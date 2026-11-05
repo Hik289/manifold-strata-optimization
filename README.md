@@ -7,15 +7,6 @@
     <a href="https://pytorch.org/"><img alt="PyTorch 2.1+" src="https://img.shields.io/badge/PyTorch-2.1%2B-EE4C2C.svg?style=flat"></a>
     <a href="https://github.com/Hik289/manifold-strata-optimization/actions/workflows/tests.yml"><img alt="Numerical checks" src="https://github.com/Hik289/manifold-strata-optimization/actions/workflows/tests.yml/badge.svg?branch=main"></a>
   </p>
-  <p>Research code for nested gradient subspaces, multi-timescale covariance sketches,<br>and transported adaptive optimizer state.</p>
-  <p align="center">
-    <a href="#the-idea">Method</a> &nbsp;·&nbsp;
-    <a href="#quickstart">Quickstart</a> &nbsp;·&nbsp;
-    <a href="docs/EXPERIMENTS.md">Experiments</a> &nbsp;·&nbsp;
-    <a href="#reported-evidence">Results</a> &nbsp;·&nbsp;
-    <a href="https://github.com/Hik289/manifold-strata-optimization/archive/refs/heads/main.zip">Download</a> &nbsp;·&nbsp;
-    <a href="docs/README.zh-CN.md">中文</a>
-  </p>
 </div>
 
 > A single subspace mixes persistent and rapidly changing gradient directions.
@@ -26,10 +17,6 @@
   <a href="fig_method_update_detailed.png">
     <img src="fig_method_update_detailed.png" width="100%" alt="Detailed STRATA update: orthogonal gradient splitting, blockwise Adam, lifting and residual correction, followed by multi-timescale covariance sketches, flag retraction, Procrustes alignment and moment transport.">
   </a>
-</p>
-<p align="center">
-  <sub><b>The STRATA update.</b> The upper path updates model weights; the lower path refreshes the nested flag and optimizer state.<br>
-  <a href="fig_method_update_detailed.png">View the full-resolution PNG</a> · <a href="docs/algorithm.md">Read the algorithm</a></sub>
 </p>
 
 ## The idea
@@ -78,35 +65,6 @@ checks orthogonality, nesting, gradient decomposition, energy conservation,
 gauge identities, retraction, transport and the one-level reduction to
 Single-Grassmann. Neither command launches a benchmark grid.
 
-### Use it in PyTorch
-
-```python
-from strata_pkg import STRATAAdamW
-
-optimizer = STRATAAdamW(
-    model.parameters(),
-    lr=3e-4,
-    ranks=[16, 32, 64],       # cumulative dimensions, not three separate ranks
-    rhos=[0.999, 0.98, 0.9],
-    a_ks=[1.0, 0.7, 0.4],
-    a_perp=0.2,
-    tau=50,
-    xi=1e-3,
-    eps=1e-6,
-    seed=42,
-)
-
-optimizer.zero_grad(set_to_none=True)
-loss = criterion(model(inputs), targets)
-loss.backward()
-optimizer.step()
-```
-
-Eligible matrix parameters use the flag branch; convolutional kernels are
-flattened internally. Biases, normalization parameters and matrices too small
-for the requested maximum rank use a dense AdamW branch. The ranks and memory
-settings above are an example, not a universal best configuration.
-
 ## Experiments
 
 Install the optional benchmark dependencies:
@@ -147,31 +105,6 @@ check, use the trainer's `--smoke --epochs 2` with a **different output folder**
 [All 856 configuration recipes →](configs/experiments.json)
 [Choose a queue subset →](configs/README.md)
 
-## Reported evidence
-
-The accompanying manuscript reports **seed-42 case studies**, not multi-seed
-statistical significance or universal optimizer superiority. A few completed
-comparisons illustrate the scope of the evidence:
-
-| Setting | Metric | STRATA | Single-G | AdamW | GaLore | Independent |
-| :--- | :--- | ---: | ---: | ---: | ---: | ---: |
-| ETTh2 / H24 | MSE ↓ | **1.74404** | 2.37970 | 2.16884 | 1.79170 | 2.18874 |
-| Rotated-MNIST / fine-tuning | Accuracy ↑ | 57.655% | 57.109% | **62.193%** | 59.691% | 57.278% |
-| Rotated-MNIST / replay | Accuracy ↑ | 88.582% | 87.170% | **90.720%** | 88.880% | 87.140% |
-
-Rates/configurations are selected using validation within each method after the
-full stated search finishes. The ETT setting uses six candidates per method;
-the Rotated-MNIST settings use two rates per method. These selected examples
-are descriptive; stronger baselines and adverse outcomes are retained in the
-[manuscript](docs/manuscript.pdf) and [complete evidence records](results/README.md).
-Optimizer tensor storage and peak allocated memory are reported separately.
-
-**Release snapshot:** 556 completed configurations, 278 deferred configurations
-and one failed candidate, with other long runs unfinished at the manuscript's
-2026-11-05 04:08 UTC snapshot. The 856 recipes describe the expanded design;
-they are not 856 completed experiments. No credentials, raw datasets or trained
-checkpoints are included.
-
 ## Repository map
 
 ```text
@@ -207,11 +140,3 @@ Use GitHub's **Cite this repository** button, or:
   url = {https://github.com/Hik289/manifold-strata-optimization}
 }
 ```
-
-## License & acknowledgments
-
-Code is released under the [MIT License](LICENSE). The vendored Muon baseline
-retains its original license and author credits; see
-[third-party notices](THIRD_PARTY_NOTICES.md). Dataset licenses remain with
-their respective providers. The manuscript is a working research document;
-conference-style presentation does not imply conference acceptance.
