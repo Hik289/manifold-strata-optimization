@@ -1,25 +1,36 @@
 <div align="center">
-
-# STRATA
-### Flag-manifold optimizer state for multi-timescale gradients
-
-**Learn nested gradient subspaces. Keep model weights unconstrained.**
-
-[![Manuscript](https://img.shields.io/badge/Read-Manuscript-172B4D?style=for-the-badge)](docs/manuscript.pdf)
-[![Quickstart](https://img.shields.io/badge/Run-Quickstart-178F83?style=for-the-badge)](#quickstart)
-[![Experiments](https://img.shields.io/badge/Explore-Experiments-4575B4?style=for-the-badge)](docs/EXPERIMENTS.md)
-[![Download](https://img.shields.io/badge/Download-Source-E7A341?style=for-the-badge)](https://github.com/Hik289/manifold-strata-optimization/archive/refs/heads/main.zip)
-
-[![Numerical checks](https://github.com/Hik289/manifold-strata-optimization/actions/workflows/tests.yml/badge.svg)](https://github.com/Hik289/manifold-strata-optimization/actions/workflows/tests.yml)
-[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](pyproject.toml)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.1%2B-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-178F83.svg)](LICENSE)
-
-[Method](#the-idea) · [Installation](#quickstart) · [Benchmarks](#experiments) · [Evidence](#reported-evidence) · [Citation](#citation) · [中文使用说明](docs/README.zh-CN.md)
-
-<img src="docs/assets/intuition.png" alt="STRATA tracks gradients over slow, medium and fast timescales, organizes them into a nested flag, and combines blockwise adaptive directions with a residual to update unconstrained weights." width="100%">
-
+  <h1>STRATA: Flag-Manifold Optimizer State</h1>
+  <p align="center">
+    <a href="docs/manuscript.pdf"><img alt="Manuscript PDF" src="https://img.shields.io/badge/Manuscript-PDF-b31b1b.svg?style=flat"></a>
+    <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/License-MIT-green.svg?style=flat"></a>
+    <a href="pyproject.toml"><img alt="Python 3.9+" src="https://img.shields.io/badge/Python-3.9%2B-3776AB.svg?style=flat"></a>
+    <a href="https://pytorch.org/"><img alt="PyTorch 2.1+" src="https://img.shields.io/badge/PyTorch-2.1%2B-EE4C2C.svg?style=flat"></a>
+    <a href="https://github.com/Hik289/manifold-strata-optimization/actions/workflows/tests.yml"><img alt="Numerical checks" src="https://github.com/Hik289/manifold-strata-optimization/actions/workflows/tests.yml/badge.svg?branch=main"></a>
+  </p>
+  <p>Research code for nested gradient subspaces, multi-timescale covariance sketches,<br>and transported adaptive optimizer state.</p>
+  <p align="center">
+    <a href="#the-idea">Method</a> &nbsp;·&nbsp;
+    <a href="#quickstart">Quickstart</a> &nbsp;·&nbsp;
+    <a href="docs/EXPERIMENTS.md">Experiments</a> &nbsp;·&nbsp;
+    <a href="#reported-evidence">Results</a> &nbsp;·&nbsp;
+    <a href="https://github.com/Hik289/manifold-strata-optimization/archive/refs/heads/main.zip">Download</a> &nbsp;·&nbsp;
+    <a href="docs/README.zh-CN.md">中文</a>
+  </p>
 </div>
+
+> A single subspace mixes persistent and rapidly changing gradient directions.
+> STRATA tracks them through a nested flag and combines blockwise adaptive
+> updates in the original, unconstrained weight space.
+
+<p align="center">
+  <a href="fig_method_update_detailed.png">
+    <img src="fig_method_update_detailed.png" width="100%" alt="Detailed STRATA update: orthogonal gradient splitting, blockwise Adam, lifting and residual correction, followed by multi-timescale covariance sketches, flag retraction, Procrustes alignment and moment transport.">
+  </a>
+</p>
+<p align="center">
+  <sub><b>The STRATA update.</b> The upper path updates model weights; the lower path refreshes the nested flag and optimizer state.<br>
+  <a href="fig_method_update_detailed.png">View the full-resolution PNG</a> · <a href="docs/algorithm.md">Read the algorithm</a></sub>
+</p>
 
 ## The idea
 
@@ -175,7 +186,8 @@ data/scripts/             Data-pipeline and gradient-structure checks
 tools/                    Queue initialization and release checks
 results/                  Frozen, configuration-level evidence tables
 paper/                    Manuscript LaTeX source and figures
-docs/                     Guides, manuscript PDF and intuition PNG
+docs/                     Guides, manuscript PDF and supporting visuals
+fig_method_update_detailed.png  Full-resolution method diagram
 ```
 
 The historical launchers and archived variants are retained for completeness.
