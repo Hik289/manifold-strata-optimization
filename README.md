@@ -1,11 +1,8 @@
 <div align="center">
   <h1>STRATA: Flag-Manifold Optimizer State</h1>
   <p align="center">
-    <a href="docs/manuscript.pdf"><img alt="Manuscript PDF" src="https://img.shields.io/badge/Manuscript-PDF-b31b1b.svg?style=flat"></a>
     <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/License-MIT-green.svg?style=flat"></a>
     <a href="pyproject.toml"><img alt="Python 3.9+" src="https://img.shields.io/badge/Python-3.9%2B-3776AB.svg?style=flat"></a>
-    <a href="https://pytorch.org/"><img alt="PyTorch 2.1+" src="https://img.shields.io/badge/PyTorch-2.1%2B-EE4C2C.svg?style=flat"></a>
-    <a href="https://github.com/Hik289/manifold-strata-optimization/actions/workflows/tests.yml"><img alt="Numerical checks" src="https://github.com/Hik289/manifold-strata-optimization/actions/workflows/tests.yml/badge.svg?branch=main"></a>
   </p>
 </div>
 
@@ -37,7 +34,7 @@ model architecture or the feasible set of weights.
 
 **Included:** the optimizer and geometric primitives; four baseline optimizers;
 all experiment trainers, data preparation, ablations, queue recipes, verification
-and plotting code; the working manuscript and a frozen results snapshot.
+and plotting code; the manuscript source and a frozen results snapshot.
 
 [Algorithm specification](docs/algorithm.md) · [Optimizer API](docs/API.md) · [Reproducibility](docs/REPRODUCIBILITY.md)
 
@@ -119,7 +116,7 @@ data/scripts/             Data-pipeline and gradient-structure checks
 tools/                    Queue initialization and release checks
 results/                  Frozen, configuration-level evidence tables
 paper/                    Manuscript LaTeX source and figures
-docs/                     Guides, manuscript PDF and supporting visuals
+docs/                     Guides and supporting visuals
 fig_method_update_detailed.png  Full-resolution method diagram
 ```
 

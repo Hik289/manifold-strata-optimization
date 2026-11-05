@@ -16,6 +16,7 @@ venv/
 build/
 dist/
 .latex-build/
+*.pdf
 *.aux
 *.bbl
 *.blg
@@ -48,6 +49,5 @@ dist/
 /results_revision/
 /snapshot_light/
 /hf_cache/
-/paper/main.pdf
 /analysis/revision_*/
 /analysis/*.json

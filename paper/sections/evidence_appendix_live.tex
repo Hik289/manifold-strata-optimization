@@ -76,7 +76,7 @@ GaLore & 1e-03 & 0.1399 & 3.8 & 290 & 0.128 \\
 Independent & 1e-03 & 0.1266 & 2.83 & 257 & 0.104 \\
 \bottomrule\end{tabular}
 \end{adjustbox}\end{table}
-\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_evidence_darcy.pdf}\caption{Complete 2000-epoch Darcy/FNO loss trajectories: training, validation, and test MSE. Rates are validation-selected from complete two-rate grids; test residual and spectrum never select a curve. All methods and adverse outcomes are retained.}\end{figure}
+\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_evidence_darcy.png}\caption{Complete 2000-epoch Darcy/FNO loss trajectories: training, validation, and test MSE. Rates are validation-selected from complete two-rate grids; test residual and spectrum never select a curve. All methods and adverse outcomes are retained.}\end{figure}
 \paragraph{PubMed mechanism follow-up.} The ten variants and both rates are frozen before follow-up outcomes. Their controls reuse the original two full-method configurations. Freezing after 200 updates also stops variance resets; periodic pooled SVD changes the flag objective. Thus these are explicitly identified interventions, not pure isolated geometry controls.
 \begin{table}[htbp]\centering\footnotesize\setlength{\tabcolsep}{3pt}\caption{Complete PubMed/SAGE ablation grid, validation-selected rates, terminal-100 accuracies. Differences are relative to full STRATA. No variant is promoted to the default based on test results.}\label{tab:pubmed-ablations}\begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{lrrrr}\toprule Variant & lr & Val & Test & $\Delta$ test (pp)\\\midrule
@@ -129,7 +129,7 @@ Independent & 10 & 1e-03 & 0.67426 & 0.65143 \\
 \end{adjustbox}
 \end{table}
 
-\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_evidence_xi_loss_grid.pdf}\caption{All 18 completed equal-rank step/rate trajectories, without selection or smoothing. Rows show STRATA, Single-G and Independent; columns show training and validation cross-entropy. Colors denote flag step and line styles distinguish the two learning rates. Every candidate runs 1000 epochs.}\end{figure}
+\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_evidence_xi_loss_grid.png}\caption{All 18 completed equal-rank step/rate trajectories, without selection or smoothing. Rows show STRATA, Single-G and Independent; columns show training and validation cross-entropy. Colors denote flag step and line styles distinguish the two learning rates. Every candidate runs 1000 epochs.}\end{figure}
 \paragraph{State-matched capacity control.} Same-rank comparisons allocate more optimizer state to STRATA than to Single-Grassmann. We therefore choose the closest integer Single-G rank using initialized tensor storage only, before observing any new accuracy; the target includes probes. Both methods receive the same six-candidate flag-step/rate grid. This is an approximately equal-state comparison, separate from the equal-rank default protocol.
 Single-G rank 82 uses 2423128 bytes, versus 2433048 for rank-64 STRATA, a signed difference of -0.408\%. The choice uses exact shape-derived state counts over integer ranks 4--255, including probe-rank saturation, checked against actual initialized storage at four ranks and an archived STRATA final checkpoint; no validation or test score chooses rank.
 \begin{table}[htbp]\centering\footnotesize\setlength{\tabcolsep}{3pt}\caption{Completed state-budget control. Rank is fixed from storage alone; every row finishes two rates at each of three flag steps. Default test selects the rate at $\xi=10^{-3}$; six-grid test selects both hyperparameters on validation. Independent uses blocks of dimensions $(16,16,32)$, whose total rank budget is 64. State includes probes and the cached union basis when present.}\label{tab:memory-control}\begin{adjustbox}{max width=\linewidth}
@@ -141,7 +141,7 @@ Single-G R82 & 2.311 & 0.001 & 1e-03 & 0.72923 & 0.72923 \\
 Independent total R64 & 2.195 & 0.001 & 1e-03 & 0.74151 & 0.74151 \\
 \bottomrule\end{tabular}
 \end{adjustbox}\end{table}
-\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_evidence_memory_control.pdf}\caption{Completed capacity-control training and validation losses after equal six-candidate validation selection. The additional Single-G rank is determined using state storage alone; all six candidates are shown separately below.}\end{figure}
+\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_evidence_memory_control.png}\caption{Completed capacity-control training and validation losses after equal six-candidate validation selection. The additional Single-G rank is determined using state storage alone; all six candidates are shown separately below.}\end{figure}
 \begin{table}[htbp]\centering\footnotesize\caption{All six completed Single-G state-control candidates. The rank is chosen using storage alone; validation, not test, selects the reported optimum.}\begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{rrrr}\toprule $\xi$ & lr & Val acc & Test acc\\\midrule
 0.001 & 3e-04 & 0.71554 & 0.71640 \\
@@ -152,4 +152,4 @@ Independent total R64 & 2.195 & 0.001 & 1e-03 & 0.74151 & 0.74151 \\
 10 & 1e-03 & 0.72560 & 0.72434 \\
 \bottomrule\end{tabular}
 \end{adjustbox}\end{table}
-\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_evidence_memory_grid.pdf}\caption{All six completed Single-G capacity-control training and validation trajectories. No candidate is omitted, selected or smoothed in this grid view.}\end{figure}
+\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_evidence_memory_grid.png}\caption{All six completed Single-G capacity-control training and validation trajectories. No candidate is omitted, selected or smoothed in this grid view.}\end{figure}

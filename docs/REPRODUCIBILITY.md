@@ -60,9 +60,10 @@ With TeX Live and latexmk installed, from the repository root:
 latexmk -pdf -interaction=nonstopmode -halt-on-error -cd paper/main.tex
 ```
 
-The included `docs/manuscript.pdf` is a verified, privacy-cleaned working
-snapshot. The original style notices are retained. The source uses the ICML
-2026 format; it is not relabeled as an official 2027 template.
+The repository includes the manuscript source and PNG figures. Compile locally
+to generate the PDF; PDF outputs are excluded from version control. The original
+style notices are retained. The source uses the ICML 2026 format; it is not
+relabeled as an official 2027 template.
 
 ## Data and storage
 

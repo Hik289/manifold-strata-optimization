@@ -31,7 +31,7 @@ GaLore & 1e-04 & -- & \textbf{0.73812} & \textbf{0.76942} & 0.377 & \rwcheck \\
 Independent & 3e-04 & 0.1 & 1.04792 & 0.90163 & 0.751 & \rwcross \\
 \bottomrule\end{tabular}
 \end{adjustbox}\end{table}
-\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_new_family_edb567be48.pdf}\caption{Complete ETTh1 / H24 loss trajectories. Left to right: training, validation, and test loss. Selection uses validation only after all candidates finish or record failure. All five methods and adverse outcomes remain visible. Curves are raw and unsmoothed.}\end{figure}
+\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_new_family_edb567be48.png}\caption{Complete ETTh1 / H24 loss trajectories. Left to right: training, validation, and test loss. Selection uses validation only after all candidates finish or record failure. All five methods and adverse outcomes remain visible. Curves are raw and unsmoothed.}\end{figure}
 \clearpage
 \paragraph{ETTh2 / H24 complete search.} Primary metric: MSE. Recorded candidate failures: STRATA 0, Single-G 0, AdamW 0, GaLore 0, Independent 0. Shared-CPU wall time is not isolated throughput; tensor-state size is distinct from peak memory.
 \begin{table}[htbp]\centering\caption{\textbf{ETTh2 / H24: selected configurations and stored state.} Each method selects among six candidates on validation. Bold marks the best validation/test value; the green row identifies STRATA. Pareto status uses test quality and stored state, not peak memory.}\begin{adjustbox}{max width=\linewidth}
@@ -44,7 +44,7 @@ GaLore & 1e-02 & -- & 1.00745 & 1.79170 & 0.377 & \rwcheck \\
 Independent & 1e-03 & 0.1 & 1.31254 & 2.18874 & 0.751 & \rwcross \\
 \bottomrule\end{tabular}
 \end{adjustbox}\end{table}
-\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_new_family_151c40f1dd.pdf}\caption{Complete ETTh2 / H24 loss trajectories. Left to right: training, validation, and test loss. Selection uses validation only after all candidates finish or record failure. All five methods and adverse outcomes remain visible. Curves are raw and unsmoothed.}\end{figure}
+\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_new_family_151c40f1dd.png}\caption{Complete ETTh2 / H24 loss trajectories. Left to right: training, validation, and test loss. Selection uses validation only after all candidates finish or record failure. All five methods and adverse outcomes remain visible. Curves are raw and unsmoothed.}\end{figure}
 \clearpage
 \paragraph{MovieLens100K / ratings complete search.} Primary metric: RMSE. Recorded candidate failures: STRATA 0, Single-G 0, AdamW 0, GaLore 0, Independent 0. Shared-CPU wall time is not isolated throughput; tensor-state size is distinct from peak memory.
 \begin{table}[htbp]\centering\caption{\textbf{MovieLens100K / ratings: selected configurations and stored state.} Each method selects among six candidates on validation. Bold marks the best validation/test value; the green row identifies STRATA. Pareto status uses test quality and stored state, not peak memory.}\begin{adjustbox}{max width=\linewidth}
@@ -57,7 +57,7 @@ GaLore & 1e-04 & -- & 0.94025 & 0.95778 & 0.692 & \rwcheck \\
 Independent & 3e-04 & 10 & 1.00684 & 1.01755 & 0.833 & \rwcross \\
 \bottomrule\end{tabular}
 \end{adjustbox}\end{table}
-\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_new_family_ce752a0fe4.pdf}\caption{Complete MovieLens100K / ratings loss trajectories. Left to right: training, validation, and test loss. Selection uses validation only after all candidates finish or record failure. All five methods and adverse outcomes remain visible. Curves are raw and unsmoothed.}\end{figure}
+\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_new_family_ce752a0fe4.png}\caption{Complete MovieLens100K / ratings loss trajectories. Left to right: training, validation, and test loss. Selection uses validation only after all candidates finish or record failure. All five methods and adverse outcomes remain visible. Curves are raw and unsmoothed.}\end{figure}
 \clearpage
 \paragraph{MovieLens1M / ratings complete search.} Primary metric: RMSE. Recorded candidate failures: STRATA 0, Single-G 0, AdamW 0, GaLore 0, Independent 0. Shared-CPU wall time is not isolated throughput; tensor-state size is distinct from peak memory.
 \begin{table}[htbp]\centering\caption{\textbf{MovieLens1M / ratings: selected configurations and stored state.} Each method selects among six candidates on validation. Bold marks the best validation/test value; the green row identifies STRATA. Pareto status uses test quality and stored state, not peak memory.}\begin{adjustbox}{max width=\linewidth}
@@ -70,7 +70,7 @@ GaLore & 1e-04 & -- & \textbf{0.89748} & \textbf{0.91712} & 2.547 & \rwcheck \\
 Independent & 3e-04 & 10 & 1.05453 & 1.08146 & 2.688 & \rwcross \\
 \bottomrule\end{tabular}
 \end{adjustbox}\end{table}
-\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_new_family_4338a23ff7.pdf}\caption{Complete MovieLens1M / ratings loss trajectories. Left to right: training, validation, and test loss. Selection uses validation only after all candidates finish or record failure. All five methods and adverse outcomes remain visible. Curves are raw and unsmoothed.}\end{figure}
+\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_new_family_4338a23ff7.png}\caption{Complete MovieLens1M / ratings loss trajectories. Left to right: training, validation, and test loss. Selection uses validation only after all candidates finish or record failure. All five methods and adverse outcomes remain visible. Curves are raw and unsmoothed.}\end{figure}
 \clearpage
 \paragraph{Gas sensors / fine-tuning complete search.} Primary metric: acc. Recorded candidate failures: STRATA 0, Single-G 0, AdamW 0, GaLore 0, Independent 0. Shared-CPU wall time is not isolated throughput; tensor-state size is distinct from peak memory.
 \begin{table}[htbp]\centering\caption{\textbf{Gas sensors / fine-tuning: selected configurations and stored state.} Each method selects among six candidates on validation. Bold marks the best validation/test value; the green row identifies STRATA. Pareto status uses test quality and stored state, not peak memory.}\begin{adjustbox}{max width=\linewidth}
@@ -83,7 +83,7 @@ GaLore & 1e-03 & -- & \textbf{0.90496} & \textbf{0.90656} & 0.188 & \rwcheck \\
 Independent & 3e-04 & 10 & 0.82691 & 0.80659 & 0.398 & \rwcross \\
 \bottomrule\end{tabular}
 \end{adjustbox}\end{table}
-\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_new_family_2d8b18f1f2.pdf}\caption{Complete Gas sensors / fine-tuning loss trajectories. Left to right: training, validation, and test loss. Selection uses validation only after all candidates finish or record failure. All five methods and adverse outcomes remain visible. Curves are raw and unsmoothed; sensor-drift evaluation averages domains seen so far and changes at domain boundaries.}\end{figure}
+\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_new_family_2d8b18f1f2.png}\caption{Complete Gas sensors / fine-tuning loss trajectories. Left to right: training, validation, and test loss. Selection uses validation only after all candidates finish or record failure. All five methods and adverse outcomes remain visible. Curves are raw and unsmoothed; sensor-drift evaluation averages domains seen so far and changes at domain boundaries.}\end{figure}
 \clearpage
 \paragraph{Gas sensors / replay complete search.} Primary metric: acc. Recorded candidate failures: STRATA 0, Single-G 0, AdamW 0, GaLore 0, Independent 0. Shared-CPU wall time is not isolated throughput; tensor-state size is distinct from peak memory.
 \begin{table}[htbp]\centering\caption{\textbf{Gas sensors / replay: selected configurations and stored state.} Each method selects among six candidates on validation. Bold marks the best validation/test value; the green row identifies STRATA. Pareto status uses test quality and stored state, not peak memory.}\begin{adjustbox}{max width=\linewidth}
@@ -96,4 +96,4 @@ GaLore & 1e-03 & -- & 0.97444 & 0.96232 & 0.188 & \rwcheck \\
 Independent & 1e-03 & 10 & 0.97214 & 0.96343 & 0.398 & \rwcross \\
 \bottomrule\end{tabular}
 \end{adjustbox}\end{table}
-\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_new_family_8ed4986eff.pdf}\caption{Complete Gas sensors / replay loss trajectories. Left to right: training, validation, and test loss. Selection uses validation only after all candidates finish or record failure. All five methods and adverse outcomes remain visible. Curves are raw and unsmoothed; sensor-drift evaluation averages domains seen so far and changes at domain boundaries.}\end{figure}
+\begin{figure}[!htbp]\centering\includegraphics[width=.98\linewidth]{figures/fig_new_family_8ed4986eff.png}\caption{Complete Gas sensors / replay loss trajectories. Left to right: training, validation, and test loss. Selection uses validation only after all candidates finish or record failure. All five methods and adverse outcomes remain visible. Curves are raw and unsmoothed; sensor-drift evaluation averages domains seen so far and changes at domain boundaries.}\end{figure}

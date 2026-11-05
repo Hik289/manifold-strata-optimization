@@ -4,46 +4,46 @@
 Every plotted value comes from a retained JSON trajectory. The figure audit records source paths, SHA-256 digests, the selected metric, point counts, and the last observed abscissa. Classification selections use terminal-100 validation accuracy among completed 1000-epoch trials. The scientific panels restrict both methods to rank 64 and choose within that rank using terminal-100 PDE residual; exact-solution errors never select the curve. Seed 42 is used throughout. Archived epoch indices and new one-based epochs are retained separately. Curves are not stretched to a common horizon, and unfinished traces do not enter endpoint or AUC comparisons. No confidence intervals are claimed.
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=.98\linewidth]{figures/fig_loss_classification_validation.pdf}
+\includegraphics[width=.98\linewidth]{figures/fig_loss_classification_validation.png}
 \caption{\textbf{Training and validation cross-entropy for the selected classifiers.} Each row is one dataset; left: training loss; right: held-out validation loss. The same selected run supplies both panels. A declining training loss with rising validation loss is retained. Missing Fashion-MNIST baselines are left absent. These are single-seed archived trajectories with unequal baseline search sizes.}
 \label{fig:loss-classification-validation}
 \end{figure}
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=.98\linewidth]{figures/fig_loss_scientific.pdf}
+\includegraphics[width=.98\linewidth]{figures/fig_loss_scientific.png}
 \caption{\textbf{Scientific-ML convergence at a strictly matched maximum rank of 64.} Left: total training loss; right: PDE residual loss. Exact-solution endpoint errors are tabulated separately. Rows: Burgers, Burgers-g2, Poisson. Each method's learning rate is selected by terminal PDE loss within rank 64. For Poisson this gives Single-Grassmann 2.04357 and STRATA 0.18741. The former differs from 2.00280, the rank-32 winner of the pooled-rank Single-Grassmann grid. Neither exact-solution error nor a favorable intermediate point selects a run.}
 \label{fig:loss-scientific}
 \end{figure}
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=.98\linewidth]{figures/fig_loss_graph_continual.pdf}
+\includegraphics[width=.98\linewidth]{figures/fig_loss_graph_continual.png}
 \caption{\textbf{Graph and continual-learning loss trajectories.} Left: training cross-entropy; right: validation cross-entropy. Rows show archived ogbn-arxiv, newly completed Cora/GCN configurations at the fixed rate $3\times10^{-4}$, and newly completed Rotated-MNIST fine-tuning configurations at that same fixed rate. In continual learning the held-out loss averages seen tasks, whose set grows at task boundaries; it is not the loss on an unchanging distribution. Only completed configurations are included in these panels.}
 \label{fig:loss-graph-cl}
 \end{figure}
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=.98\linewidth]{figures/fig_loss_ongoing.pdf}
+\includegraphics[width=.98\linewidth]{figures/fig_loss_ongoing.png}
 \caption{\textbf{Large-task trajectories and configuration completion status.} Left: training loss; right: validation loss. Rows show WikiText-103/GPT-2, Tiny-ImageNet/ResNet-18, ImageNet-100/ResNet-18, and WikiText-2/LSTM at rate $3\times10^{-4}$. GPT-2 uses actual training tokens; the other rows use observed epochs. Each WikiText-2 epoch covers the complete next-token training corpus. A title marks any completed STRATA configuration; missing methods and unfinished searches do not become completed comparison cohorts. Other traces stop at their last observed epoch. A missing method has no available trace at the snapshot. The different language tokenizations also prevent interpreting perplexity across the two language-model rows as a matched comparison. These traces do not establish a family-level advantage.}
 \label{fig:loss-ongoing}
 \end{figure}
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=.98\linewidth]{figures/fig_loss_grid_mnist.pdf}
+\includegraphics[width=.98\linewidth]{figures/fig_loss_grid_mnist.png}
 \caption{\textbf{All completed MNIST classifier-grid training losses.} Separate panels show methods; lines show all available completed learning-rate trials. Poor configurations are retained. A 397-epoch partial GaLore trial is excluded from the complete-grid view.}
 \end{figure}
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=.98\linewidth]{figures/fig_loss_grid_fashion.pdf}
+\includegraphics[width=.98\linewidth]{figures/fig_loss_grid_fashion.png}
 \caption{\textbf{All completed Fashion-MNIST classifier-grid training losses.} Missing archived AdamW/GaLore grids are absent. The unstable Single-Grassmann trial remains visible rather than being removed from the learning-rate matrix.}
 \end{figure}
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=.98\linewidth]{figures/fig_loss_grid_cifar10.pdf}
+\includegraphics[width=.98\linewidth]{figures/fig_loss_grid_cifar10.png}
 \caption{\textbf{All completed CIFAR-10 classifier-grid training losses.} STRATA/Single-Grassmann have two available rates; each archived AdamW/GaLore reference has one. These unequal grids are disclosed rather than represented as equal hyperparameter budgets.}
 \end{figure}
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=.98\linewidth]{figures/fig_loss_grid_cifar100.pdf}
+\includegraphics[width=.98\linewidth]{figures/fig_loss_grid_cifar100.png}
 \caption{\textbf{All completed CIFAR-100 classifier-grid training losses.} The full training paths support optimization diagnostics while the held-out panels prevent interpreting a small terminal training loss as evidence of superior generalization.}
 \end{figure}
 \input{sections/convergence_metrics_table}

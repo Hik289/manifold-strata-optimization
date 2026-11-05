@@ -32,5 +32,6 @@ python experiments/test_numerical.py
 - 原始数据、训练检查点、运行队列与任何连接凭据均不随代码发布。
 
 方法接口见 [API.md](API.md)，完整数学说明见 [algorithm.md](algorithm.md)，
-论文见 [manuscript.pdf](manuscript.pdf)。代码采用 [MIT](../LICENSE) 许可证，
+论文源码见 [paper/main.tex](../paper/main.tex)，PDF 可在本地编译生成。
+代码采用 [MIT](../LICENSE) 许可证，
 第三方基线和数据集遵守各自的许可证与使用条款。
