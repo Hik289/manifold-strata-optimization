@@ -1,0 +1,240 @@
+\subsection{Flag quotient, tangent decomposition, and retractions}
+The geometric variable is a chain of nested subspaces. Rotating a basis inside
+one block leaves that chain unchanged, which motivates the quotient and its
+horizontal tangent space. The orthogonal block decomposition also separates
+captured gradient energy from the residual exactly. Coordinatewise adaptive
+moments require additional information about the chosen basis; their behavior
+is examined in Proposition~\ref{prop:tf-gauge}.
+
+\begin{definition}[Ambient spaces and block selectors]
+\begin{gather}
+ \langle X,Y\rangle_F:=\tr(X^\top Y),\quad
+ \|X\|_F^2:=\langle X,X\rangle_F,\quad
+ \|X\|_{\op}:=\sup_{\|v\|_2=1}\|Xv\|_2,\\
+ \sym A:=\tfrac12(A+A^\top),\qquad
+ \skw A:=\tfrac12(A-A^\top),\\
+ 0=r_0<r_1<\cdots<r_K=R<d\le m,\quad
+ q_j:=r_j-r_{j-1},\quad q_{K+1}:=d-R,\\
+ I_{K+1}:=\{R+1,\ldots,d\},\\
+ I_j:=\{r_{j-1}+1,\ldots,r_j\},\quad
+ E_j:=\diag(\mathbf1_{I_j})\in\RR^{R\times R},\quad
+ F_k:=\sum_{j\le k}E_j,\\
+ \St(d,R):=\{U\in\RR^{d\times R}:U^\top U=I_R\},\\
+ \mathcal G:=\prod_{j=1}^K\mathrm O(q_j),\qquad
+ U\sim V\ \Longleftrightarrow\ 
+ V=U\diag(O_1,\ldots,O_K),\quad O_j\in\mathrm O(q_j),\\
+ \mathfrak F(q_1,\ldots,q_{K+1})
+ :=\St(d,R)/\mathcal G
+ \simeq\mathrm O(d)/\prod_{j=1}^{K+1}\mathrm O(q_j),\\
+ U_j:=U_{:,I_j},\quad
+ P_k(U):=UF_kU^\top,\quad
+ \Pi_j(U):=UE_jU^\top,\quad \Pi_{K+1}(U):=I_d-UU^\top.
+ \label{eq:tf-projectors}
+\end{gather}
+\end{definition}
+\begin{proposition}[Projector algebra]\label{lem:tf-energy}
+\begin{gather}
+ P_k^\top=P_k=P_k^2,\quad \tr P_k=r_k,\quad
+ P_kP_l=P_{\min(k,l)},\\
+ \Pi_i^\top=\Pi_i,\quad \Pi_i\Pi_j=\delta_{ij}\Pi_i,
+ \quad\sum_{j=1}^{K+1}\Pi_j=I_d,\\
+ G=\sum_{j=1}^{K+1}G\Pi_j,\quad
+ \langle G\Pi_i,G\Pi_j\rangle_F=0\quad(i\ne j),\\
+ \|G\|_F^2=\sum_{j=1}^K\|GU_j\|_F^2+
+ \|G\Pi_{K+1}\|_F^2,\\
+ \|G-GP_k\|_F^2=\tr(G^\top G)-\tr(P_kG^\top G).
+\end{gather}
+\end{proposition}
+\begin{proof}
+\begin{align}
+ P_kP_l&=UF_k(U^\top U)F_lU^\top=UF_{\min(k,l)}U^\top,\\
+ \Pi_i\Pi_j&=UE_iE_jU^\top=\delta_{ij}UE_iU^\top,\quad i,j\le K,\\
+ (I-UU^\top)UE_j&=0,\qquad
+ \sum_{j\le K}UE_jU^\top=UU^\top,\\
+ \langle G\Pi_i,G\Pi_j\rangle_F
+ &=\tr(\Pi_iG^\top G\Pi_j)
+ =\tr(\Pi_j\Pi_iG^\top G)=0,\\
+ \|GU_jU_j^\top\|_F^2
+ &=\tr(U_jU_j^\top G^\top GU_jU_j^\top)
+ =\tr(U_j^\top G^\top GU_j),\\
+ \|G(I-P_k)\|_F^2
+ &=\tr((I-P_k)G^\top G(I-P_k))
+ =\tr(G^\top G)-\tr(P_kG^\top G).
+\end{align}
+\end{proof}
+\begin{proposition}[Vertical and horizontal spaces]\label{prop:rigid-horizontal}
+\begin{align}
+ T_U\St(d,R)&=\{Z:U^\top Z+Z^\top U=0\},\\
+ \Ver_U&=\{U\Omega:\Omega^\top=-\Omega,
+                  \ \Omega=\blkdiag(\Omega_{11},\ldots,\Omega_{KK})\},\\
+ \Hor_U&=\{Z\in T_U\St(d,R):E_jU^\top ZE_j=0\ (1\le j\le K)\},\\
+ T_U\St(d,R)&=\Hor_U\mathbin{\perp}\Ver_U,\\
+ \mathsf H_U(A)&=A-U\sym(U^\top A)
+   -U\blkdiag\bigl(\skw(U^\top A)\bigr),
+ \label{eq:rigid-horizontal}\
+ \dim\mathfrak F&=dR-\frac{R^2+\sum_{j=1}^Kq_j^2}{2}.
+\end{align}
+\end{proposition}
+\begin{proof}
+\begin{align}
+ 0&=\left.\frac{\mathrm d}{\mathrm ds}(U+sZ)^\top(U+sZ)\right|_{s=0}
+   =U^\top Z+Z^\top U,\\
+ Z&=U\Omega+U_\perp B,\quad
+ \Omega=U^\top Z=-\Omega^\top,\quad B=U_\perp^\top Z,\\
+ \langle Z,U\Lambda\rangle_F
+ &=\tr(\Omega^\top\Lambda)
+ =\sum_j\tr(\Omega_{jj}^\top\Lambda_{jj}),\\
+ Z\perp\Ver_U&\Longleftrightarrow\Omega_{jj}=0\quad(\forall j),\\
+ A&=\underbrace{U\sym(U^\top A)}_{(T_U\St)^\perp}
+ +\underbrace{U\blkdiag(\skw(U^\top A))}_{\Ver_U}
+ +\underbrace{\mathsf H_U(A)}_{\Hor_U},\\
+ \langle U S,U\Omega\rangle_F&=\tr(S\Omega)=0
+ \quad(S^\top=S,\ \Omega^\top=-\Omega),\\
+ \dim\Hor_U&=dR-\frac{R(R+1)}2-\sum_j\frac{q_j(q_j-1)}2.
+\end{align}
+\end{proof}
+We use projector distances to compare subspaces independently of their basis
+representatives. The aligned-basis distance is convenient for moment transport;
+the following comparisons allow estimates in these two representations to be
+combined with explicit constants.
+
+\begin{definition}[Quotient metric and projector distances]
+\begin{gather}
+ g_{[U]}(\xi,\eta):=\langle\xi_U^{\Hor},\eta_U^{\Hor}\rangle_F,\\
+ d_P(U,V)^2:=\sum_{k=1}^K\|P_k(U)-P_k(V)\|_F^2,
+ \label{eq:tf-distance}\\
+ d_B(U,V)^2:=\sum_{j=1}^K\min_{O_j\in\mathrm O(q_j)}
+                    \|U_j-V_jO_j\|_F^2,\\
+ d_\Pi(U,V)^2:=\sum_{j=1}^K\|\Pi_j(U)-\Pi_j(V)\|_F^2,\\
+ \overline d_\Pi(U,V)^2:=\sum_{j=1}^{K+1}\|\Pi_j(U)-\Pi_j(V)\|_F^2.
+\end{gather}
+\end{definition}
+\begin{lemma}[Overlap transport identity and sharp metric comparisons]\label{lem:rigid-metrics}
+For $T_{ja}:=\tr(\Pi_j(U)\Pi_a(V))$, $1\le j,a\le K+1$, set
+$W:=\sum_{j\ne a}T_{ja}$. Then
+\begin{gather}
+ d_P^2=\sum_{j,a}|j-a|T_{ja},\quad\overline d_\Pi^2=2W,\\
+ d_B^2\le d_\Pi^2\le2d_B^2,\qquad
+ d_\Pi^2\le\overline d_\Pi^2\le2d_P^2,\\
+ d_P^2\le\frac K2\overline d_\Pi^2\le Kd_\Pi^2\le2K d_B^2.
+\end{gather}
+The constants in $\overline d_\Pi^2\le2d_P^2$ and
+$d_P^2\le(K/2)\overline d_\Pi^2$ are attained by adjacent-block and
+first-to-residual rotations, respectively.
+\end{lemma}
+\begin{proof}
+\begin{align}
+ U_j^\top V_j&=L_j\diag(\sigma_{j1},\ldots,\sigma_{jq_j})R_j^\top,
+ \quad0\le\sigma_{ji}\le1,\\
+ \min_{O_j}\|U_j-V_jO_j\|_F^2&=2\sum_i(1-\sigma_{ji}),\\
+ \|\Pi_j(U)-\Pi_j(V)\|_F^2&=2\sum_i(1-\sigma_{ji}^2),\\
+ 1-\sigma&\le1-\sigma^2\le2(1-\sigma),\quad\sigma\in[0,1],\\
+ \sum_aT_{ja}&=q_j,\quad\sum_jT_{ja}=q_a,\\
+ \|P_k(U)-P_k(V)\|_F^2
+ &=\sum_{j\le k<a}T_{ja}+\sum_{a\le k<j}T_{ja},\\
+ \sum_k\|P_k(U)-P_k(V)\|_F^2&=\sum_{j,a}|j-a|T_{ja},\\
+ \sum_j\|\Pi_j(U)-\Pi_j(V)\|_F^2&=2\sum_{j\ne a}T_{ja}=2W,\\
+ \|\Pi_{K+1}(U)-\Pi_{K+1}(V)\|_F^2
+ &=2\sum_{a\le K}T_{K+1,a}\le W.
+\end{align}
+Thus $W\le d_P^2\le KW$ and $d_\Pi^2\ge W$. A two-plane rotation between
+blocks $a<b$ has $W=2\sin^2\theta$ and $d_P^2=(b-a)W$, proving the equality
+claims. Keeping the overlap flow avoids repeated triangle inequalities for
+the nested prefixes.
+\end{proof}
+\begin{lemma}[Infinitesimal projector metric]\label{lem:rigid-differential}
+For $Q=[U,U_\perp]\in\mathrm O(d)$, $\Omega^\top=-\Omega$,
+$\Omega_{jj}=0$, and $U(s)=(Qe^{s\Omega})_{:R}$,
+\begin{align}
+ \dot P_k(0)&=Q[\Omega,\widehat F_k]Q^\top,\quad
+ \widehat F_k:=\diag(I_{r_k},0_{d-r_k}),\\
+ \sum_k\|\dot P_k(0)\|_F^2
+ &=2\sum_{1\le a<b\le K+1}(b-a)\|\Omega_{ab}\|_F^2,\\
+ \|\dot U(0)\|_F^2
+ &=2\sum_{a<b\le K}\|\Omega_{ab}\|_F^2
+   +\sum_{a\le K}\|\Omega_{a,K+1}\|_F^2,\\
+ \|\dot U(0)\|_F^2
+ &\le\sum_k\|\dot P_k(0)\|_F^2
+ \le2K\|\dot U(0)\|_F^2.
+\end{align}
+\end{lemma}
+\begin{proof}
+\begin{align}
+ P_k(s)&=Qe^{s\Omega}\widehat F_ke^{-s\Omega}Q^\top,\\
+ [\Omega,\widehat F_k]_{ab}
+ &=(\mathbf1_{b\le k}-\mathbf1_{a\le k})\Omega_{ab},\\
+ \|[\Omega,\widehat F_k]\|_F^2
+ &=2\sum_{a\le k<b}\|\Omega_{ab}\|_F^2,\\
+ \sum_{k=1}^K\mathbf1_{a\le k<b}&=b-a,\\
+ \|(Q\Omega)_{:R}\|_F^2
+ &=\|\Omega_{1:K,1:K}\|_F^2+\|\Omega_{K+1,1:K}\|_F^2.
+\end{align}
+\end{proof}
+\begin{proposition}[Polar and QR retractions]\label{prop:rigid-retract}
+For $Z\in T_U\St(d,R)$,
+\begin{gather}
+ X:=U+Z,\quad X^\top X=I+Z^\top Z,\quad\sigma_{\min}(X)\ge1,\\
+ R_U^{\mathrm{pol}}(Z):=(U+Z)(I+Z^\top Z)^{-1/2},\\
+ R_U^{\mathrm{qr}}(Z):=(U+Z)\operatorname{chol}(I+Z^\top Z)^{-\top},\\
+ R_U^{\mathrm{pol}}(0)=R_U^{\mathrm{qr}}(0)=U,\quad
+ \mathrm DR_U^{\mathrm{pol}}(0)[Z]=\mathrm DR_U^{\mathrm{qr}}(0)[Z]=Z,\\
+ \|R_U^{\mathrm{pol}}(Z)-U-Z\|_F\le
+ \tfrac12\sqrt{1+\|Z\|_{\op}^2}\,\|Z\|_F^2,\\
+ \|R_U^{\mathrm{qr}}(Z)-U-Z\|_F\le
+ (1+\|Z\|_{\op}^2)\|Z\|_F^2.
+ \label{eq:rigid-qr-error}
+\end{gather}
+\end{proposition}
+\begin{proof}
+\begin{align}
+ X^\top X&=I+U^\top Z+Z^\top U+Z^\top Z=I+Z^\top Z,\\
+ 0&\preceq I-(I+E)^{-1/2}\preceq\tfrac12 E,\quad E:=Z^\top Z,\\
+ \|R_U^{\mathrm{pol}}(Z)-X\|_F
+ &\le\|X\|_{\op}\|(I+E)^{-1/2}-I\|_F
+ \le\tfrac12\sqrt{1+\|Z\|_{\op}^2}\|E\|_F,\\
+ L(s)L(s)^\top&=I+sE,\quad L(0)=I,\\
+ L'(s)&=L(s)\mathcal T\bigl(L(s)^{-1}E L(s)^{-\top}\bigr),\\
+ \mathcal T(A)&:=\operatorname{tril}(A,-1)+\tfrac12\diag(A),\\
+ \|\mathcal T(A)\|_F&\le\|A\|_F,\quad
+ \|L(s)^{-1}\|_{\op}\le1,\\
+ \|L(1)-I\|_F&\le\int_0^1\|L'(s)\|_F\,\mathrm ds
+ \le\sqrt{1+\|E\|_{\op}}\|E\|_F,\\
+ \|XL(1)^{-\top}-X\|_F
+ &\le\|X\|_{\op}\|L(1)^{-1}\|_{\op}\|L(1)-I\|_F\\
+ &\le(1+\|E\|_{\op})\|E\|_F
+ \le(1+\|Z\|_{\op}^2)\|Z\|_F^2.
+\end{align}
+\end{proof}
+The retraction error is quadratic in the tangent step, so a small horizontal
+update preserves its intended first-order motion. Comparing two different runs
+additionally requires control of the QR map between their inputs. The next
+lemma makes the necessary singular-value condition on that connecting segment
+explicit.
+
+\begin{lemma}[Differential of the positive-diagonal QR map]\label{lem:rigid-qr-lip}
+For $X=QR$, $R_{ii}>0$, $\sigma_{\min}(X)\ge a>0$,
+\begin{align}
+ A&:=Q^\top(\mathrm dX)R^{-1},\\
+ \mathrm dQ&=(I-QQ^\top)(\mathrm dX)R^{-1}
+  +Q\bigl(\operatorname{tril}(A,-1)-\operatorname{tril}(A,-1)^\top\bigr),\\
+ \|\mathrm dQ\|_F^2&\le2\|(\mathrm dX)R^{-1}\|_F^2
+ \le\frac2{a^2}\|\mathrm dX\|_F^2.
+\end{align}
+If $\inf_{s\in[0,1]}\sigma_{\min}(X+s(Y-X))\ge a$,
+\begin{equation}
+ \|\operatorname{qf}(X)-\operatorname{qf}(Y)\|_F
+ \le\frac{\sqrt2}{a}\|X-Y\|_F.
+\end{equation}
+\end{lemma}
+\begin{proof}
+\begin{align}
+ \mathrm dX&=(\mathrm dQ)R+Q\,\mathrm dR,\\
+ Q^\top(\mathrm dX)R^{-1}&=Q^\top\mathrm dQ+(\mathrm dR)R^{-1},\\
+ (Q^\top\mathrm dQ)^\top&=-Q^\top\mathrm dQ,\qquad
+ \operatorname{tril}((\mathrm dR)R^{-1},-1)=0,\\
+ \|\operatorname{tril}(A,-1)-\operatorname{tril}(A,-1)^\top\|_F^2
+ &=2\|\operatorname{tril}(A,-1)\|_F^2\le2\|A\|_F^2,\\
+ \operatorname{qf}(Y)-\operatorname{qf}(X)
+ &=\int_0^1\mathrm D\operatorname{qf}(X+s(Y-X))[Y-X]\,\mathrm ds.
+\end{align}
+\end{proof}

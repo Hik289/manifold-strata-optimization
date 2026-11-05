@@ -1,0 +1,15 @@
+\paragraph{Scope of the positive cases.}
+Table~\ref{tab:positive-cases} collects three illustrative comparisons from the completed default graph matrix. These rows are chosen for exposition after observing the matrix; they are not a preselected confirmatory subset. Within every row, all methods finish both rates before validation selects a configuration. STRATA improves on Single-Grassmann in three of the twelve dataset--architecture settings, and does not in the other nine. The complete matrix and adverse cases appear in Appendix~\ref{app:full-empirical-record}. GaLore is stronger in these three cases, so they support restricted comparisons rather than a universal graph-optimizer ranking.
+\begin{table*}[t]\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{Illustrative positive same-rank comparisons, seed42, terminal-100 test accuracy after full two-rate validation selection. Every method is shown; higher is better. The full twelve-setting graph matrix is retained in the appendix.}
+\label{tab:positive-cases}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lrrrrr}\toprule
+Setting & STRATA & Single-G & AdamW & GaLore & Indep.\\\midrule
+PubMed/SAGE & \cellcolor{oursbg}0.71623 & 0.67902 & 0.69061 & \textbf{0.75801} & 0.74151\\
+PubMed/GCN & \cellcolor{oursbg}0.71742 & 0.71208 & 0.70445 & \textbf{0.75915} & 0.68782\\
+CiteSeer/SAGE & \cellcolor{oursbg}0.55747 & 0.53980 & 0.55302 & \textbf{0.65124} & 0.55836\\
+\bottomrule\end{tabular}
+\end{adjustbox}\end{table*}
+\paragraph{Other restricted benefits.}
+The archived MNIST/MLP case gives STRATA accuracy 0.98273 versus Single-Grassmann 0.98011, while the available full-AdamW reference is about 0.987. Both completed five-method Rotated-MNIST grids below improve on Single-Grassmann after two-rate validation selection. In Poisson, STRATA has lower error than same-rank Single-Grassmann in an unstable baseline grid, while full AdamW is substantially better. These are specific vision, continual-learning and numerical-stability observations. They do not establish superiority over the strongest baseline across those families, and their complete adverse comparisons remain in the appendix.

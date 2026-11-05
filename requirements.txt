@@ -1,0 +1,2 @@
+# Install from the repository root. Select a matching PyTorch/CUDA wheel first.
+-e .[experiments]

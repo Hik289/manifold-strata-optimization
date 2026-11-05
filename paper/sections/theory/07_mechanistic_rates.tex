@@ -1,0 +1,171 @@
+\subsection{Invariant-block quadratic rates and an exact small-gain criterion}
+An invariant-block quadratic isolates a setting where differentiated scalar
+weights can improve conditioning exactly. The result describes the benefit
+available when the flag aligns with Hessian invariant subspaces. Learning a
+flag from gradient covariance does not itself ensure this alignment; the
+perturbation bound quantifies how flag error can erode the ideal rate.
+
+\begin{assumption}[Invariant Hessian blocks]\label{ass:rigid-quadratic}
+\begin{gather}
+ F(w)=\tfrac12(w-w^\star)^\top H(w-w^\star),\quad H\succ0,\\
+ H\Pi_j=\Pi_jH,\quad
+ 0<\ell_j\Pi_j\preceq\Pi_jH\Pi_j\preceq u_j\Pi_j,\quad
+ B=\sum_{j=1}^{K+1}a_j\Pi_j,\quad a_j>0.
+\end{gather}
+The projectors in this assumption act on the parameter vector; a matrix
+right-action uses $I_m\otimes\Pi_j$ after vectorization.
+\end{assumption}
+\begin{theorem}[Block conditioning and optimal scalar weights]\label{thm:rigid-conditioning}
+Under Assumption~\ref{ass:rigid-quadratic}, let
+\begin{gather}
+ \ell_B:=\min_j a_j\ell_j,\quad u_B:=\max_j a_ju_j,\quad
+ \kappa_B:=u_B/\ell_B,\quad \eta_\star:=2/(u_B+\ell_B),\\
+ w_{t+1}=w_t-\eta B\nabla F(w_t).
+\end{gather}
+Then
+\begin{align}
+ \|w_t-w^\star\|_{B^{-1}}
+ &\le\left[\max_{\lambda\in[\ell_B,u_B]}|1-\eta\lambda|\right]^t
+                  \|w_0-w^\star\|_{B^{-1}},\\
+ F(w_t)&\le\left(\frac{\kappa_B-1}{\kappa_B+1}\right)^{2t}F(w_0)
+                 \quad(\eta=\eta_\star),\\
+ \inf_{a_1,\ldots,a_{K+1}>0}\frac{\max_j a_ju_j}{\min_j a_j\ell_j}
+ &=\max_j\frac{u_j}{\ell_j},\qquad a_j=1/\ell_j\text{ attains the infimum}.
+\end{align}
+If $H=\sum_jh_j\Pi_j$ and $a_j=h_j^{-1}$, then $w_1=w^\star$ for $\eta=1$.
+\end{theorem}
+\begin{proof}
+\begin{align}
+ x_t&:=B^{-1/2}(w_t-w^\star),\quad
+ \widetilde H:=B^{1/2}HB^{1/2}=BH,\\
+ x_{t+1}&=(I-\eta\widetilde H)x_t,\quad
+ \operatorname{spec}(\widetilde H)\subset[\ell_B,u_B],\\
+ F(w_t)&=\tfrac12x_t^\top\widetilde Hx_t,\quad
+ \widetilde H^{1/2}x_t=(I-\eta\widetilde H)^t\widetilde H^{1/2}x_0,\\
+ \min_{\eta>0}\max\{|1-\eta\ell_B|,|1-\eta u_B|\}
+ &=\frac{u_B-\ell_B}{u_B+\ell_B},\\
+ \frac{\max_i a_iu_i}{\min_i a_i\ell_i}
+ &\ge\frac{a_ju_j}{a_j\ell_j}=u_j/\ell_j\quad(\forall j),\\
+ a_j=1/\ell_j&\Longrightarrow\min_j a_j\ell_j=1,\quad
+                                  \max_j a_ju_j=\max_j u_j/\ell_j.
+\end{align}
+\end{proof}
+\begin{proposition}[Flag perturbation of quadratic conditioning]\label{prop:rigid-quadratic-error}
+Let $B_\star=B(U^\star)$, $B=B(U)$, and
+$\delta_B:=\Gamma^a d_P(U,U^\star)$. If
+$\ell_\star I\preceq H^{1/2}B_\star H^{1/2}\preceq u_\star I$, then
+\begin{gather}
+ \ell_\star-\|H\|_{\op}\delta_B
+ \le\lambda_{\min}(H^{1/2}BH^{1/2})
+ \le\lambda_{\max}(H^{1/2}BH^{1/2})
+ \le u_\star+\|H\|_{\op}\delta_B,\\
+ \|H\|_{\op}\delta_B<\ell_\star
+ \Longrightarrow\quad
+ \kappa(H^{1/2}BH^{1/2})
+ \le\frac{u_\star+\|H\|_{\op}\delta_B}
+            {\ell_\star-\|H\|_{\op}\delta_B}.
+\end{gather}
+\end{proposition}
+\begin{proof}
+\begin{equation}
+ \|H^{1/2}(B-B_\star)H^{1/2}\|_{\op}
+ \le\|H\|_{\op}\|B-B_\star\|_{\op}\le\|H\|_{\op}\delta_B.
+\end{equation}
+\end{proof}
+The small-gain criterion addresses a different question: when does direct
+parameter contraction dominate feedback through optimizer state? The resolvent
+$(I-D)^{-1}$ sums repeated propagation inside the state subsystem. Its coupling
+cost must remain below the direct contraction margin $\alpha$, giving an exact
+criterion for the stated nonnegative envelope.
+
+\begin{theorem}[Schur-resolvent small gain]\label{thm:rigid-schur}
+This is the nonsingular $M$-matrix/Schur-complement criterion for a nonnegative
+feedback system~\citep{berman1994nonnegative}, specialized to the optimizer's
+parameter--state partition.
+Let a nonnegative sensitivity envelope at a fixed step size have the form
+\begin{gather}
+ \mathcal A_\eta:=
+ \begin{pmatrix}1-\eta\alpha&\eta b^\top\\c&D\end{pmatrix}\ge0,\quad
+ b,c\ge0,\quad D\ge0,\quad\rho(D)<1,\quad\eta>0.
+\end{gather}
+Then
+\begin{equation}
+ \rho(\mathcal A_\eta)<1\quad\Longleftrightarrow\quad
+                      \alpha>b^\top(I-D)^{-1}c.
+\end{equation}
+If the right side holds, choose $\varepsilon>0$ so small that
+\begin{gather}
+ v^\top:=(b^\top+\varepsilon\mathbf1^\top)(I-D)^{-1}>0,\quad
+ \delta:=\alpha-v^\top c>0,\quad a_\eta:=(1,\eta v^\top),\\
+ 0<\gamma\le\delta,\quad
+ \gamma\eta\max_jv_j\le\varepsilon.
+\end{gather}
+Then
+\begin{equation}
+ a_\eta\mathcal A_\eta\preceq(1-\gamma\eta)a_\eta.
+\end{equation}
+\end{theorem}
+\begin{proof}
+\begin{align}
+ (I-D)^{-1}&=\sum_{k=0}^\infty D^k\ge0,\\
+ v^\top(I-D)&=b^\top+\varepsilon\mathbf1^\top,\\
+ a_\eta\mathcal A_\eta
+ &=(1-\eta(\alpha-v^\top c),\ \eta v^\top-\eta\varepsilon\mathbf1^\top)
+ \preceq(1-\gamma\eta)a_\eta.
+\end{align}
+Thus $\rho(\mathcal A_\eta)\le1-\gamma\eta<1$. Conversely,
+$\rho(\mathcal A_\eta)<1$ implies the existence of $x=(x_0,x_s)>0$ with
+$(I-\mathcal A_\eta)x>0$, e.g.
+$x=(I-\mathcal A_\eta)^{-1}\mathbf1$. Hence
+\begin{gather}
+ (I-D)x_s>cx_0,\quad x_s>(I-D)^{-1}cx_0,\quad
+ \alpha x_0>b^\top x_s\ge b^\top(I-D)^{-1}cx_0.
+\end{gather}
+\end{proof}
+\begin{corollary}[A uniform $1/n$ sensitivity floor]\label{cor:rigid-schur-stability}
+Suppose a coupled optimizer satisfies
+\begin{gather}
+ \binom{u_{t+1}}{s_{t+1}}\preceq
+ \mathcal A_\eta\binom{u_t}{s_t}
+ +\frac{I_t}{b_t}\binom{\eta d}{h},\quad
+ \PP(I_t=1)=b_t/n,\quad (u_0,s_0)=0,
+\end{gather}
+with the hypotheses of Theorem~\ref{thm:rigid-schur}. Then
+\begin{align}
+ \EE[u_T+\eta v^\top s_T]
+ &\le\frac{d+v^\top h}{n\gamma}
+                         (1-(1-\gamma\eta)^T),\\
+ \epsilon_T^{\mathrm{stab}}&\le\frac{L_0(d+v^\top h)}{n\gamma}.
+\end{align}
+\end{corollary}
+\begin{proof}
+\begin{gather}
+ \EE[u_{t+1}+\eta v^\top s_{t+1}]
+ \le(1-\gamma\eta)\EE[u_t+\eta v^\top s_t]
+                                      +\eta(d+v^\top h)/n.
+\end{gather}
+\end{proof}
+\begin{proposition}[Local Jacobian envelopes for the actual map]\label{prop:rigid-jacobian}
+Let $\mathcal T_{t,S}$ denote the complete map of
+Definition~\ref{def:rigid-map}, expressed in regular local coordinates. For a convex
+coupling region $\mathcal K$, partition its Jacobian into parameter and state blocks:
+\begin{gather}
+ \mathrm D\mathcal T_{t,S}(x)=
+ \begin{pmatrix}J_{ww}&J_{ws}\\J_{sw}&J_{ss}\end{pmatrix},\quad
+ \sup_{x\in\mathcal K}\|J_{ww}\|\le1-\eta\alpha,\quad
+ \sup_{x\in\mathcal K}\|J_{ws}\|\le\eta b,\\
+ \sup_{x\in\mathcal K}\|J_{sw}\|\le c,\quad
+ \sup_{x\in\mathcal K}\|J_{ss}\|\le q<1.
+\end{gather}
+If $\alpha(1-q)>bc$, the scalar-state version of
+Theorem~\ref{thm:rigid-schur} applies. Block norms give the matrix-state version.
+For the broad triangle-inequality envelope of
+Definition~\ref{def:rigid-transition}, these contraction conditions are additional
+hypotheses, not consequences of smoothness alone.
+\end{proposition}
+\begin{proof}
+\begin{equation}
+ \mathcal T_{t,S}(x)-\mathcal T_{t,S}(x')
+ =\int_0^1\mathrm D\mathcal T_{t,S}(x'+a(x-x'))(x-x')\,\mathrm da.
+\end{equation}
+\end{proof}

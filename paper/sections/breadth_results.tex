@@ -1,0 +1,40 @@
+\paragraph{New complete comparison cohorts.}
+Table~\ref{tab:new-cohorts} includes a cohort only when all five methods have completed the stated budget. Two-rate rows require all ten trials before validation-based learning-rate selection; fixed-rate rows use $3\times10^{-4}$ for every method. An incomplete search is not reported as a validation-selected winner.
+\begin{table}[t]
+\centering\footnotesize
+\caption{New full-budget comparison cohorts, seed 42, terminal-100 test accuracy. A two-rate search selects each method using terminal validation accuracy. Fixed-rate rows use no rate selection. Only complete five-method cohorts are shown; the full ledger retains every completed trial.}
+\label{tab:new-cohorts}
+\setlength{\tabcolsep}{3pt}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{llrrrrr}\toprule
+Task/model & Protocol & STRATA & Single-G & AdamW & GaLore & Indep.\\\midrule
+CiteSeer/gat & 2-rate val & \cellcolor{oursbg}0.5676 & 0.5918 & 0.5737 & \textbf{0.6264} & 0.5718 \\
+CiteSeer/gcn & 2-rate val & \cellcolor{oursbg}0.4920 & 0.5156 & 0.5927 & \textbf{0.6166} & 0.5030 \\
+CiteSeer/gcnii & 2-rate val & \cellcolor{oursbg}0.4751 & 0.4987 & 0.6085 & \textbf{0.6150} & 0.5042 \\
+CiteSeer/sage & 2-rate val & \cellcolor{oursbg}0.5575 & 0.5398 & 0.5530 & \textbf{0.6512} & 0.5584 \\
+Cora/gat & 2-rate val & \cellcolor{oursbg}0.6980 & 0.7191 & 0.7100 & \textbf{0.7816} & 0.7365 \\
+Cora/gcn & 2-rate val & \cellcolor{oursbg}0.7012 & 0.7164 & 0.7154 & \textbf{0.7718} & 0.6956 \\
+Cora/gcnii & 2-rate val & \cellcolor{oursbg}0.6898 & 0.7014 & 0.6784 & \textbf{0.7603} & 0.6934 \\
+Cora/sage & 2-rate val & \cellcolor{oursbg}0.4653 & 0.6506 & 0.7060 & \textbf{0.7503} & 0.5641 \\
+PubMed/gat & 2-rate val & \cellcolor{oursbg}0.7117 & 0.7431 & 0.7232 & \textbf{0.7663} & 0.7366 \\
+PubMed/gcn & 2-rate val & \cellcolor{oursbg}0.7174 & 0.7121 & 0.7045 & \textbf{0.7592} & 0.6878 \\
+PubMed/gcnii & 2-rate val & \cellcolor{oursbg}0.6634 & 0.7107 & 0.7088 & \textbf{0.7499} & 0.6693 \\
+PubMed/sage & 2-rate val & \cellcolor{oursbg}0.7162 & 0.6790 & 0.6906 & \textbf{0.7580} & 0.7415 \\
+adult/MLP-256-256 & 2-rate val & \cellcolor{oursbg}0.8149 & 0.8149 & 0.8172 & \textbf{0.8216} & 0.8117 \\
+adult/MLP-512-512 & 2-rate val & \cellcolor{oursbg}0.8151 & 0.8128 & \textbf{0.8191} & 0.8184 & 0.8151 \\
+cifar100\_class\_shift/ResNet18-CIFAR & 2-rate val & \cellcolor{oursbg}0.5309 & \textbf{0.5737} & 0.5584 & 0.5306 & 0.5337 \\
+cifar10\_label\_shift/ResNet18-CIFAR & 2-rate val & \cellcolor{oursbg}0.7501 & 0.7665 & \textbf{0.8021} & 0.8000 & 0.7696 \\
+covertype/MLP-256-256 & 2-rate val & \cellcolor{oursbg}0.9622 & 0.9630 & \textbf{0.9635} & 0.9627 & 0.9615 \\
+covertype/MLP-512-512 & 2-rate val & \cellcolor{oursbg}0.9664 & 0.9664 & 0.9645 & 0.9660 & \textbf{0.9675} \\
+Rotated-MNIST/MLP (fine-tuning) & 2-rate val & \cellcolor{oursbg}0.5765 & 0.5711 & \textbf{0.6219} & 0.5969 & 0.5728 \\
+Rotated-MNIST/MLP (replay) & 2-rate val & \cellcolor{oursbg}0.8858 & 0.8717 & \textbf{0.9072} & 0.8888 & 0.8714 \\
+rotated\_mnist\_shift/MLP-256-256 & 2-rate val & \cellcolor{oursbg}0.9761 & 0.9790 & \textbf{0.9806} & 0.9796 & 0.9767 \\
+wine\_red/MLP-256-256 & 2-rate val & \cellcolor{oursbg}0.6842 & 0.6883 & 0.7102 & \textbf{0.7185} & 0.6910 \\
+wine\_red/MLP-512-512 & 2-rate val & \cellcolor{oursbg}\textbf{0.7150} & 0.6970 & 0.7149 & 0.7105 & 0.7018 \\
+wine\_white/MLP-256-256 & 2-rate val & \cellcolor{oursbg}0.7242 & 0.7317 & 0.7204 & 0.7260 & \textbf{0.7389} \\
+wine\_white/MLP-512-512 & 2-rate val & \cellcolor{oursbg}0.7088 & 0.7231 & 0.7174 & 0.7100 & \textbf{0.7389} \\
+\bottomrule\end{tabular}
+\end{adjustbox}\end{table}
+After completing both rates on Cora/GCN, validation selects STRATA $3\times10^{-4}$ and Single-Grassmann $10^{-3}$. Their test accuracies are 0.70120 and 0.71643; the earlier positive fixed-rate difference therefore does not survive the completed search. GaLore reaches 0.77180 in this cohort. This adverse comparison is retained.
+On the completed PubMed/SAGE two-rate cohort, STRATA reaches 0.71623 versus Single-Grassmann 0.67902, a descriptive gain of 3.721 percentage points. The highest test accuracy among the validation-selected methods is 0.75801 (galore); this single-seed observation does not establish a graph-family advantage.
+\paragraph{Completed Rotated-MNIST replay protocol.} Both fine-tuning and replay use the same seed-42 split (55000 training, 5000 validation and 10000 test examples), two 256-wide hidden layers, rank 64, and ten rotations from $0^\circ$ to $90^\circ$ in $10^\circ$ increments. Each rotation receives 100 epochs. Replay stores 200 examples after each task and adds one recalled example per four current-task examples in each minibatch (current batch size 512); all five methods use this same replay rule. Endpoints average epochs 901--1000, evaluating all ten seen rotations. Every method completes both original rates before terminal validation accuracy selects the rate: $10^{-3}$ for STRATA, AdamW, GaLore and Independent, and $3\times10^{-4}$ for Single-Grassmann. STRATA improves on Single-Grassmann by 1.412 percentage points and on Independent by 1.443 points; AdamW and GaLore remain higher. These single-seed comparisons do not establish statistical significance. The loss curves retain all selected methods without smoothing; the mean validation loss covers an increasing set of seen rotations at task boundaries.

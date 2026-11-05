@@ -1,0 +1,329 @@
+\subsection{Nonconvex convergence, PL rates, and coupled Lyapunov bounds}
+We first analyze a predictable positive preconditioner with an explicit
+discrepancy term. This separates the descent mechanism from the costs of
+momentum, normalization, clipping, and transport. For STRATA the decomposition
+is exact, but obtaining a vanishing error requires control of those costs.
+The later analysis of the actual normalization field provides a second route
+that retains its dependence on the current gradient directly.
+
+\begin{assumption}[Smooth objective and predictable surrogate]\label{ass:rigid-descent}
+For $F:\RR^D\to\RR$, $w_t\in\mathcal F_{t-1}$, and a self-adjoint $B_t$, assume
+\begin{gather}
+ F_{\inf}:=\inf_wF(w)>-\infty,\quad\EE|F(w_0)|<\infty,\\\quad
+ \|\nabla F(w)-\nabla F(v)\|\le L\|w-v\|,\\
+ h_t:=\nabla F(w_t),\quad g_t=h_t+b_t+\zeta_t,\quad
+ \EE[\zeta_t\mid\mathcal F_{t-1}]=0,\quad
+ \EE[\|\zeta_t\|^2\mid\mathcal F_{t-1}]\le\sigma_t^2,\\
+ B_t\in\mathcal F_{t-1},\quad 0<mI\preceq B_t\preceq MI,\\
+ w_{t+1}=w_t-\eta_t(B_tg_t+e_t),\quad
+ \varepsilon_t:=e_t+B_tb_t.
+\end{gather}
+\end{assumption}
+\begin{theorem}[Variance-resolved finite-time stationarity]\label{thm:tf-convergence}
+Under Assumption~\ref{ass:rigid-descent}, let
+$0<\eta_t\le1/(4LM)$, $S_T:=\sum_{t<T}\eta_t$, and
+$\Delta_0:=\EE F(w_0)-F_{\inf}$. Define
+\begin{equation}
+ \Sigma_t:=\EE_t[\zeta_t\zeta_t^\top],\quad
+ \mathsf v_t:=\tr(B_t^2\Sigma_t)=\EE_t\|B_t\zeta_t\|^2
+                         \le M^2\sigma_t^2.
+\end{equation}
+Write $\|x\|_A^2:=x^\top Ax$ for $A\succ0$. Then
+\begin{align}
+ \EE F(w_{t+1})
+ &\le\EE F(w_t)-\tfrac12\eta_t\EE\|h_t\|_{B_t}^2
+       +L\eta_t^2\EE\mathsf v_t
+       +\eta_t\EE\|\varepsilon_t\|_{B_t^{-1}}^2
+       +L\eta_t^2\EE\|\varepsilon_t\|^2,\\
+ \frac{\sum_{t<T}\eta_t\EE\|h_t\|^2}{S_T}
+ &\le\frac{2\Delta_0}{mS_T}
+ +\frac{2L\sum_{t<T}\eta_t^2\EE\mathsf v_t}{mS_T}
+ +\frac{2\sum_{t<T}\left[\eta_t\EE\|\varepsilon_t\|_{B_t^{-1}}^2
+                         +L\eta_t^2\EE\|\varepsilon_t\|^2\right]}{mS_T}.
+ \label{eq:tf-stationarity}
+\end{align}
+For an independent output index $J$ with $\PP(J=t)=\eta_t/S_T$, the left side is
+$\EE\|\nabla F(w_J)\|^2$.
+\end{theorem}
+\begin{proof}
+Use the descent lemma~\citep{nesterov2004introductory} and the positive-operator
+inequality $B_t^2\preceq MB_t$. Weighted Fenchel--Young bounds the defect
+in the matching dual metric. With $\overline g_t:=h_t+\zeta_t$ and
+$Q_t:=\langle h_t,B_th_t\rangle$,
+\begin{align}
+ F(w_{t+1})&\le F(w_t)-\eta_t\langle h_t,B_t\overline g_t+\varepsilon_t\rangle
+                    +\tfrac L2\eta_t^2\|B_t\overline g_t+\varepsilon_t\|^2,\\
+ \EE_t\langle h_t,B_t\overline g_t\rangle
+ &=\langle h_t,B_th_t\rangle,\\
+ |\langle h_t,\varepsilon_t\rangle|
+ &\le\tfrac14 Q_t+\|\varepsilon_t\|_{B_t^{-1}}^2,\\
+ \EE_t\|B_t\overline g_t+\varepsilon_t\|^2
+ &\le2\|B_th_t\|^2+2\mathsf v_t+2\EE_t\|\varepsilon_t\|^2,\\
+ \|B_th_t\|^2&\le M\langle h_t,B_th_t\rangle,\\
+ -\eta_t(1-LM\eta_t)Q_t
+                 +\tfrac14\eta_t Q_t
+ &\le-\tfrac12\eta_t Q_t,\\
+ \tfrac12\sum_{t<T}\eta_t\EE\|h_t\|_{B_t}^2
+ &\le\EE F(w_0)-\EE F(w_T)
+ +L\sum_{t<T}\eta_t^2\EE\mathsf v_t\\
+ &\quad+\sum_{t<T}\left[\eta_t\EE\|\varepsilon_t\|_{B_t^{-1}}^2
+                              +L\eta_t^2\EE\|\varepsilon_t\|^2\right].
+\end{align}
+Finally $\|h_t\|_{B_t}^2\ge m\|h_t\|^2$. The defect energy is kept directional;
+replacing it by $m^{-1}\|\varepsilon_t\|^2$ is an optional later relaxation.
+\end{proof}
+\begin{corollary}[Sharp descent in the zero-discrepancy case]\label{cor:sharp-descent}
+If $\varepsilon_t=0$ and $0<\eta_t<2/(LM)$, then
+\begin{equation}
+ \sum_{t<T}\eta_t(1-LM\eta_t/2)\EE\|h_t\|_{B_t}^2
+ \le\Delta_0+\frac L2\sum_{t<T}\eta_t^2\EE\mathsf v_t.
+\end{equation}
+\end{corollary}
+\begin{proof}
+Conditional centering gives the exact second-moment identity
+$\EE_t\|B_t(h_t+\zeta_t)\|^2=\|B_th_t\|^2+\mathsf v_t$.
+Apply the descent lemma without a two-term norm relaxation and sum.
+For $F(w)=L\|w\|^2/2$ and $B_t=MI$, every one-step inequality is an equality:
+both the noise coefficient $L/2$ and the endpoint $2/(LM)$ are sharp for this
+class. The positive-operator step also explains the larger step range in
+Theorem~\ref{thm:tf-convergence}.
+\end{proof}
+The stationarity bound has three sources: the initial objective gap, accumulated
+stochastic variance, and accumulated update discrepancy. Its left side concerns
+a step-size-weighted output iterate. Thus a decreasing training loss alone
+does not verify the conclusion, and persistent discrepancy can leave a
+nonvanishing stationarity floor even as the stochastic term decreases.
+
+\begin{corollary}[Rates and almost-sure stationarity along a subsequence]
+If $\EE\mathsf v_t\le\overline v$, $\eta_t=\eta/\sqrt T\le1/(4LM)$, then
+\begin{align}
+ \EE\|\nabla F(w_J)\|^2
+ &\le\frac{2\Delta_0}{m\eta\sqrt T}
+       +\frac{2L\eta\overline v}{m\sqrt T}
+       +\frac{2}{m}\left(\frac1m+\frac{L\eta}{\sqrt T}\right)
+                        \frac1T\sum_{t<T}\EE\|\varepsilon_t\|^2.
+\end{align}
+If almost surely
+\begin{gather}
+ \sum_t\eta_t=\infty,\quad
+ \sum_t\eta_t^2\mathsf v_t<\infty,\quad
+ \sum_t(\eta_t/m+L\eta_t^2)\EE_t\|\varepsilon_t\|^2<\infty,
+\end{gather}
+then
+\begin{equation}
+ F(w_t)\text{ converges a.s.},\qquad
+ \sum_t\eta_t\|h_t\|^2<\infty\text{ a.s.},\qquad
+ \liminf_{t\to\infty}\|h_t\|=0\text{ a.s.}
+\end{equation}
+\end{corollary}
+\begin{proof}
+The finite-time assertion follows by substitution; one may always take
+$\overline v=M^2\sigma^2$ when $\sigma_t^2\le\sigma^2$, and
+$\|\varepsilon_t\|_{B_t^{-1}}^2\le m^{-1}\|\varepsilon_t\|^2$.
+For the almost-sure assertion,
+apply the nonnegative almost-supermartingale theorem \citep{robbins1971convergence}
+to $F(w_t)-F_{\inf}$, the summable conditional error, and
+$\tfrac m2\eta_t\|h_t\|^2$; an eventually positive lower bound on $\|h_t\|$
+would contradict $\sum_t\eta_t=\infty$.
+\end{proof}
+\begin{theorem}[PL contraction and an explicit floor]\label{thm:tf-PL}
+In addition, suppose
+\begin{gather}
+ \tfrac12\|\nabla F(w)\|^2\ge\mu(F(w)-F^\star),\quad\mu>0,\\
+ 0<\eta\le\min\{1/(4LM),1/(\mu m)\},\quad
+ \EE\mathsf v_t\le\overline v,\quad\EE\|\varepsilon_t\|^2\le E^2.
+\end{gather}
+For $a_t:=\EE[F(w_t)-F^\star]$, $q:=1-\mu m\eta$,
+\begin{align}
+ a_{t+1}&\le qa_t+L\eta^2\overline v+(\eta/m+L\eta^2)E^2,\\
+ a_T&\le q^Ta_0+
+ \frac{L\eta\overline v+(m^{-1}+L\eta)E^2}{\mu m}(1-q^T).
+\end{align}
+\end{theorem}
+\begin{proof}
+\begin{gather}
+ -\tfrac m2\eta\EE\|h_t\|^2\le-\mu m\eta a_t,\qquad
+ \sum_{j=0}^{T-1}q^j=(1-q^T)/(\mu m\eta).
+\end{gather}
+\end{proof}
+Under PL, the same descent estimate becomes a contraction of objective error.
+The formula distinguishes a transient geometric term from the error floor:
+reducing the learning rate suppresses the variance contribution, while a fixed
+discrepancy budget $E^2$ can persist. The diminishing-step result specifies when
+decaying discrepancy also permits the objective error to vanish.
+
+\begin{lemma}[Diminishing-step PL recurrence]\label{lem:rigid-polynomial}
+If $t_0>a>\max\{1,p\}$, $p>0$, and
+\begin{equation}
+ a_{t+1}\le\left(1-\frac a{t+t_0}\right)a_t+
+                  \frac b{(t+t_0)^2}+\frac c{(t+t_0)^{1+p}},
+\end{equation}
+then
+\begin{align}
+ a_T&\le\left(\frac{t_0}{T+t_0}\right)^a a_0
+ +\frac{b\,2^a}{(T+t_0)^a}\sum_{t<T}(t+t_0)^{a-2}
+ +\frac{c\,2^a}{(T+t_0)^a}\sum_{t<T}(t+t_0)^{a-p-1}\\
+ &=O((T+t_0)^{-a}+(T+t_0)^{-1}+(T+t_0)^{-p}).
+\end{align}
+Thus $\eta_t=\eta_0/(t+t_0)$, $\EE\|\varepsilon_t\|^2=O((t+t_0)^{-p})$,
+and $a=\mu m\eta_0>\max\{1,p\}$ imply the displayed rate.
+\end{lemma}
+\begin{proof}
+\begin{align}
+ \prod_{j=s+1}^{T-1}\left(1-\frac a{j+t_0}\right)
+ &\le\exp\left(-a\sum_{j=s+1}^{T-1}\frac1{j+t_0}\right)
+ \le\left(\frac{s+1+t_0}{T+t_0}\right)^a,\\
+ (s+1+t_0)^a&\le2^a(s+t_0)^a,\qquad
+ \sum_{t<T}(t+t_0)^u=O((T+t_0)^{u+1})\quad(u>-1).
+\end{align}
+\end{proof}
+\begin{theorem}[Coupled parameter--flag Lyapunov inequality]\label{thm:rigid-lyapunov}
+Suppose nonnegative sequences $E_t,R_t,\Xi_t,\sigma_t^2$ satisfy
+\begin{align}
+ \EE F(w_{t+1})&\le\EE F(w_t)-a\eta\EE\|h_t\|^2
+               +c\eta E_t+v\eta^2\sigma_t^2+r\eta R_t,\\
+ E_{t+1}&\le\kappa E_t+b\eta^2\EE\|h_t\|^2+q\eta^2\sigma_t^2+s\Xi_t,
+ \quad0\le\kappa<1.
+\end{align}
+Let $a,c>0$, $b\ge0$,
+\begin{gather}
+ \eta^2\le\frac{a(1-\kappa)}{4bc}\quad(bc=0:\ \text{no constraint}),\quad
+ \Lambda:=\frac{2c\eta}{1-\kappa},\quad
+ \mathcal L_t:=\EE F(w_t)-F_{\inf}+\Lambda E_t.
+\end{gather}
+Then
+\begin{align}
+ \mathcal L_{t+1}-\mathcal L_t
+ &\le-\tfrac a2\eta\EE\|h_t\|^2-c\eta E_t
+       +(v+\Lambda q)\eta^2\sigma_t^2+r\eta R_t+\Lambda s\Xi_t,\\
+ \frac1T\sum_{t<T}\EE\|h_t\|^2
+ &\le\frac{2\mathcal L_0}{a\eta T}
+ +\frac{2(v+\Lambda q)\eta}{aT}\sum_{t<T}\sigma_t^2
+ +\frac{2r}{aT}\sum_{t<T}R_t
+ +\frac{4cs}{a(1-\kappa)T}\sum_{t<T}\Xi_t.
+\end{align}
+\end{theorem}
+\begin{proof}
+\begin{align}
+ \mathcal L_{t+1}-\mathcal L_t
+ &\le-(a\eta-\Lambda b\eta^2)\EE\|h_t\|^2
+       +(c\eta-\Lambda(1-\kappa))E_t
+       +(v+\Lambda q)\eta^2\sigma_t^2+r\eta R_t+\Lambda s\Xi_t,\\
+ a\eta-\Lambda b\eta^2&\ge a\eta/2,\qquad
+ c\eta-\Lambda(1-\kappa)=-c\eta.
+\end{align}
+Summation and $\mathcal L_T\ge0$ give the conclusion.
+\end{proof}
+The joint potential accounts for feedback between parameter motion and flag
+tracking: each can introduce error into the other. Its weight $\Lambda$ is
+chosen so that contraction of the flag error absorbs its contribution to
+parameter descent. The following corollary then connects covariance estimation
+and tracking to the stationarity bound through explicit intermediate constants.
+
+\begin{corollary}[Covariance-to-stationarity error chain]\label{cor:tf-endtoend}
+Suppose a linear block-isotropic surrogate satisfies
+\begin{gather}
+ \EE\|\varepsilon_t\|^2\le
+   2G_\star^2(\Gamma^a)^2J_P^2 E_t+2R_t,\quad
+ d_P(\psi(x),\psi(y))\le J_P\|x-y\|,\\
+ E_{t+1}\le\kappa E_t+B_t.
+\end{gather}
+For constant $\eta\le1/(4LM)$ and $\sup_t\EE\mathsf v_t\le\overline v$,
+\begin{align}
+ \frac1T\sum_{t<T}\EE\|h_t\|^2
+ &\le\frac{2\Delta_0}{m\eta T}+\frac{2L\eta\overline v}{m}\\
+ &\quad+\frac4m(m^{-1}+L\eta)\left[
+ \frac{G_\star^2(\Gamma^a)^2J_P^2}{T(1-\kappa)}
+             \left(E_0+\sum_{t<T-1}B_t\right)+\frac1T\sum_{t<T}R_t\right].
+\end{align}
+For the implemented coordinatewise optimizer, $R_t$ additionally contains the
+normalization, gauge, momentum, clipping, and decay terms of
+Definitions~\ref{def:rigid-map} and~\ref{def:rigid-error} and
+Lemma~\ref{lem:rigid-clipping}.
+\end{corollary}
+\begin{proof}
+\begin{gather}
+ \|(B(U_t)-B(U_t^\star))g_t\|^2
+ \le G_\star^2(\Gamma^a)^2J_P^2\|x_t-x_t^\star\|^2,\quad
+ \sum_{t<T}E_t\le(E_0+\sum_{t<T-1}B_t)/(1-\kappa).
+\end{gather}
+\end{proof}
+\subsection{A virtual-iterate theorem for matrix momentum}
+The virtual iterate subtracts the parameter displacement stored in momentum.
+Its increment resembles a preconditioned gradient step, with a remainder that
+records changing coefficients and transport. This algebraic reformulation
+allows the proof to retain the whole momentum history through variation
+budgets, rather than discarding it as an unspecified per-step error.
+
+\begin{assumption}[Predictable momentum system]\label{ass:rigid-momentum}
+Let $\mathcal B_t,B_t\in\mathcal F_{t-1}$, with
+$\|\mathcal B_t\|_{\op}\le\beta<1$, $mI\preceq B_t\preceq MI$, and
+\begin{gather}
+ m_t=\mathcal B_t m_{t-1}+(I-\mathcal B_t)g_t+u_t,\quad
+ w_{t+1}=w_t-\eta_tB_tm_t,\quad m_{-1}=0,\\
+ \EE_tg_t=\nabla F(w_t),\quad\EE_t\|g_t\|^2\le G_2^2,\quad
+ \|m_t\|\le G_m,\quad\|\nabla F(z_t)\|\le G_z,\\
+ C_t:=\eta_tB_t(I-\mathcal B_t)^{-1}\mathcal B_t,\quad C_{-1}:=0,\quad
+ z_t:=w_t-C_{t-1}m_{t-1}.
+\end{gather}
+\end{assumption}
+\begin{lemma}[Exact virtual-iterate identity]\label{lem:rigid-virtual}
+Under Assumption~\ref{ass:rigid-momentum},
+\begin{gather}
+ z_{t+1}=z_t-\eta_tB_tg_t+r_t,\\
+ r_t:=(C_{t-1}-C_t)m_{t-1}-\eta_tB_t(I-\mathcal B_t)^{-1}u_t,\\
+ \|r_t\|\le G_m\|C_t-C_{t-1}\|_{\op}
+                      +\frac{\eta_tM}{1-\beta}\|u_t\|,\qquad
+ \|w_t-z_t\|\le\|C_{t-1}\|_{\op}G_m.
+\end{gather}
+\end{lemma}
+\begin{proof}
+\begin{align}
+ \eta_tB_t+C_t&=\eta_tB_t(I-\mathcal B_t)^{-1},\\
+ (\eta_tB_t+C_t)m_t
+ &=C_tm_{t-1}+\eta_tB_tg_t
+                       +\eta_tB_t(I-\mathcal B_t)^{-1}u_t,\\
+ z_{t+1}-z_t&=-(\eta_tB_t+C_t)m_t+C_{t-1}m_{t-1}.
+\end{align}
+\end{proof}
+\begin{theorem}[Stationarity with explicit variation and transport budgets]
+\label{thm:rigid-momentum}
+Under Assumptions~\ref{ass:rigid-descent} (smoothness and lower bound only)
+and~\ref{ass:rigid-momentum},
+\begin{align}
+ \frac m2\sum_{t<T}\eta_t\EE\|\nabla F(w_t)\|^2
+ &\le F(w_0)-F_{\inf}+LM^2G_2^2\sum_{t<T}\eta_t^2\\
+ &\quad+\frac{M^2L^2G_m^2}{2m}\sum_{t<T}\eta_t\|C_{t-1}\|_{\op}^2
+       +G_z\sum_{t<T}\EE\|r_t\|+L\sum_{t<T}\EE\|r_t\|^2.
+\end{align}
+For constant scalar momentum $\mathcal B_t=\beta I$ and constant
+$\eta=\eta_0/\sqrt T$, define
+$\mathcal V_T:=\sum_{t<T}\|B_t-B_{t-1}\|_{\op}$, with $B_{-1}=0$. Then
+\begin{align}
+ \sum_{t<T}\EE\|r_t\|
+ &\le\frac{\eta\beta G_m}{1-\beta}\EE\mathcal V_T
+                  +\frac{\eta M}{1-\beta}\sum_{t<T}\EE\|u_t\|,\\
+ \EE\mathcal V_T+\sum_{t<T}\EE\|u_t\|=O(\sqrt T),\quad
+ \sum_{t<T}\EE\|r_t\|^2=O(1)
+ &\Longrightarrow\frac1T\sum_{t<T}\EE\|\nabla F(w_t)\|^2=O(T^{-1/2}).
+\end{align}
+\end{theorem}
+\begin{proof}
+Let $h_t=\nabla F(w_t)$, $\delta_t=\nabla F(z_t)-h_t$. Then
+\begin{align}
+ \|\delta_t\|&\le L\|C_{t-1}\|_{\op}G_m,\\
+ -\EE_t\langle\nabla F(z_t),B_tg_t\rangle
+ &=-\langle h_t+\delta_t,B_th_t\rangle\\
+ &\le-\tfrac m2\|h_t\|^2+\tfrac{M^2}{2m}\|\delta_t\|^2,\\
+ F(z_{t+1})&\le F(z_t)-\eta_t\langle\nabla F(z_t),B_tg_t\rangle
+ +\langle\nabla F(z_t),r_t\rangle
+ +\tfrac L2\|-\eta_tB_tg_t+r_t\|^2,\\
+ \EE_tF(z_{t+1})&\le F(z_t)-\tfrac m2\eta_t\|h_t\|^2
+ +\frac{\eta_tM^2L^2G_m^2}{2m}\|C_{t-1}\|_{\op}^2
+ \notag\\
+ &\quad+G_z\EE_t\|r_t\|+LM^2\eta_t^2G_2^2+L\EE_t\|r_t\|^2.
+\end{align}
+Summation gives the first assertion. Also
+$\|C_t\|_{\op}\le\eta M\beta/(1-\beta)$ and
+$\sum_t\eta\|C_{t-1}\|_{\op}^2=O(T\eta^3)$.
+\end{proof}

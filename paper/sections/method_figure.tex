@@ -1,0 +1,20 @@
+\begin{table*}[t]
+\centering
+\caption{\textbf{One STRATA-AdamW iteration.} The parameter branch uses the current flag; refreshed coordinates are used at the next iteration. Block alignment rotates first-moment coordinates but need not preserve ambient momentum exactly.}
+\label{tab:method-update}
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}p{.31\textwidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Stage} & \textbf{Operation} & \textbf{State or output} \\
+\midrule
+Project & Decompose the gradient into orthogonal incremental flag blocks. & $Z_{k,t}=G_tU_t^{[k]}$, \quad $G_{\perp,t}=G_t(I-P_{K,t})$. \\
+Adapt & Update block first and second moments with separate ages. & $\widehat M_{k,t}$ and $\widehat V_{k,t}$ use counters $c_k^M$ and $c_k^V$. \\
+Lift & Lift the blockwise adaptive directions; add the normalized residual. & $D_t=\sum_k a_kH_{k,t}U_t^{[k]\top}+a_\perp G_{\perp,t}/(\|G_{\perp,t}\|_F/\sqrt{md}+\epsilon)$. \\
+Update & Apply the direction and decoupled weight decay. & Unconstrained matrix parameter $W_{t+1}$. \\
+\midrule
+\rowcolor{oursbg}
+Track & Update covariance sketches at every step. & $Y_{k,t}=\rho_kY_{k,t-1}+(1-\rho_k)G_t^\top(G_t\Omega_k)$. \\
+\rowcolor{oursbg}
+Refresh & Every $\tau$ steps, take a flag step, retract, and align blocks. & Procrustes rotations transport $M_k$; reset $V_k$ and $c_k^V$, retain mature $c_k^M$. \\
+\bottomrule
+\end{tabularx}
+\end{table*}

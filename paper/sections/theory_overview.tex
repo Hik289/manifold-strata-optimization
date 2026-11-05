@@ -1,0 +1,39 @@
+\section{Convergence and Generalization}\label{sec:theory}
+We analyze the chain from covariance estimation to learned flags, evolving adaptive states, parameter descent, and generalization. Complete hypotheses and proofs are in Appendix~\ref{app:theory-full}; Appendix~\ref{app:expanded-theory-bridge} retains the expanded mathematical bridge.
+
+\paragraph{Flag geometry and tracking.}
+For $P_k=U_{:r_k}U_{:r_k}^\top$, put $\Pi_k=P_k-P_{k-1}$ and $\Phi(U)=\sum_k\omega_k\operatorname{tr}(P_kC_k)$. The overlap coupling $T_{ja}=\operatorname{tr}(\Pi_j(U)\Pi_a(V))$ gives the exact distance identity
+\begin{equation}
+ d_P^2(U,V)=\sum_{j,a}|j-a|T_{ja}.
+\end{equation}
+Charging each misplaced direction only for the prefix boundaries it crosses gives the sharp factor $K$ in the assignment-distance comparison. Hoffman--Kruskal integrality characterizes the commuting-covariance global optimum as a capacity-constrained assignment (Theorem~\ref{thm:tf-assignment}). A commuting counterexample still has a strict nonglobal local maximum (Proposition~\ref{prop:tf-cycle}). Under the regular local-chart hypotheses, the oracle perturbation and tracking estimates are
+\begin{align}
+ \|x_{\widehat C}^\star-x_C^\star\|
+ &\le\frac{2J_\psi}{\mu_\phi}\sum_k\omega_k\sqrt{r_k}\epsilon_k,\\
+ \sqrt{E_s}&\le q^s\sqrt{E_0}+\sum_{j<s}q^{s-1-j}b_j.
+\end{align}
+Here $\epsilon_k$ bounds covariance error and $b_j$ combines statistical, sketch, and drift forcing. The sharp quadratic contraction is $q_\star=(L_\phi-\mu_\phi)/(L_\phi+\mu_\phi)$. Centered noise and persistent drift have different gains, $\xi^2/(1-q^2)$ and $1/(1-q)$, respectively (Theorem~\ref{thm:tf-tracking}).
+
+\paragraph{Convergence with evolving adaptive state.}
+For a predictable preconditioner $mI\preceq B_t\preceq MI$, write $w_{t+1}=w_t-\eta_t(B_tg_t+e_t)$ and retain the exact discrepancy $e_t$ from the practical update. With $S_T=\sum_{t<T}\eta_t$, the nonconvex estimate is
+\begin{align}
+ \frac{\sum_{t<T}\eta_t\mathbb E\|\nabla F(w_t)\|^2}{S_T}
+ &\le \frac{2\Delta_0}{mS_T}
+ +\frac{2L\sum_{t<T}\eta_t^2\mathbb E\mathsf v_t}{mS_T}\notag\\
+ &\quad+\mathcal E_T,
+\end{align}
+where $\mathcal E_T$ is the explicit bias, transport, and normalization discrepancy term in Theorem~\ref{thm:tf-convergence}; $\mathsf v_t=\operatorname{tr}(B_t^2\Sigma_t)$ retains directional noise rather than replacing it by $M^2\sigma_t^2$. Under the PL condition, the initial gap contracts by $(1-\mu m\eta)^T$ toward a stated noise/discrepancy floor (Theorem~\ref{thm:tf-PL}). The implemented current-gradient normalizer requires separate analysis: Theorem~\ref{thm:actual-coercivity} controls its conditional symmetry defect, and Theorem~\ref{thm:actual-convergence} propagates observable moment/reset/transport budgets. The explicit asymmetric-noise stationary bias in Proposition~\ref{prop:actual-skew-counterexample} explains why gradient unbiasedness alone is insufficient.
+
+\paragraph{Generalization and directional complexity.}
+Coupling neighboring samples gives a five-component recursion for parameters, flags, sketches, first moments, and square-root second moments. Its nonnegative transition matrices $\mathcal M_t$ yield
+\begin{equation}
+ \epsilon_T^{\rm stab}\le\frac{L_0}{n}e_w\sum_{t<T}b_t
+ (\mathcal M_{T-1}\cdots\mathcal M_{t+1})d_t.
+\end{equation}
+This accounts for the whole optimizer state (Theorem~\ref{thm:rigid-generalization}). Independently, the Seeger--Maurer route keeps inverse binary KL and the exact moment constant $\Xi_n$, avoiding a Pinsker relaxation (Theorem~\ref{thm:rigid-pac}). Under the stated bounded-loss curvature hypothesis, optimizing a full-rank Gaussian posterior aligned with the flag gives
+\begin{align}
+ \mathcal C_\lambda(U)
+ &=\frac1{2\lambda}\sum_jmq_j\log(1+2\lambda\sigma_0^2\overline h_j(U)),\\
+ (\sigma_j^2)^\star&=\frac{\sigma_0^2}{1+2\lambda\sigma_0^2\overline h_j(U)}.
+\end{align}
+Refining a block with unequal average curvatures strictly decreases this optimized complexity; upper and lower gains depend on their weighted variance (Proposition~\ref{prop:directional-refinement}). Tracking sensitivity depends on spectral spread, with isotropic curvature canceling exactly. These are conditional guarantees with explicit hypotheses, rather than empirical certificates of those hypotheses on every benchmark.

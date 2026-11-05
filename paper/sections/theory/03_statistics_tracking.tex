@@ -1,0 +1,342 @@
+\subsection{Adapted covariance statistics, sketches, and tracking}
+Gradients depend on previous updates, so their second moments form an adapted
+process. We separate fluctuations around each conditional covariance from the
+lag introduced by averaging a changing target. Normalized and raw EMAs are
+distinguished throughout because their early-time scaling changes the relative
+weights in the flag objective.
+
+\begin{definition}[Filtration and normalized EMA]
+For a filtration $(\mathcal F_t)$, let $G_t$ be $\mathcal F_t$-measurable and
+\begin{gather}
+ \EE_t[\cdot]:=\EE[\cdot\mid\mathcal F_{t-1}],\\
+ X_t:=G_t^\top G_t,\quad C_t:=\EE[X_t\mid\mathcal F_{t-1}],\\
+ Z_t:=X_t-C_t,\quad\EE[Z_t\mid\mathcal F_{t-1}]=0,\\
+ \overline C_{k,t}:=(1-\rho_k)\sum_{i=1}^t\rho_k^{t-i}X_i,\quad
+ \widehat C_{k,t}:=\overline C_{k,t}/(1-\rho_k^t),\quad0<\rho_k<1,\\
+ \alpha_{k,t,i}:=\frac{(1-\rho_k)\rho_k^{t-i}}{1-\rho_k^t},\qquad
+ C^\circ_{k,t}:=\sum_{i=1}^t\alpha_{k,t,i}C_i.
+\end{gather}
+\end{definition}
+\begin{lemma}[Exact EMA identities]\label{lem:rigid-ema}
+\begin{align}
+ \sum_{i=1}^t\alpha_{k,t,i}&=1,\quad
+ \max_i\alpha_{k,t,i}=\frac{1-\rho_k}{1-\rho_k^t},\\
+ \sum_{i=1}^t\alpha_{k,t,i}^2
+ &=\frac{1-\rho_k}{1+\rho_k}\frac{1+\rho_k^t}{1-\rho_k^t},\\
+ A_{k,t}:=\sum_i(t-i)\alpha_{k,t,i}
+ &=\frac{\rho_k}{1-\rho_k}-\frac{t\rho_k^t}{1-\rho_k^t},\\
+ \|C_i-C_{i-1}\|_{\op}\le\nu
+ &\Longrightarrow\|C^\circ_{k,t}-C_t\|_{\op}\le\nu A_{k,t}.
+\end{align}
+\end{lemma}
+\begin{proof}
+\begin{align}
+ \sum_{j=0}^{t-1}\rho^j&=(1-\rho^t)/(1-\rho),\quad
+ \sum_{j=0}^{t-1}\rho^{2j}=(1-\rho^{2t})/(1-\rho^2),\\
+ \sum_{j=0}^{t-1}j\rho^j
+ &=\rho\frac{\mathrm d}{\mathrm d\rho}\frac{1-\rho^t}{1-\rho},\\
+ \|C^\circ_{k,t}-C_t\|_{\op}
+ &\le\sum_i\alpha_{k,t,i}\sum_{j=i+1}^t\|C_j-C_{j-1}\|_{\op}
+ \le\nu\sum_i(t-i)\alpha_{k,t,i}.
+\end{align}
+\end{proof}
+\begin{theorem}[Finite-horizon adapted covariance bound]\label{thm:rigid-covariance}
+Suppose, almost surely,
+\begin{gather}
+ \|Z_i\|_{\op}\le L_Z,\quad
+ \EE[Z_i^2\mid\mathcal F_{i-1}]\preceq v_i I,
+ \quad v_i\text{ deterministic},\\
+ V_{k,t}:=\sum_i\alpha_{k,t,i}^2v_i,\quad
+ R_{k,t}:=L_Z\max_i\alpha_{k,t,i},\\
+ u:=\log(2dKT/\delta),\quad
+ \mathfrak r(V,R,u):=\frac{Ru}{3}+\sqrt{2Vu+\frac{R^2u^2}{9}}.
+\end{gather}
+With probability at least $1-\delta$, simultaneously for $k\le K,t\le T$,
+\begin{align}
+ \|\widehat C_{k,t}-C_t\|_{\op}
+ &\le\mathfrak r(V_{k,t},R_{k,t},u)+\nu A_{k,t},\\
+ \|\overline C_{k,t}-C_t\|_{\op}
+ &\le(1-\rho_k^t)
+  \left(\mathfrak r(V_{k,t},R_{k,t},u)+\nu A_{k,t}\right)
+       +\rho_k^t\|C_t\|_{\op}.
+\end{align}
+\end{theorem}
+\begin{proof}
+For fixed $(k,t)$, $D_i:=\alpha_{k,t,i}Z_i$ satisfies
+\begin{gather}
+ \EE[D_i\mid\mathcal F_{i-1}]=0,\quad
+ \lambda_{\max}(\pm D_i)\le R_{k,t},\quad
+ \left\|\sum_i\EE[D_i^2\mid\mathcal F_{i-1}]\right\|_{\op}\le V_{k,t}.
+\end{gather}
+The matrix Freedman inequality \citep{tropp2011freedman} gives
+\begin{align}
+ \PP\left(\left\|\sum_iD_i\right\|_{\op}\ge s\right)
+ &\le2d\exp\left(-\frac{s^2}{2(V_{k,t}+R_{k,t}s/3)}\right),\\
+ s=\mathfrak r(V_{k,t},R_{k,t},u)
+ &\Longrightarrow s^2=2u(V_{k,t}+R_{k,t}s/3),\\
+ \PP\left(\exists k,t:\|\widehat C_{k,t}-C^\circ_{k,t}\|_{\op}>s\right)
+ &\le2dKT e^{-u}=\delta,\\
+ \overline C_{k,t}-C_t
+ &=(1-\rho_k^t)(\widehat C_{k,t}-C_t)-\rho_k^t C_t.
+\end{align}
+Thus the radius exactly inverts the Bernstein exponent in matrix Freedman;
+it avoids the further relaxation
+$\mathfrak r(V,R,u)\le\sqrt{2Vu}+2Ru/3$. A zero conditional-variance budget
+means the martingale sum vanishes almost surely and its radius can be set to zero.
+\end{proof}
+\begin{corollary}[Memory--drift balance]
+For the limiting EMA weights, $v_i\le v$, $h=1-\rho$, and fixed $u$,
+\begin{gather}
+ \epsilon(h)\le\mathfrak r\left(\frac{vh}{2-h},L_Zh,u\right)
+                         +\frac{\nu(1-h)}h,\\
+ \mathfrak r\left(\frac{vh}{2-h},L_Zh,u\right)
+ =\sqrt{vu}\sqrt h+\frac{L_Zu}{3}h+O(h^{3/2}),\quad h\downarrow0,\\
+ a:=\sqrt{vu}>0,\quad\nu>0,\quad
+ h_0:=(2\nu/a)^{2/3}\le1,\quad
+ a\sqrt{h_0}+\nu/h_0=3\,2^{-2/3}a^{2/3}\nu^{1/3}.
+\end{gather}
+The choice $h_0$ minimizes the leading stochastic--drift expression
+$a\sqrt h+\nu/h$; the first display retains the finite-$h$ constants.
+\end{corollary}
+Longer memory reduces the stochastic term by spreading mass over more
+observations, but increases the age of the information used to track the
+current covariance. The displayed balance quantifies this tradeoff. Different
+timescales can address different drift regimes; their joint benefit still
+depends on the flag objective and the resulting update.
+
+\begin{definition}[Fixed-probe Nystr\"om reconstruction]
+\begin{gather}
+ \Omega_k\in\RR^{d\times s_k},\quad s_k=\min(d,r_k+p),\quad
+ Y_k=C_k\Omega_k,\quad B_k=\sym(\Omega_k^\top Y_k)+\gamma I,\quad\gamma>0,\\
+ \mathcal N_\gamma(Y_k):=Y_kB_k^{-1}Y_k^\top.
+\end{gather}
+\end{definition}
+\begin{proposition}[PSD order, regularization, and probe blindness]\label{prop:rigid-nystrom}
+For $C\succeq0$, $Y=C\Omega$, and $Z=C^{1/2}\Omega$,
+\begin{align}
+ \mathcal N_\gamma(C\Omega)
+ &=C^{1/2}Z(Z^\top Z+\gamma I)^{-1}Z^\top C^{1/2},\\
+ 0\preceq\mathcal N_\gamma(C\Omega)&\preceq C,\\
+ \mathcal N_0(C\Omega)-\mathcal N_\gamma(C\Omega)
+ &=C^{1/2}L\diag\left(\frac{\gamma}{\sigma_i^2+\gamma}\right)L^\top C^{1/2},
+ \quad Z=L\diag(\sigma_i)R^\top\quad(\sigma_i>0).
+\end{align}
+If $s<d$, $v\in\ker\Omega^\top$, and $\|v\|=1$, then
+\begin{equation}
+ C=a vv^\top\quad\Longrightarrow\quad Y=0,\quad
+ \mathcal N_\gamma(Y)=0,\quad\|C-\mathcal N_\gamma(Y)\|_{\op}=a.
+\end{equation}
+Here $\mathcal N_0$ uses the Moore--Penrose inverse.
+\end{proposition}
+\begin{proof}
+\begin{align}
+ Z(Z^\top Z+\gamma I)^{-1}Z^\top
+ &=L\diag\left(\frac{\sigma_i^2}{\sigma_i^2+\gamma}\right)L^\top,\\
+ 0&\le\frac{\sigma_i^2}{\sigma_i^2+\gamma}\le1,\quad
+ Z(Z^\top Z)^\dagger Z^\top=LL^\top,\\
+ C\Omega&=av(v^\top\Omega)=0.
+\end{align}
+\end{proof}
+\begin{lemma}[Sketch sensitivity]\label{lem:rigid-sketch-lip}
+Suppose $B=\sym(\Omega^\top Y)+\gamma I\succeq\gamma I$ and
+$B'=\sym(\Omega^\top Y')+\gamma I\succeq\gamma I$, with
+$\max(\|Y\|_{\op},\|Y'\|_{\op})\le Y_\star$. Then
+\begin{align}
+ \|\mathcal N_\gamma(Y)-\mathcal N_\gamma(Y')\|_F
+ &\le L_N\|Y-Y'\|_F,\quad
+ L_N:=2Y_\star/\gamma+Y_\star^2\|\Omega\|_{\op}/\gamma^2,\\
+ \mathrm D\mathcal N_\gamma(Y)[E]
+ &=EB^{-1}Y^\top+YB^{-1}E^\top
+                   -YB^{-1}\sym(\Omega^\top E)B^{-1}Y^\top.
+\end{align}
+\end{lemma}
+\begin{proof}
+\begin{align}
+ B^{-1}-B'^{-1}&=B^{-1}(B'-B)B'^{-1},\\
+ YB^{-1}Y^\top-Y'B'^{-1}Y'^\top
+ &=(Y-Y')B^{-1}Y^\top+Y'B^{-1}(Y-Y')^\top
+                       +Y'(B^{-1}-B'^{-1})Y'^\top,\\
+ \|B^{-1}-B'^{-1}\|_F
+ &\le\gamma^{-2}\|\Omega\|_{\op}\|Y-Y'\|_F,\qquad
+ \mathrm D(B^{-1})[E]=-B^{-1}\sym(\Omega^\top E)B^{-1}.
+\end{align}
+\end{proof}
+The probe-blindness example explains why sketch error must remain a separate
+quantity: a fixed probe can miss an entire energetic direction. We now combine
+this approximation error with statistical error and target motion. The
+tracking recursion measures distance to a local oracle at refresh times, rather
+than assuming exact covariance information at every parameter update.
+
+\begin{definition}[Refresh-time chart recursion]
+At refresh index $s$, let
+\begin{gather}
+ f_s(x):=\Phi(\psi(x);C_s),\quad \nabla f_s(x_s^\star)=0,\\
+ x_{s+1}=x_s+\xi\nabla f_s(x_s)+\xi e_s+\xi\zeta_s+r_s,\\
+ \Delta_s:=x_{s+1}^\star-x_s^\star,\quad
+ E_s:=\EE\|x_s-x_s^\star\|^2,\\
+ q:=\max\{|1-\xi\mu_\phi|,|1-\xi L_\phi|\}<1,\quad0<\xi<2/L_\phi.
+\end{gather}
+\end{definition}
+\begin{theorem}[Cocoercive tracking with exact forcing gains]\label{thm:tf-tracking}
+Under Assumption~\ref{ass:tf-chart}, assume the relevant iterates and connecting
+segments remain in its convex chart. Define
+\begin{gather}
+ v_s:=\xi e_s+\xi\zeta_s+r_s-\Delta_s,\quad
+ b_s:=\sqrt{\EE\|v_s\|^2}.
+\end{gather}
+Then the root-mean-square error obeys
+\begin{align}
+ \sqrt{E_{s+1}}&\le q\sqrt{E_s}+b_s,\\
+ \sqrt{E_s}&\le q^s\sqrt{E_0}+\sum_{j<s}q^{s-1-j}b_j.
+ \label{eq:tracking-rms-sharp}
+\end{align}
+The contraction is minimized at
+$\xi_\star=2/(L_\phi+\mu_\phi)$, giving
+$q_\star=(L_\phi-\mu_\phi)/(L_\phi+\mu_\phi)$.
+For comparison, a squared-error form remains valid: for $\alpha>0$ with
+$\kappa:=(1+\alpha)q^2<1$,
+\begin{align}
+ E_{s+1}&\le\kappa E_s+B_s,\\
+ B_s&:=4(1+\alpha^{-1})\EE\left[
+       \xi^2\|e_s\|^2+\xi^2\|\zeta_s\|^2+\|r_s\|^2+\|\Delta_s\|^2\right],\\
+ E_s&\le\kappa^s E_0+\sum_{j=0}^{s-1}\kappa^{s-1-j}B_j,
+ \label{eq:tf-tracking-expanded}\\
+ \sum_{s=0}^{S-1}E_s&\le\frac{E_0+\sum_{s=0}^{S-2}B_s}{1-\kappa}.
+\end{align}
+If $\EE[\zeta_s\mid\mathcal H_s]=0$, where $\mathcal H_s$ contains
+$(f_s,x_s,x_s^\star,e_s,r_s,\Delta_s)$, set
+$d_s^2:=\EE\|\xi e_s+r_s-\Delta_s\|^2$ and
+$\sigma_s^2:=\EE\|\zeta_s\|^2$. Then
+\begin{equation}
+ E_{s+1}\le(q\sqrt{E_s}+d_s)^2+\xi^2\sigma_s^2.
+\end{equation}
+For uniform envelopes $d_s\le\overline d$, $\sigma_s\le\overline\sigma$, define
+\begin{equation}
+ x_\infty:=\frac{q\overline d+
+      \sqrt{\overline d^2+(1-q^2)\xi^2\overline\sigma^2}}{1-q^2}.
+\end{equation}
+Then $\sqrt{E_s}\le x_\infty+q^s(\sqrt{E_0}-x_\infty)_+$.
+In particular the pure-drift RMS gain is $1/(1-q)$, whereas the centered-noise
+variance gain is $\xi^2/(1-q^2)$; scalar quadratic recursions attain both.
+\end{theorem}
+\begin{proof}
+The smooth strongly convex interpolation inequality associated with
+Baillon--Haddad cocoercivity~\citep{bauschke2010baillon} gives the optimal-step
+contraction. Here its local Hessian proof also gives every admissible step:
+with $v=x-y$ and $g=\nabla(-f_s)(x)-\nabla(-f_s)(y)$,
+\begin{align}
+ \langle v,g\rangle&\ge\frac{\mu_\phi L_\phi}{\mu_\phi+L_\phi}\|v\|^2
+                 +\frac{\|g\|^2}{\mu_\phi+L_\phi},\\
+ T_s(x)-T_s(y)
+ &=\left[I+\xi\int_0^1\nabla^2f_s(y+u(x-y))\,\mathrm du\right](x-y),\\
+ \|T_s(x)-T_s(y)\|&\le q\|x-y\|,\quad T_s(x_s^\star)=x_s^\star,\\
+ x_{s+1}-x_{s+1}^\star
+ &=T_s(x_s)-T_s(x_s^\star)+\xi e_s+\xi\zeta_s+r_s-\Delta_s,\\
+ \|a+b\|^2&\le(1+\alpha)\|a\|^2+(1+\alpha^{-1})\|b\|^2,\\
+ \|b_1+b_2+b_3+b_4\|^2&\le4\sum_{i=1}^4\|b_i\|^2,\\
+ \sum_{s=0}^{S-1}\sum_{j<s}\kappa^{s-1-j}B_j
+ &\le(1-\kappa)^{-1}\sum_{j=0}^{S-2}B_j.
+\end{align}
+The averaged Hessian in the first map identity has spectrum in
+$[-L_\phi,-\mu_\phi]$, so the endpoint formula for $q$ is exact for the
+quadratic class. Minkowski's inequality in $L^2$ gives
+\eqref{eq:tracking-rms-sharp} directly. Conditional centering removes the
+cross term with $\zeta_s$. The scalar map
+$x\mapsto\sqrt{(qx+\overline d)^2+\xi^2\overline\sigma^2}$ has Lipschitz constant at most
+$q$ and fixed point $x_\infty$, proving the last bound. Constant scalar forcing
+and a scalar AR(1) process respectively attain the two stated gains.
+Sharpness here concerns the comparison recursion; applicability to a flag
+trajectory still requires the stated chart invariance.
+\end{proof}
+\begin{corollary}[End-to-end flag forcing]\label{cor:rigid-flag-forcing}
+Suppose $\|\widetilde C_{k,s}-\widehat C_{k,s}\|_{\op}\le a_{k,s}$ and
+$\|\widehat C_{k,s}-C_{k,s}\|_{\op}\le\epsilon_{k,s}$. Then
+\begin{align}
+ \|e_s\|&\le2J_\psi\sum_k\omega_k\sqrt{r_k}(a_{k,s}+\epsilon_{k,s}),\\
+ \|\Delta_s\|&\le\frac{2J_\psi}{\mu_\phi}
+               \sum_k\omega_k\sqrt{r_k}\|C_{k,s+1}-C_{k,s}\|_{\op}.
+\end{align}
+If $\|C_k(w)-C_k(w')\|_{\op}\le L_{C,k}\|w-w'\|$ and
+$w_{t+1}=w_t-\eta_t d_t$, with $\tau$ steps per refresh, then
+\begin{align}
+ \|\Delta_s\|^2
+ &\le L_\star^2\tau\sum_{t=s\tau}^{(s+1)\tau-1}\eta_t^2\|d_t\|^2,
+ \quad L_\star:=\frac{2J_\psi}{\mu_\phi}\sum_k\omega_k\sqrt{r_k}L_{C,k}.
+\end{align}
+\end{corollary}
+\begin{proposition}[Bounded-gradient constants and raw-EMA weights]\label{prop:rigid-raw-ema}
+If $\|G_t\|_F\le G_\star$ almost surely, then
+\begin{gather}
+ 0\preceq X_t,C_t\preceq G_\star^2I,\quad
+ \|Z_t\|_{\op}\le G_\star^2,\quad
+ \EE_tZ_t^2=\EE_tX_t^2-C_t^2\preceq G_\star^4I,\\
+ L_Z=G_\star^2,\qquad v_t=G_\star^4
+ \quad\text{are admissible in Theorem~\ref{thm:rigid-covariance}},\\
+ \Phi(U;\overline C_{1:K,t})
+ =\sum_k\omega_k(1-\rho_k^t)\tr(P_k(U)\widehat C_{k,t}).
+\end{gather}
+Thus replacing raw EMAs by normalized EMAs changes the relative objective weights
+unless all factors $1-\rho_k^t$ coincide.
+\end{proposition}
+\begin{proof}
+\begin{gather}
+ -G_\star^2I\preceq X_t-C_t\preceq G_\star^2I,\quad
+ X_t^2\preceq G_\star^2X_t,\\
+ \EE_t(X_t-C_t)^2=\EE_tX_t^2-C_t^2
+ \preceq G_\star^2 C_t\preceq G_\star^4I.
+\end{gather}
+\end{proof}
+The preceding chart recursion uses a Euclidean gradient for clarity. Actual
+manifold ascent uses the inverse pullback metric, and QR introduces a retraction
+remainder. The next theorem controls both effects so that the same tracking
+argument applies under explicit local metric and step-size conditions.
+
+\begin{theorem}[Actual Riemannian ascent in a non-Euclidean chart]
+\label{thm:rigid-chart-metric}
+Under Assumption~\ref{ass:tf-chart}, let $\mathcal D$ lie in the radius-$r$ ball
+about $x^\star$, and define the pullback metric $\mathsf G(x)$ and natural gradient
+\begin{gather}
+ \mathsf G(x)_{ab}:=g_{\psi(x)}(\mathrm D\psi(x)e_a,\mathrm D\psi(x)e_b),\quad
+ A(x):=\mathsf G(x)^{-1}\nabla f(x),\\
+ \|\mathsf G^{-1}(x)-I\|_{\op}\le\delta_M,\quad
+ \|\mathrm D(\mathsf G^{-1})(x)\|\le L_M,\\
+ \mu_A:=\mu_\phi-L_\phi(\delta_M+L_Mr)>0,\quad
+ L_A:=L_\phi(1+\delta_M+L_Mr),\\
+ 0<\xi<2\mu_A/L_A^2,\quad q_A:=\sqrt{1-2\mu_A\xi+L_A^2\xi^2}<1.
+\end{gather}
+Then
+\begin{align}
+ \langle x-y,A(x)-A(y)\rangle&\le-\mu_A\|x-y\|^2,\\
+ \|A(x)-A(y)\|&\le L_A\|x-y\|,\\
+ \|x+\xi A(x)-y-\xi A(y)\|&\le q_A\|x-y\|.
+\end{align}
+Let $\mathcal R_x(v)$ be the chart representation of the quotient QR retraction,
+with $\mathcal R_x(0)=x$, $\mathrm D\mathcal R_x(0)=I$, and
+$\|\mathrm D^2\mathcal R_x(v)\|\le C_\psi$ on the relevant segment. For an
+estimated covariance $\widehat C$, the actual ascent is
+\begin{gather}
+ x^+=\mathcal R_x\left(\xi\mathsf G(x)^{-1}\nabla f_{\widehat C}(x)\right)
+ =x+\xi A(x)+\xi e(x)+r(x),\\
+ \|e(x)\|\le(1+\delta_M)E_C,\qquad
+ \|r(x)\|\le\tfrac12 C_\psi\xi^2\|A(x)+e(x)\|^2.
+\end{gather}
+Theorem~\ref{thm:tf-tracking} therefore applies with $q$ replaced by $q_A$,
+$\kappa=(1+\alpha)q_A^2<1$, and the displayed error and remainder bounds.
+\end{theorem}
+\begin{proof}
+For $M(x):=\mathsf G(x)^{-1}$,
+\begin{align}
+ \mathrm DA(x)[v]&=\nabla^2f(x)v+(M(x)-I)\nabla^2f(x)v
+                           +(\mathrm DM(x)[v])\nabla f(x),\\
+ \|\nabla f(x)\|&=\|\nabla f(x)-\nabla f(x^\star)\|\le L_\phi r,\\
+ v^\top\mathrm DA(x)v
+ &\le-\mu_\phi\|v\|^2+\delta_M L_\phi\|v\|^2+L_ML_\phi r\|v\|^2
+ =-\mu_A\|v\|^2,\\
+ \|\mathrm DA(x)\|_{\op}&\le L_A,\\
+ \|x-y+\xi(A(x)-A(y))\|^2
+ &\le(1-2\mu_A\xi+L_A^2\xi^2)\|x-y\|^2,\\
+ e(x)&:=M(x)(\nabla f_{\widehat C}(x)-\nabla f_C(x)),\\
+ r(x)&=\int_0^1(1-s)\mathrm D^2\mathcal R_x(sv)[v,v]\,\mathrm ds,
+ \quad v=\xi(A(x)+e(x)).
+\end{align}
+\end{proof}

@@ -1,0 +1,14 @@
+\section{Preliminaries and Problem Setup}
+For a matrix parameter $W\in\mathbb{R}^{m\times n}$, let $d=\min(m,n)$ and let $R$ be the maximum low-rank budget. A Single-Grassmann optimizer maintains one rank-$R$ subspace. STRATA maintains a flag $U_1\subset\cdots\subset U_K$ with ranks $r_1<\cdots<r_K=R$ and incremental projectors $\Pi_k=P_k-P_{k-1}$, $P_k=U_kU_k^\top$. For an exponential moving average timescale $\rho_k$, the population covariance is modeled as $\Sigma_{k,t}=\mathbb{E}C_{k,t}$ with $C_{k,t}=\rho_k C_{k,t-1}+(1-\rho_k)g_tg_t^\top$.
+
+The descriptive nesting diagnostic compares independently optimal timescale subspaces before imposing a flag:
+\begin{equation}
+\delta_{\mathrm{nest},t}=\sum_{k=1}^{K-1}\|(I-\hat P_{k+1,t})\hat P_{k,t}\|_F^2,
+\end{equation}
+where $\hat P_{k,t}$ projects onto the independently estimated top-$r_k$ subspace. Small values mean that the independent optima already look nested; rising values mean that this structure is being lost. In this paper, $\delta_{\mathrm{nest}}$ is a structural measurement, not a performance predictor.
+
+The main theoretical object is a flag objective
+\begin{equation}
+\Phi_t(U)=\sum_{k=1}^K \omega_k \mathrm{tr}(P_k(U)\Sigma_{k,t}),
+\end{equation}
+which assigns the nested blocks to multi-timescale covariance mass. The theory analyzes when this objective has an optimal flag, how sketch/statistical/tracking errors perturb it, and how flag error enters parameter optimization through layer coefficient differences in a linear block-isotropic surrogate, with separate discrepancy terms for the practical Adam rule. The surrogate coefficient variation is $\Gamma_t^a=\sum_k |a_{k,t}-a_{k+1,t}|$.

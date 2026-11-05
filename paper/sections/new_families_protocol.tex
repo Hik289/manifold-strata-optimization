@@ -1,0 +1,48 @@
+\section{Prospective Real-Data Tasks Beyond the Current Cases}
+\label{app:prospective-real-tasks}
+\paragraph{Purpose and frozen scope.}
+The additional study comprises six settings in three directions: ETTh1 and ETTh2 forecasting, MovieLens100K and MovieLens1M explicit-rating prediction, and gas-sensor drift with fine-tuning or replay. The task list, data digests, splits, models, six candidates per method, metrics and failure policy are frozen before formal outcomes in the retained plan. The goal is to test structured-gradient and adaptation hypotheses beyond citation graphs; neither dataset readiness nor a queued configuration is evidence of improvement. We retain all declared settings and candidate failures, irrespective of the sign of the result.
+
+\paragraph{ETT forecasting.}
+We use the original hourly transformer series~\citep{zhou2021informer}, each with seven numeric channels. The first $8640$ observations define training; validation and test targets lie in $[8640,11520)$ and $[11520,14400)$, respectively. The remaining observations do not enter these trials. With lookback $L=96$ and horizon $H=24$, a split $[a,b)$ contains precisely
+\[
+ t\in\{\max(a,L),\ldots,b-H\},\qquad
+ x_t=\operatorname{vec}(z_{t-L:t}),\quad
+ y_t=\operatorname{vec}(z_{t:t+H}).
+\]
+Thus an input uses past observations only, and every target horizon is contained in its own split. Channel means and standard deviations use the training prefix only. The common forecaster is a $672\to256\to256\to168$ MLP with GELU hidden activations. Its primary metric is MSE in training-standard-deviation units; MAE is secondary. These are controlled optimizer comparisons on ETT data, not claims to reproduce the Informer architecture or a forecasting state-of-the-art endpoint.
+
+\paragraph{Explicit-rating recommendation.}
+MovieLens100K and MovieLens1M come from the official GroupLens releases~\citep{harper2015movielens}. MovieLens100K preserves the official \texttt{u1.test}; a SHA-256 user/item hash assigns ten percent of \texttt{u1.base} to validation, yielding $71978/8022/20000$ ratings. MovieLens1M uses chronological $70/15/15$ splits within each user, with item ID breaking timestamp ties, yielding $697378/149931/152900$ ratings. User/item pairs do not overlap across splits. Catalog IDs may be known without using held-out ratings. All methods fit the same biased matrix-factorization model,
+\[
+ \widehat r_{ui}=\mu_{\rm train}+b_u+c_i+
+ \frac{p_u^\top q_i}{\sqrt{128}},\qquad p_u,q_i\in\mathbb R^{128}.
+\]
+Training minimizes observed-rating MSE. The primary evaluation is raw-rating RMSE; these tasks do not support a top-$k$ retrieval or NDCG claim. Embeddings use dense gradients, so every optimizer sees the same parameterization and examples. Complete epochs traverse all training ratings.
+
+\paragraph{Real sensor drift.}
+The UCI Gas Sensor Array Drift data~\citep{vergara2012gasdrift} contain $13910$ records, $128$ features, six labels and ten ordered batches. A global SHA-256 hash of the float32 feature row and label fixes $70/15/15$ training/validation/test roles; identical records keep the same role across batches. Only batch-one training rows determine feature normalization. The common classifier is a $128\to256\to256\to6$ ReLU MLP. Training spends $100$ complete epochs in each successive domain, for $1000$ total epochs, and never trains on future domains. Fine-tuning uses current-domain training rows. Replay additionally samples at most $128$ old examples per current minibatch from a deterministic $512$-example sample of past training domains, refreshed at domain boundaries. This is the replay sample size, not a claim that the resident benchmark arrays consume constant storage. Flags and moments carry across domain switches. Evaluation at domain $k$ averages the per-domain held-out accuracies equally,
+\[
+ A_k(\theta)=\frac1k\sum_{j=1}^k
+ \frac1{|D_j|}\sum_{(x,y)\in D_j}
+ \mathbf1\{\arg\max f_\theta(x)=y\}.
+\]
+Per-domain accuracies are retained. Since the set of seen domains grows, these curves are not measurements of convergence to one fixed population objective.
+
+\paragraph{Equal search counts and computational budgets.}
+STRATA, Single-Grassmann and Independent use maximum/total rank $32$ and six candidates,
+\[
+ \eta\in\{3\times10^{-4},10^{-3}\},\qquad
+ \xi\in\{10^{-3},10^{-1},10\}.
+\]
+Independent's actual block dimensions are $(8,8,16)$, totaling $32$. AdamW and GaLore each use six distinct learning rates,
+\[
+ \eta\in\{10^{-4},3\times10^{-4},10^{-3},3\times10^{-3},10^{-2},3\times10^{-2}\}.
+\]
+Thus the search counts are equal; the hyperparameter spaces are explicitly different. These are comparisons of the full algorithms, not a pure isolated nesting intervention. All use seed42, float32 computation, clipping at norm10 and zero weight decay. A cosine schedule with five-epoch warmup spans the full static task, or restarts within each $100$-epoch drift domain. Each prescribed epoch traverses the complete relevant training set. Six CPU workers use two intra-op threads each after checking capacity; CPU wall time is shared-server timing, and a zero CUDA-allocation field means not applicable, not zero total memory. State counts include fixed probes and persistent buffers.
+
+\paragraph{Selection and complete reporting.}
+For every method and setting, the selected candidate optimizes the mean primary validation metric over the terminal $100$ epochs: MSE/RMSE is minimized and accuracy maximized. Test metrics never select a configuration. The same reporting rule applies to favorable and unfavorable results. A setting is summarized only after its $30$ candidates complete or record a failure; a failed candidate has no fabricated endpoint, and a method with no complete candidate has no selected score. Raw losses, validation/test metrics, flag snapshots, ten-epoch checkpoints, source hashes and data hashes remain available. Small smoke checks are stored separately and excluded from the formal queue. The single-seed protocol does not justify statistical-significance claims or a guaranteed winner in any task family.
+
+\paragraph{Relation to the conditional theory.}
+Replay makes persistent past-domain corrections available alongside current-domain gradients while preserving the model architecture and optimizer tensor-state sizes. The fine-tuning/replay contrast therefore probes a data-regime interaction; it does not isolate a geometric component of the optimizer. ETT windows overlap, chronological ratings share users and sensor domains are dependent and shifted. These data do not by themselves establish the sampling assumptions of the generalization theorems, and unclipped MSE is not a bounded loss. The task comparisons are empirical tests of optimization and state--quality tradeoffs, not numerical certificates of the conditional convergence or generalization bounds.

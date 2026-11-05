@@ -1,0 +1,1252 @@
+[
+  {
+    "dataset": "CiteSeer",
+    "model": "gat",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 182,
+        "method": "strata",
+        "lr": 0.0003,
+        "val": 0.5756800282001495,
+        "test": 0.5675800269842148,
+        "source": "runs_revision/CiteSeer__gat__strata__lr0.0003"
+      },
+      "single": {
+        "id": 188,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.5840200287103653,
+        "test": 0.5917500269412994,
+        "source": "runs_revision/CiteSeer__gat__single__lr0.001"
+      },
+      "adamw": {
+        "id": 184,
+        "method": "adamw",
+        "lr": 0.0003,
+        "val": 0.5805000293254853,
+        "test": 0.5736500257253647,
+        "source": "runs_revision/CiteSeer__gat__adamw__lr0.0003"
+      },
+      "galore": {
+        "id": 185,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.6254800313711166,
+        "test": 0.6264300268888473,
+        "source": "runs_revision/CiteSeer__gat__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 186,
+        "method": "independent",
+        "lr": 0.0003,
+        "val": 0.6021000319719314,
+        "test": 0.571780024766922,
+        "source": "runs_revision/CiteSeer__gat__independent__lr0.0003"
+      }
+    },
+    "strata_minus_sg": -0.024169999957084576
+  },
+  {
+    "dataset": "CiteSeer",
+    "model": "gcn",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 583,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.5356200271844864,
+        "test": 0.4919900220632553,
+        "source": "runs_revision/CiteSeer__gcn__strata__lr0.001"
+      },
+      "single": {
+        "id": 584,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.5472000274062156,
+        "test": 0.5155500248074532,
+        "source": "runs_revision/CiteSeer__gcn__single__lr0.001"
+      },
+      "adamw": {
+        "id": 585,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.6056600320339203,
+        "test": 0.592700030207634,
+        "source": "runs_revision/CiteSeer__gcn__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 581,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.6355800271034241,
+        "test": 0.6166100317239761,
+        "source": "runs_revision/CiteSeer__gcn__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 587,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.5479200276732444,
+        "test": 0.5029600211977958,
+        "source": "runs_revision/CiteSeer__gcn__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": -0.02356000274419784
+  },
+  {
+    "dataset": "CiteSeer",
+    "model": "gcnii",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 603,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.5171600231528282,
+        "test": 0.4750800237059593,
+        "source": "runs_revision/CiteSeer__gcnii__strata__lr0.001"
+      },
+      "single": {
+        "id": 604,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.5354400244355202,
+        "test": 0.4987400192022324,
+        "source": "runs_revision/CiteSeer__gcnii__single__lr0.001"
+      },
+      "adamw": {
+        "id": 605,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.6093800354003907,
+        "test": 0.608480024933815,
+        "source": "runs_revision/CiteSeer__gcnii__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 601,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.6371200263500214,
+        "test": 0.6149900305271149,
+        "source": "runs_revision/CiteSeer__gcnii__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 607,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.5507000255584716,
+        "test": 0.504200020134449,
+        "source": "runs_revision/CiteSeer__gcnii__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": -0.023659995496273067
+  },
+  {
+    "dataset": "CiteSeer",
+    "model": "sage",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 593,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.5672600291669369,
+        "test": 0.5574700251221657,
+        "source": "runs_revision/CiteSeer__sage__strata__lr0.001"
+      },
+      "single": {
+        "id": 594,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.5643400266766548,
+        "test": 0.5398000255227089,
+        "source": "runs_revision/CiteSeer__sage__single__lr0.001"
+      },
+      "adamw": {
+        "id": 595,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.5729400259256363,
+        "test": 0.5530200302600861,
+        "source": "runs_revision/CiteSeer__sage__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 591,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.6501400297880173,
+        "test": 0.6512400305271149,
+        "source": "runs_revision/CiteSeer__sage__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 597,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.596540030837059,
+        "test": 0.5583600237965584,
+        "source": "runs_revision/CiteSeer__sage__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": 0.01766999959945681
+  },
+  {
+    "dataset": "Cora",
+    "model": "gat",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 563,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.6910200321674347,
+        "test": 0.6979800331592559,
+        "source": "runs_revision/Cora__gat__strata__lr0.001"
+      },
+      "single": {
+        "id": 564,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.7068400299549102,
+        "test": 0.719090034365654,
+        "source": "runs_revision/Cora__gat__single__lr0.001"
+      },
+      "adamw": {
+        "id": 560,
+        "method": "adamw",
+        "lr": 0.0003,
+        "val": 0.6959200298786163,
+        "test": 0.7099500346183777,
+        "source": "runs_revision/Cora__gat__adamw__lr0.0003"
+      },
+      "galore": {
+        "id": 561,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.7806200408935546,
+        "test": 0.7815500354766846,
+        "source": "runs_revision/Cora__gat__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 567,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.7306800371408463,
+        "test": 0.7365000355243683,
+        "source": "runs_revision/Cora__gat__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": -0.021110001206398055
+  },
+  {
+    "dataset": "Cora",
+    "model": "gcn",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 172,
+        "method": "strata",
+        "lr": 0.0003,
+        "val": 0.6829600340127945,
+        "test": 0.7012000334262848,
+        "source": "runs_revision/Cora__gcn__strata__lr0.0003"
+      },
+      "single": {
+        "id": 178,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.6853800338506698,
+        "test": 0.7164300352334976,
+        "source": "runs_revision/Cora__gcn__single__lr0.001"
+      },
+      "adamw": {
+        "id": 179,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.6724800300598145,
+        "test": 0.7153800344467163,
+        "source": "runs_revision/Cora__gcn__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 175,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.7605000299215317,
+        "test": 0.7718000370264053,
+        "source": "runs_revision/Cora__gcn__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 176,
+        "method": "independent",
+        "lr": 0.0003,
+        "val": 0.6679600310325623,
+        "test": 0.6955500340461731,
+        "source": "runs_revision/Cora__gcn__independent__lr0.0003"
+      }
+    },
+    "strata_minus_sg": -0.01523000180721279
+  },
+  {
+    "dataset": "Cora",
+    "model": "gcnii",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 207,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.6737000328302384,
+        "test": 0.689750035405159,
+        "source": "runs_revision/Cora__gcnii__strata__lr0.001"
+      },
+      "single": {
+        "id": 203,
+        "method": "single",
+        "lr": 0.0003,
+        "val": 0.6835600340366363,
+        "test": 0.7013800358772277,
+        "source": "runs_revision/Cora__gcnii__single__lr0.0003"
+      },
+      "adamw": {
+        "id": 204,
+        "method": "adamw",
+        "lr": 0.0003,
+        "val": 0.6646400332450867,
+        "test": 0.6784000337123871,
+        "source": "runs_revision/Cora__gcnii__adamw__lr0.0003"
+      },
+      "galore": {
+        "id": 205,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.7442400336265564,
+        "test": 0.7603300368785858,
+        "source": "runs_revision/Cora__gcnii__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 206,
+        "method": "independent",
+        "lr": 0.0003,
+        "val": 0.6773400354385376,
+        "test": 0.6934400337934494,
+        "source": "runs_revision/Cora__gcnii__independent__lr0.0003"
+      }
+    },
+    "strata_minus_sg": -0.011630000472068747
+  },
+  {
+    "dataset": "Cora",
+    "model": "sage",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 573,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.4638000240921974,
+        "test": 0.4653200224041939,
+        "source": "runs_revision/Cora__sage__strata__lr0.001"
+      },
+      "single": {
+        "id": 574,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.6501000320911408,
+        "test": 0.6506100317835808,
+        "source": "runs_revision/Cora__sage__single__lr0.001"
+      },
+      "adamw": {
+        "id": 575,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.6974400305747985,
+        "test": 0.7059900337457656,
+        "source": "runs_revision/Cora__sage__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 571,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.7402600324153901,
+        "test": 0.7503400313854217,
+        "source": "runs_revision/Cora__sage__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 577,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.589340026974678,
+        "test": 0.5640900260210038,
+        "source": "runs_revision/Cora__sage__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": -0.1852900093793869
+  },
+  {
+    "dataset": "PubMed",
+    "model": "gat",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 623,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.7407600337266922,
+        "test": 0.711740026473999,
+        "source": "runs_revision/PubMed__gat__strata__lr0.001"
+      },
+      "single": {
+        "id": 624,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.7532000344991684,
+        "test": 0.7430800372362136,
+        "source": "runs_revision/PubMed__gat__single__lr0.001"
+      },
+      "adamw": {
+        "id": 625,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.7505200457572937,
+        "test": 0.7232300478219986,
+        "source": "runs_revision/PubMed__gat__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 621,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.7733000379800796,
+        "test": 0.766260033249855,
+        "source": "runs_revision/PubMed__gat__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 627,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.7577400243282318,
+        "test": 0.7365900379419327,
+        "source": "runs_revision/PubMed__gat__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": -0.0313400107622146
+  },
+  {
+    "dataset": "PubMed",
+    "model": "gcn",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 613,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.7319800341129303,
+        "test": 0.7174200242757798,
+        "source": "runs_revision/PubMed__gcn__strata__lr0.001"
+      },
+      "single": {
+        "id": 614,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.7202000367641449,
+        "test": 0.7120800429582596,
+        "source": "runs_revision/PubMed__gcn__single__lr0.001"
+      },
+      "adamw": {
+        "id": 615,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.7231200480461121,
+        "test": 0.7044500499963761,
+        "source": "runs_revision/PubMed__gcn__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 611,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.7675000298023223,
+        "test": 0.759150043129921,
+        "source": "runs_revision/PubMed__gcn__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 617,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.7208400404453278,
+        "test": 0.6878200298547745,
+        "source": "runs_revision/PubMed__gcn__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": 0.005339981317520226
+  },
+  {
+    "dataset": "PubMed",
+    "model": "gcnii",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 633,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.6836200284957886,
+        "test": 0.6634100371599198,
+        "source": "runs_revision/PubMed__gcnii__strata__lr0.001"
+      },
+      "single": {
+        "id": 634,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.7163400310277939,
+        "test": 0.7106700336933136,
+        "source": "runs_revision/PubMed__gcnii__single__lr0.001"
+      },
+      "adamw": {
+        "id": 635,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.7322800493240357,
+        "test": 0.7088000303506852,
+        "source": "runs_revision/PubMed__gcnii__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 636,
+        "method": "galore",
+        "lr": 0.001,
+        "val": 0.761840037703514,
+        "test": 0.7498500353097916,
+        "source": "runs_revision/PubMed__gcnii__galore__lr0.001"
+      },
+      "independent": {
+        "id": 637,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.6991200238466263,
+        "test": 0.669320029616356,
+        "source": "runs_revision/PubMed__gcnii__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": -0.047259996533393855
+  },
+  {
+    "dataset": "PubMed",
+    "model": "sage",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 197,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.7179200440645218,
+        "test": 0.7162300264835357,
+        "source": "runs_revision/PubMed__sage__strata__lr0.001"
+      },
+      "single": {
+        "id": 193,
+        "method": "single",
+        "lr": 0.0003,
+        "val": 0.7066600292921066,
+        "test": 0.6790200352668763,
+        "source": "runs_revision/PubMed__sage__single__lr0.0003"
+      },
+      "adamw": {
+        "id": 199,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.7041200309991836,
+        "test": 0.6906100386381149,
+        "source": "runs_revision/PubMed__sage__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 195,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.7589800351858139,
+        "test": 0.7580100393295288,
+        "source": "runs_revision/PubMed__sage__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 201,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.741900035738945,
+        "test": 0.7415100371837616,
+        "source": "runs_revision/PubMed__sage__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": 0.037209991216659466
+  },
+  {
+    "dataset": "adult",
+    "model": "MLP-256-256",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 428,
+        "method": "strata",
+        "lr": 0.0003,
+        "val": 0.8155767427321038,
+        "test": 0.8148614949941646,
+        "source": "runs_revision/adult__mlp256__strata__lr0.0003"
+      },
+      "single": {
+        "id": 429,
+        "method": "single",
+        "lr": 0.0003,
+        "val": 0.8135323538605814,
+        "test": 0.8148707081874579,
+        "source": "runs_revision/adult__mlp256__single__lr0.0003"
+      },
+      "adamw": {
+        "id": 430,
+        "method": "adamw",
+        "lr": 0.0003,
+        "val": 0.8182807127227256,
+        "test": 0.8172317425219581,
+        "source": "runs_revision/adult__mlp256__adamw__lr0.0003"
+      },
+      "galore": {
+        "id": 431,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.8225633010315722,
+        "test": 0.8215957250783121,
+        "source": "runs_revision/adult__mlp256__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 432,
+        "method": "independent",
+        "lr": 0.0003,
+        "val": 0.8115223507346043,
+        "test": 0.8117062833978252,
+        "source": "runs_revision/adult__mlp256__independent__lr0.0003"
+      }
+    },
+    "strata_minus_sg": -9.213193293278188e-06
+  },
+  {
+    "dataset": "adult",
+    "model": "MLP-512-512",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 443,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.812078774617068,
+        "test": 0.8150850684847364,
+        "source": "runs_revision/adult__mlp512__strata__lr0.001"
+      },
+      "single": {
+        "id": 439,
+        "method": "single",
+        "lr": 0.0003,
+        "val": 0.8093435448577679,
+        "test": 0.8128143234445053,
+        "source": "runs_revision/adult__mlp512__single__lr0.0003"
+      },
+      "adamw": {
+        "id": 440,
+        "method": "adamw",
+        "lr": 0.0003,
+        "val": 0.8144607689903092,
+        "test": 0.8190940359928753,
+        "source": "runs_revision/adult__mlp512__adamw__lr0.0003"
+      },
+      "galore": {
+        "id": 441,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.8165489215379803,
+        "test": 0.8183790921933539,
+        "source": "runs_revision/adult__mlp512__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 442,
+        "method": "independent",
+        "lr": 0.0003,
+        "val": 0.8143951234760862,
+        "test": 0.8150555862661999,
+        "source": "runs_revision/adult__mlp512__independent__lr0.0003"
+      }
+    },
+    "strata_minus_sg": 0.002270745040231059
+  },
+  {
+    "dataset": "cifar100_class_shift",
+    "model": "ResNet18-CIFAR",
+    "base": "finetune",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 55,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.5370170015455951,
+        "test": 0.5309240000000001,
+        "source": "runs_revision/cifar100_class_shift__finetune__strata__lr0.001"
+      },
+      "single": {
+        "id": 56,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.5769397217928902,
+        "test": 0.5737000000000001,
+        "source": "runs_revision/cifar100_class_shift__finetune__single__lr0.001"
+      },
+      "adamw": {
+        "id": 52,
+        "method": "adamw",
+        "lr": 0.0003,
+        "val": 0.5766769706336938,
+        "test": 0.558424,
+        "source": "runs_revision/cifar100_class_shift__finetune__adamw__lr0.0003"
+      },
+      "galore": {
+        "id": 53,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.5506877897990726,
+        "test": 0.530556,
+        "source": "runs_revision/cifar100_class_shift__finetune__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 54,
+        "method": "independent",
+        "lr": 0.0003,
+        "val": 0.536676970633694,
+        "test": 0.533716,
+        "source": "runs_revision/cifar100_class_shift__finetune__independent__lr0.0003"
+      }
+    },
+    "strata_minus_sg": -0.042776000000000036
+  },
+  {
+    "dataset": "cifar10_label_shift",
+    "model": "ResNet18-CIFAR",
+    "base": "finetune",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 65,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.7691256069313276,
+        "test": 0.7501178672245572,
+        "source": "runs_revision/cifar10_label_shift__finetune__strata__lr0.001"
+      },
+      "single": {
+        "id": 66,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.7948897150387317,
+        "test": 0.7664964346204484,
+        "source": "runs_revision/cifar10_label_shift__finetune__single__lr0.001"
+      },
+      "adamw": {
+        "id": 67,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.8115468251841085,
+        "test": 0.8021214411599296,
+        "source": "runs_revision/cifar10_label_shift__finetune__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 68,
+        "method": "galore",
+        "lr": 0.001,
+        "val": 0.8109624725802931,
+        "test": 0.7999593039376396,
+        "source": "runs_revision/cifar10_label_shift__finetune__galore__lr0.001"
+      },
+      "independent": {
+        "id": 69,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.7806158668543703,
+        "test": 0.7696400100708005,
+        "source": "runs_revision/cifar10_label_shift__finetune__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": -0.016378567395891164
+  },
+  {
+    "dataset": "covertype",
+    "model": "MLP-256-256",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 473,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.9625134200709671,
+        "test": 0.962241897033879,
+        "source": "runs_revision/covertype__mlp256__strata__lr0.001"
+      },
+      "single": {
+        "id": 474,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.9633375034118822,
+        "test": 0.9630150598267087,
+        "source": "runs_revision/covertype__mlp256__single__lr0.001"
+      },
+      "adamw": {
+        "id": 475,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.9636148894550084,
+        "test": 0.9634963095401825,
+        "source": "runs_revision/covertype__mlp256__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 476,
+        "method": "galore",
+        "lr": 0.001,
+        "val": 0.9627082385588207,
+        "test": 0.962713290239765,
+        "source": "runs_revision/covertype__mlp256__galore__lr0.001"
+      },
+      "independent": {
+        "id": 477,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.9609870575925755,
+        "test": 0.9614658689772152,
+        "source": "runs_revision/covertype__mlp256__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": -0.0007731627928296847
+  },
+  {
+    "dataset": "covertype",
+    "model": "MLP-512-512",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 483,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.9670404194340825,
+        "test": 0.9664405400449273,
+        "source": "runs_revision/covertype__mlp512__strata__lr0.001"
+      },
+      "single": {
+        "id": 484,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.9676338595214269,
+        "test": 0.9664208270297532,
+        "source": "runs_revision/covertype__mlp512__single__lr0.001"
+      },
+      "adamw": {
+        "id": 480,
+        "method": "adamw",
+        "lr": 0.0003,
+        "val": 0.9649654262578471,
+        "test": 0.964481501856691,
+        "source": "runs_revision/covertype__mlp512__adamw__lr0.0003"
+      },
+      "galore": {
+        "id": 486,
+        "method": "galore",
+        "lr": 0.001,
+        "val": 0.9667050313893185,
+        "test": 0.9659723559345346,
+        "source": "runs_revision/covertype__mlp512__galore__lr0.001"
+      },
+      "independent": {
+        "id": 487,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.9671068374124284,
+        "test": 0.9675493971484893,
+        "source": "runs_revision/covertype__mlp512__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": 1.97130151741165e-05
+  },
+  {
+    "dataset": "rotated_mnist_cl",
+    "model": "MLP-256-256",
+    "base": "finetune",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 0,
+        "method": "strata",
+        "lr": 0.0003,
+        "val": 0.5736018,
+        "test": 0.5765450000000001,
+        "source": "runs_revision/rotated_mnist_cl__finetune__strata__lr0.0003"
+      },
+      "single": {
+        "id": 1,
+        "method": "single",
+        "lr": 0.0003,
+        "val": 0.5657998,
+        "test": 0.5710881,
+        "source": "runs_revision/rotated_mnist_cl__finetune__single__lr0.0003"
+      },
+      "adamw": {
+        "id": 2,
+        "method": "adamw",
+        "lr": 0.0003,
+        "val": 0.6219648000000001,
+        "test": 0.6219251,
+        "source": "runs_revision/rotated_mnist_cl__finetune__adamw__lr0.0003"
+      },
+      "galore": {
+        "id": 3,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.5943895999999999,
+        "test": 0.5969127000000001,
+        "source": "runs_revision/rotated_mnist_cl__finetune__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 4,
+        "method": "independent",
+        "lr": 0.0003,
+        "val": 0.5688996000000001,
+        "test": 0.5727749999999999,
+        "source": "runs_revision/rotated_mnist_cl__finetune__independent__lr0.0003"
+      }
+    },
+    "strata_minus_sg": 0.005456900000000098
+  },
+  {
+    "dataset": "rotated_mnist_cl",
+    "model": "MLP-256-256",
+    "base": "replay",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 25,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.8758565999999999,
+        "test": 0.8858237000000002,
+        "source": "runs_revision/rotated_mnist_cl__replay__strata__lr0.001"
+      },
+      "single": {
+        "id": 21,
+        "method": "single",
+        "lr": 0.0003,
+        "val": 0.860092,
+        "test": 0.8716991999999999,
+        "source": "runs_revision/rotated_mnist_cl__replay__single__lr0.0003"
+      },
+      "adamw": {
+        "id": 27,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.8994875999999999,
+        "test": 0.9071971000000001,
+        "source": "runs_revision/rotated_mnist_cl__replay__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 28,
+        "method": "galore",
+        "lr": 0.001,
+        "val": 0.8804894,
+        "test": 0.8887981000000003,
+        "source": "runs_revision/rotated_mnist_cl__replay__galore__lr0.001"
+      },
+      "independent": {
+        "id": 29,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.8580404,
+        "test": 0.8713980000000001,
+        "source": "runs_revision/rotated_mnist_cl__replay__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": 0.014124500000000317
+  },
+  {
+    "dataset": "rotated_mnist_shift",
+    "model": "MLP-256-256",
+    "base": "finetune",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 15,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.9771819999999998,
+        "test": 0.976147,
+        "source": "runs_revision/rotated_mnist_shift__finetune__strata__lr0.001"
+      },
+      "single": {
+        "id": 11,
+        "method": "single",
+        "lr": 0.0003,
+        "val": 0.9768579999999999,
+        "test": 0.9789569999999999,
+        "source": "runs_revision/rotated_mnist_shift__finetune__single__lr0.0003"
+      },
+      "adamw": {
+        "id": 17,
+        "method": "adamw",
+        "lr": 0.001,
+        "val": 0.9831359999999999,
+        "test": 0.9805649999999999,
+        "source": "runs_revision/rotated_mnist_shift__finetune__adamw__lr0.001"
+      },
+      "galore": {
+        "id": 18,
+        "method": "galore",
+        "lr": 0.001,
+        "val": 0.9800280000000002,
+        "test": 0.9795830000000001,
+        "source": "runs_revision/rotated_mnist_shift__finetune__galore__lr0.001"
+      },
+      "independent": {
+        "id": 14,
+        "method": "independent",
+        "lr": 0.0003,
+        "val": 0.975642,
+        "test": 0.976742,
+        "source": "runs_revision/rotated_mnist_shift__finetune__independent__lr0.0003"
+      }
+    },
+    "strata_minus_sg": -0.002809999999999868
+  },
+  {
+    "dataset": "wine_red",
+    "model": "MLP-256-256",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 413,
+        "method": "strata",
+        "lr": 0.001,
+        "val": 0.7606837606837606,
+        "test": 0.6842105263157897,
+        "source": "runs_revision/wine_red__mlp256__strata__lr0.001"
+      },
+      "single": {
+        "id": 414,
+        "method": "single",
+        "lr": 0.001,
+        "val": 0.7694017094017096,
+        "test": 0.6882894736842105,
+        "source": "runs_revision/wine_red__mlp256__single__lr0.001"
+      },
+      "adamw": {
+        "id": 410,
+        "method": "adamw",
+        "lr": 0.0003,
+        "val": 0.7570940170940174,
+        "test": 0.7102192982456143,
+        "source": "runs_revision/wine_red__mlp256__adamw__lr0.0003"
+      },
+      "galore": {
+        "id": 411,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.739145299145299,
+        "test": 0.7185087719298248,
+        "source": "runs_revision/wine_red__mlp256__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 417,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.7692307692307695,
+        "test": 0.6909649122807021,
+        "source": "runs_revision/wine_red__mlp256__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": -0.004078947368420738
+  },
+  {
+    "dataset": "wine_red",
+    "model": "MLP-512-512",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 418,
+        "method": "strata",
+        "lr": 0.0003,
+        "val": 0.7820512820512822,
+        "test": 0.715,
+        "source": "runs_revision/wine_red__mlp512__strata__lr0.0003"
+      },
+      "single": {
+        "id": 419,
+        "method": "single",
+        "lr": 0.0003,
+        "val": 0.7679487179487181,
+        "test": 0.6970175438596492,
+        "source": "runs_revision/wine_red__mlp512__single__lr0.0003"
+      },
+      "adamw": {
+        "id": 420,
+        "method": "adamw",
+        "lr": 0.0003,
+        "val": 0.752136752136752,
+        "test": 0.7149122807017544,
+        "source": "runs_revision/wine_red__mlp512__adamw__lr0.0003"
+      },
+      "galore": {
+        "id": 421,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.752136752136752,
+        "test": 0.7105263157894739,
+        "source": "runs_revision/wine_red__mlp512__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 427,
+        "method": "independent",
+        "lr": 0.001,
+        "val": 0.7564102564102566,
+        "test": 0.7017543859649126,
+        "source": "runs_revision/wine_red__mlp512__independent__lr0.001"
+      }
+    },
+    "strata_minus_sg": 0.017982456140350767
+  },
+  {
+    "dataset": "wine_white",
+    "model": "MLP-256-256",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 448,
+        "method": "strata",
+        "lr": 0.0003,
+        "val": 0.7651111111111112,
+        "test": 0.7242324246771878,
+        "source": "runs_revision/wine_white__mlp256__strata__lr0.0003"
+      },
+      "single": {
+        "id": 449,
+        "method": "single",
+        "lr": 0.0003,
+        "val": 0.7359477124183005,
+        "test": 0.7317073170731707,
+        "source": "runs_revision/wine_white__mlp256__single__lr0.0003"
+      },
+      "adamw": {
+        "id": 450,
+        "method": "adamw",
+        "lr": 0.0003,
+        "val": 0.7585751633986928,
+        "test": 0.7203730272596846,
+        "source": "runs_revision/wine_white__mlp256__adamw__lr0.0003"
+      },
+      "galore": {
+        "id": 451,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.7542483660130719,
+        "test": 0.7259684361549493,
+        "source": "runs_revision/wine_white__mlp256__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 452,
+        "method": "independent",
+        "lr": 0.0003,
+        "val": 0.7450980392156865,
+        "test": 0.7389239598278334,
+        "source": "runs_revision/wine_white__mlp256__independent__lr0.0003"
+      }
+    },
+    "strata_minus_sg": -0.007474892395982868
+  },
+  {
+    "dataset": "wine_white",
+    "model": "MLP-512-512",
+    "base": "",
+    "protocol": "2-rate val",
+    "trials": 10,
+    "methods": {
+      "strata": {
+        "id": 458,
+        "method": "strata",
+        "lr": 0.0003,
+        "val": 0.7425359477124183,
+        "test": 0.7087517934002868,
+        "source": "runs_revision/wine_white__mlp512__strata__lr0.0003"
+      },
+      "single": {
+        "id": 459,
+        "method": "single",
+        "lr": 0.0003,
+        "val": 0.7425359477124183,
+        "test": 0.723098995695839,
+        "source": "runs_revision/wine_white__mlp512__single__lr0.0003"
+      },
+      "adamw": {
+        "id": 460,
+        "method": "adamw",
+        "lr": 0.0003,
+        "val": 0.7282614379084967,
+        "test": 0.7173601147776186,
+        "source": "runs_revision/wine_white__mlp512__adamw__lr0.0003"
+      },
+      "galore": {
+        "id": 461,
+        "method": "galore",
+        "lr": 0.0003,
+        "val": 0.7269803921568626,
+        "test": 0.7100430416068864,
+        "source": "runs_revision/wine_white__mlp512__galore__lr0.0003"
+      },
+      "independent": {
+        "id": 462,
+        "method": "independent",
+        "lr": 0.0003,
+        "val": 0.7564052287581697,
+        "test": 0.7388809182209468,
+        "source": "runs_revision/wine_white__mlp512__independent__lr0.0003"
+      }
+    },
+    "strata_minus_sg": -0.014347202295552197
+  }
+]

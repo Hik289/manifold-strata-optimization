@@ -1,0 +1,15 @@
+\section{Related Work}
+\label{sec:related-work}
+\paragraph{Compressed adaptive state and online tracking.}
+AdamW maintains coordinatewise adaptive statistics with decoupled weight decay~\cite{adamw2019}. GaLore reduces state through low-rank gradient projection and periodic SVD refresh~\cite{zhao2024galore}. OSD replaces spectral refresh with online PCA~\cite{liang2024osd}, while SubTrack++ uses Grassmannian tracking together with projection-aware adaptive statistics~\cite{rajabi2025subtrackpp}. APOLLO uses random projections to estimate structured gradient scaling~\cite{apollo2024}. STRATA shares the goal of compressing optimizer state, but maintains a nested chain associated with several covariance decay rates instead of one tracked projection. Table~\ref{tab:related-work-features} distinguishes these mechanisms. In particular, tracking a subspace and correcting moments as its coordinates change are established ideas; the proposed combination is a multi-timescale flag state, not the introduction of either idea alone.
+
+\input{sections/related_work_table}
+
+\paragraph{Matrix-aware update geometry.}
+Shampoo uses matrix preconditioning~\cite{gupta2018shampoo}; SOAP applies Adam in the preconditioner's evolving eigenbasis~\cite{vyas2024soap}. Muon approximately orthogonalizes matrix-valued update directions~\cite{jordan2024muon}. These methods concern update geometry and need not constrain the trained weights. STRATA likewise leaves $W$ unconstrained, but allocates low-dimensional adaptive statistics to nested gradient-coordinate blocks. SOAP's basis adaptation and SubTrack++'s projection-aware moments are particularly relevant precedents for our alignment and state-consistency audit. The feature table does not imply a universal memory or convergence advantage: stored probes, residual updates, and state refresh all contribute costs.
+
+\paragraph{Flag geometry and nested representations.}
+Flag optimization supplies the differential geometry of nested subspaces~\cite{lai2022simpler}; nested-subspace learning lifts Grassmannian criteria through nested projectors~\cite{szwagier2025nested}. Thus nestedness itself is not new. Our use is optimizer-internal: multiple moving gradient covariance estimates drive a flag, and each incremental block carries adaptive moments. This adds a stochastic state-management problem to a geometric representation problem. The complete analysis explicitly separates quotient-invariant projector identities from basis-dependent coordinatewise Adam updates, and the experiments test whether this additional structure yields a benefit rather than assuming that it must.
+
+\paragraph{Adaptive convergence and generalization.}
+Adam-type convergence can fail even for convex objectives~\citep{reddi2018adam}. Algorithmic stability links coupled training trajectories to expected generalization~\citep{hardt2016train}. Our analysis includes the complete STRATA state and treats current-gradient normalization, transport/reset variation, and flag-aligned posterior families under explicit assumptions.

@@ -1,0 +1,148 @@
+\section{Expanded Convergence and Generalization Bridge}
+\label{app:expanded-theory-bridge}
+All definitions, hypotheses, and proofs are in Appendix~\ref{app:theory-full}.
+The central question is how accurately learned gradient subspaces affect an
+optimizer whose moments and normalizers also evolve. We follow the chain from
+covariance estimation to flag tracking, adaptive-state perturbations, and
+parameter descent. For generalization, we examine both sensitivity to one
+training example and the complexity of a distribution around the learned
+parameters. These routes expose different assumptions and complementary terms.
+
+Write $P_k=U_{:r_k}U_{:r_k}^\top$, $\Pi_k=P_k-P_{k-1}$,
+$\Phi(U)=\sum_k\omega_k\operatorname{tr}(P_kC_k)$, and
+$d_P^2(U,V)=\sum_k\|P_k(U)-P_k(V)\|_F^2$.
+The key geometric reduction is the overlap coupling
+$T_{ja}=\operatorname{tr}(\Pi_j(U)\Pi_a(V))$:
+Lemma~\ref{lem:rigid-metrics} gives
+$d_P^2(U,V)=\sum_{j,a}|j-a|T_{ja}$ exactly. A misplaced direction is charged
+only for the prefix boundaries it crosses. This replaces repeated triangle
+inequalities and yields the sharp factor $K$ in the assignment-distance
+comparison. Hoffman--Kruskal integrality then resolves the commuting optimum.
+\begin{gather}
+ [C_k,C_l]=0,\quad C_k=Q\operatorname{diag}(\lambda_{ki})Q^\top,\quad
+ b_{ji}=\sum_{k\ge j}\omega_k\lambda_{ki},\\
+ \max_{[U]}\Phi(U)=
+ \max_{\substack{x\ge0,\ \sum_jx_{ji}=1\\\sum_ix_{ji}=q_j}}
+           \sum_{j,i}b_{ji}x_{ji}
+ =\max_{\substack{x\in\{0,1\}^{(K+1)\times d}\\\sum_jx_{ji}=1,\ \sum_ix_{ji}=q_j}}
+           \sum_{j,i}b_{ji}x_{ji}.
+ \label{eq:main-assignment}
+\end{gather}
+Theorem~\ref{thm:tf-assignment} gives~\eqref{eq:main-assignment};
+Proposition~\ref{prop:tf-cycle} gives
+\begin{equation}
+ \exists\{C_k\}:\quad [C_k,C_l]=0,\quad
+ \operatorname{grad}\Phi(U_0)=0,\quad\operatorname{Hess}\Phi(U_0)\prec0,
+ \quad\Phi(U_0)<\max_U\Phi(U).
+\end{equation}
+The assignment formula characterizes the global optimum, while the
+counterexample shows why local ascent requires a basin assumption even when
+the covariance matrices commute. The following tracking bounds therefore
+describe a regular local oracle branch.
+Under the regular-chart hypotheses of Assumption~\ref{ass:tf-chart},
+Lemma~\ref{lem:tf-oracle} and Theorem~\ref{thm:tf-tracking} imply
+\begin{align}
+ -L_\phi I\preceq\nabla^2f_C\preceq-\mu_\phi I,\quad
+ \|\widehat C_k-C_k\|_{\mathrm{op}}\le\epsilon_k
+ &\Longrightarrow
+ \|x_{\widehat C}^\star-x_C^\star\|
+ \le\frac{2J_\psi}{\mu_\phi}\sum_k\omega_k\sqrt{r_k}\epsilon_k,\\
+ \sqrt{E_{s+1}}\le q\sqrt{E_s}+b_s,\quad q<1
+ &\Longrightarrow
+ \sqrt{E_s}\le q^s\sqrt{E_0}+\sum_{j<s}q^{s-1-j}b_j.
+\end{align}
+Here $b_s$ is the $L^2$ norm of the combined forcing. The optimal quadratic
+contraction is $q_\star=(L_\phi-\mu_\phi)/(L_\phi+\mu_\phi)$; centered
+noise has variance gain $\xi^2/(1-q^2)$, while persistent drift has RMS gain
+$1/(1-q)$.
+We first isolate a predictable positive preconditioner and retain the exact
+algorithmic discrepancy as an error term. This yields a transparent descent
+bound; the analysis of current-gradient normalization below removes that
+predictability requirement under explicit noise and state-variation controls.
+For $L$-smooth $F$, let $h_t=\nabla F(w_t)$,
+$g_t=h_t+b_t+\zeta_t$, $\mathbb E_t\zeta_t=0$,
+$\mathbb E_t\|\zeta_t\|^2\le\sigma_t^2$, and
+\begin{gather}
+ w_{t+1}=w_t-\eta_t(B_tg_t+e_t),\quad
+ B_t\in\mathcal F_{t-1},\quad mI\preceq B_t\preceq MI,\\
+ \varepsilon_t=e_t+B_tb_t,\quad S_T=\sum_{t<T}\eta_t,\quad
+ \mathsf v_t=\operatorname{tr}(B_t^2\Sigma_t).
+\end{gather}
+Theorems~\ref{thm:tf-convergence} and~\ref{thm:tf-PL} yield
+\begin{gather}
+ \eta_t\le1/(4LM),\quad\Delta_0:=\mathbb E F(w_0)-F_{\inf},\\
+ \tfrac12\|\nabla F\|^2\ge\mu(F-F^\star)\quad\text{(PL case)}.
+\end{gather}
+\begin{align}
+ \frac{\sum_{t<T}\eta_t\mathbb E\|h_t\|^2}{S_T}
+ &\le\frac{2\Delta_0}{mS_T}
+ +\frac{2L\sum_{t<T}\eta_t^2\mathbb E\mathsf v_t}{mS_T}\\
+ &\quad+\frac{2\sum_{t<T}\left[\eta_t\mathbb E\|\varepsilon_t\|_{B_t^{-1}}^2
+                 +L\eta_t^2\mathbb E\|\varepsilon_t\|^2\right]}{mS_T},\\
+ \mathbb E(F(w_T)-F^\star)
+ &\le(1-\mu m\eta)^T\Delta_0
+ +\frac{L\eta\overline v+(m^{-1}+L\eta)E^2}{\mu m}.
+\end{align}
+Here $\Sigma_t=\mathbb E_t[\zeta_t\zeta_t^\top]$,
+$\sup_t\mathbb E\mathsf v_t\le\overline v\le M^2\sigma^2$,
+$\mathbb E\|\varepsilon_t\|^2\le E^2$, and the PL step-size restrictions
+apply. The exact implemented discrepancy is expanded in
+Definition~\ref{def:rigid-error} and Proposition~\ref{prop:rigid-transport}.
+
+For neighboring samples $S\sim S^{(i)}$, let
+$z_t=(\delta w_t,\delta U_t,\delta Y_t,\delta M_t,\delta\sqrt{V_t})^\top$.
+Definition~\ref{def:rigid-transition} and Theorems~\ref{thm:tf-stability}
+and~\ref{thm:rigid-generalization} give
+\begin{gather}
+ z_{t+1}\preceq\mathcal M_tz_t+d_t I_t,\quad z_0=0,\quad
+ \mathbb P(I_t=1)=b_t/n,\\
+ \left|\mathbb E(F_\mathcal D(w_T)-F_S(w_T))\right|
+ \le\epsilon_T^{\mathrm{stab}}
+ \le\frac{L_0}{n}e_w\sum_{t<T}b_t
+                  (\mathcal M_{T-1}\cdots\mathcal M_{t+1})d_t.
+\end{gather}
+
+For $0\le\ell\le1$, a sample-independent prior $P$, and any posterior $Q\ll P$,
+Theorem~\ref{thm:rigid-pac} also gives, simultaneously in $Q$ with probability
+at least $1-\delta$,
+\begin{equation}
+ L(Q)\le\operatorname{kl}_+^{-1}\!\left(\widehat L_S(Q),
+ \frac{\operatorname{KL}(Q\|P)+\log(\Xi_n/\delta)}n\right).
+\end{equation}
+Here $\Xi_n$ is the exact Seeger--Maurer moment constant, at most
+$2\sqrt n$ for $n\ge8$; retaining inverse KL avoids the Pinsker relaxation.
+Proposition~\ref{prop:rigid-pac-flag} evaluates this complexity exactly for a
+full-rank Gaussian posterior aligned with the learned flag.
+
+For the implemented current-gradient normalizer $\mathcal T_t(g)=B_t(g)g$,
+Theorem~\ref{thm:actual-coercivity} replaces predictability of $B_t$ by an explicit
+conditional symmetry defect:
+\begin{gather}
+ b_t=\mathbb E_tg_t-\nabla F(w_t),\quad
+ \delta_t=W_1(\mathcal L(\xi_t\mid\mathcal F_{t-1}),
+                    \mathcal L(-\xi_t\mid\mathcal F_{t-1})),\\
+ \widehat D_t=\|b_t\|+\|\mathbb E_t\mathcal T_t(\xi_t)\|/M
+ \le\|b_t\|+\delta_t/2,\\
+ \langle\nabla F(w_t),\mathbb E_t\mathcal T_t(g_t)\rangle
+ \ge\tfrac\kappa2\|\nabla F(w_t)\|^2-\tfrac{M^2}{2\kappa}\widehat D_t^2.
+\end{gather}
+Theorem~\ref{thm:actual-convergence} then controls the actual moment/reset/transport
+map by its observable variation budgets. Proposition~\ref{prop:actual-skew-counterexample}
+gives a closed-form nonzero stationary bias for asymmetric, unbiased noise.
+
+Under the bounded-loss anisotropic-curvature hypothesis of
+Assumption~\ref{ass:directional-curvature}, Theorem~\ref{thm:directional-pac} gives
+\begin{gather}
+ \mathcal C_\lambda(U)=\frac1{2\lambda}\sum_jmq_j
+      \log(1+2\lambda\sigma_0^2\overline h_j(U)),\qquad
+ (\sigma_j^2)^\star=\frac{\sigma_0^2}{1+2\lambda\sigma_0^2\overline h_j(U)}.
+\end{gather}
+Proposition~\ref{prop:directional-refinement} proves a strict decrease in this
+optimized posterior cost when a refined block separates unequal average curvatures.
+It also bounds the improvement above and below by the weighted variance of
+those curvatures. The tracking sensitivity depends on the spectral spread of
+the partial trace of $H_0$, so isotropic curvature cancels exactly
+(Proposition~\ref{prop:directional-tracking}).
+This last comparison identifies when additional posterior directions improve
+the bound. Translating it into an optimizer advantage also requires the learned
+flag and the resulting parameter trajectory to have the appropriate geometry.

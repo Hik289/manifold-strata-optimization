@@ -1,0 +1,194 @@
+\subsection{A second generalization route: a full-rank flag posterior}
+Stability follows perturbations along the entire training trajectory. Here we
+instead control a distribution around the final parameters, allowing a
+generalization statement when products of state sensitivities are too large
+to be informative. The posterior may use the learned flag because the bound
+holds simultaneously over posteriors; the prior must remain independent of
+the sample to which the bound is applied.
+
+\begin{definition}[Prior, posterior, and binary relative entropy]
+\begin{gather}
+ 0\le\ell(w,z)\le1,\quad
+ L(Q):=\EE_{w\sim Q,z\sim\mathcal D}\ell(w,z),\quad
+ \widehat L_S(Q):=\EE_{w\sim Q}\frac1n\sum_i\ell(w,z_i),\\
+ \operatorname{kl}(a\|b):=a\log(a/b)+(1-a)\log((1-a)/(1-b)),\\
+ \operatorname{KL}(Q\|P):=\int\log(\mathrm dQ/\mathrm dP)\,\mathrm dQ,
+ \quad Q\ll P,\\
+ \operatorname{kl}_+^{-1}(a,c)
+ :=\sup\{b\in[a,1]:\operatorname{kl}(a\|b)\le c\},\quad c\ge0.
+\end{gather}
+The prior $P$ is independent of $S$; the posterior may depend on the complete
+training trajectory.
+\end{definition}
+\begin{lemma}[Seeger--Maurer exponential moment]\label{lem:rigid-pac-moment}
+For iid $X_i\in[0,1]$, $p:=\EE X_i$, and $\overline X=n^{-1}\sum_iX_i$,
+\begin{gather}
+ \EE\exp\{n\operatorname{kl}(\overline X\|p)\}\le\Xi_n,\qquad
+ \Xi_n:=\sum_{k=0}^n\binom nk(k/n)^k(1-k/n)^{n-k},\\
+ \Xi_n\le n+1\quad(n\ge1),\qquad
+ \Xi_n\le2\sqrt n\quad(n\ge8).
+\end{gather}
+Here $0^0=1$. The moment bound is attained by every nondegenerate Bernoulli
+law, so $\Xi_n$ is its exact uniform prefactor~\citep{maurer2004note}.
+\end{lemma}
+\begin{proof}
+For $p\in(0,1)$, the function $f(x):=\exp(n\operatorname{kl}(x\|p))$ is convex.
+For every convex $g$ and $X\in[0,1]$,
+\begin{gather}
+ g(X)\le(1-X)g(0)+Xg(1),\qquad
+ \EE g(X)\le(1-p)g(0)+pg(1).
+\end{gather}
+Applying this replacement separately to each coordinate yields independent
+$B_i\sim\operatorname{Bernoulli}(p)$ and
+\begin{align}
+ \EE f(\overline X)
+ &\le\EE f(n^{-1}\textstyle\sum_iB_i)\\
+ &=\sum_{k=0}^n\binom nk p^k(1-p)^{n-k}
+             \left(\frac{k/n}{p}\right)^k
+             \left(\frac{1-k/n}{1-p}\right)^{n-k}\\
+ &=\sum_{k=0}^n\binom nk(k/n)^k(1-k/n)^{n-k}=\Xi_n\le n+1.
+\end{align}
+For Bernoulli $X_i$ the comparison is an equality. Maurer's Stirling bound
+\citep[Theorem 1]{maurer2004note} gives $\Xi_n\le2\sqrt n$ for $n\ge8$.
+At $p\in\{0,1\}$, $X_i=p$ almost surely and the left side equals $1$.
+\end{proof}
+\begin{theorem}[Seeger--Maurer PAC--Bayes bound, without Pinsker relaxation]
+\label{thm:rigid-pac}
+For any sample-independent $P$ and $\delta\in(0,1)$, with probability at least
+$1-\delta$ over $S$, simultaneously for all $Q\ll P$, with
+$k_Q:=\operatorname{KL}(Q\|P)+\log(\Xi_n/\delta)$,
+\begin{gather}
+ \operatorname{kl}(\widehat L_S(Q)\|L(Q))
+ \le k_Q/n,\\
+ L(Q)\le\operatorname{kl}_+^{-1}(\widehat L_S(Q),k_Q/n)
+ \le\min\left\{1,\widehat L_S(Q)+\sqrt{\frac{k_Q}{2n}}\right\}.
+\end{gather}
+This is the binary-KL form of the PAC--Bayes theorem
+\citep{seeger2002pac,maurer2004note}; the square-root expression is a secondary
+relaxation rather than the reported certificate.
+\end{theorem}
+\begin{proof}
+Fubini, Lemma~\ref{lem:rigid-pac-moment}, and Markov's inequality give
+\begin{gather}
+ \EE_S\EE_{w\sim P}e^{n\operatorname{kl}(\widehat L_S(w)\|L(w))}\le\Xi_n,\\
+ \PP_S\left(\EE_{w\sim P}e^{n\operatorname{kl}(\widehat L_S(w)\|L(w))}
+                       >\frac{\Xi_n}{\delta}\right)\le\delta.
+\end{gather}
+On the complementary event, for $f(w):=n\operatorname{kl}(\widehat L_S(w)\|L(w))$,
+the Gibbs/Donsker--Varadhan change-of-measure inequality
+\citep{donsker1975asymptotic} and joint convexity of binary relative entropy give
+\begin{align}
+ \EE_Q f-\operatorname{KL}(Q\|P)
+ &\le\log\EE_Pe^f,\\
+ n\operatorname{kl}(\widehat L_S(Q)\|L(Q))
+ &\le\EE_Qn\operatorname{kl}(\widehat L_S(w)\|L(w))
+ \le\operatorname{KL}(Q\|P)+\log(\Xi_n/\delta),\\
+ \operatorname{kl}(a\|b)&\ge2(a-b)^2.
+\end{align}
+The last inequality follows from
+$\partial_a^2\operatorname{kl}(a\|b)=1/[a(1-a)]\ge4$ and Taylor expansion at
+$a=b$. All assertions extend by continuity at boundary values.
+\end{proof}
+\begin{corollary}[Exact Catoni-type exponential inversion]\label{cor:catoni-inverse}
+For $a\in[0,1]$ and $c\ge0$,
+\begin{equation}
+ \operatorname{kl}_+^{-1}(a,c)
+ =\inf_{\gamma>0}\frac{1-\exp(-\gamma a-c)}{1-\exp(-\gamma)}.
+\end{equation}
+Thus the preceding theorem can be evaluated by a one-dimensional monotone
+root or by exponential-temperature optimization~\citep{catoni2007pac}.
+In particular, $\widehat L_S(Q)=0$ gives the exact KL-event consequence
+\begin{equation}
+ L(Q)\le1-e^{-k_Q/n}\le k_Q/n,
+\end{equation}
+which retains the fast $k_Q/n$ dependence lost by a square-root relaxation.
+\end{corollary}
+\begin{proof}
+For $b\ge a$, Bernoulli entropy duality gives
+\begin{equation}
+ \operatorname{kl}(a\|b)
+ =\sup_{\gamma\ge0}\{-\gamma a-\log(1-b+be^{-\gamma})\}.
+\end{equation}
+The constraint $\operatorname{kl}(a\|b)\le c$ is therefore equivalent to
+$b\le(1-e^{-\gamma a-c})/(1-e^{-\gamma})$ for every $\gamma>0$.
+Taking the largest admissible $b$ proves the identity, including boundary
+values by limits. This optimization is algebraic on one uniform KL event and
+incurs no additional selection penalty.
+\end{proof}
+\begin{proposition}[Exact flag-Gaussian complexity]\label{prop:rigid-pac-flag}
+For $W\in\RR^{m\times d}$, let
+\begin{gather}
+ P=\mathcal N(0,\sigma_0^2I_{md}),\quad
+ Q_{W,U,\sigma}=\mathcal N(\operatorname{vec}W,I_m\otimes\Sigma_U),\\
+ \Sigma_U:=\sum_{j=1}^{K+1}\sigma_j^2\Pi_j(U),\quad
+ \sigma_j>0,\quad\sigma_0>0.
+\end{gather}
+Using rowwise vectorization,
+\begin{align}
+ \operatorname{KL}(Q_{W,U,\sigma}\|P)
+ &=\frac{\|W\|_F^2}{2\sigma_0^2}
+ +\frac m2\sum_{j=1}^{K+1}q_j
+       \left[\frac{\sigma_j^2}{\sigma_0^2}-1
+                         -\log\frac{\sigma_j^2}{\sigma_0^2}\right],\\
+ \tr(I_m\otimes\Sigma_U)&=m\sum_{j=1}^{K+1}q_j\sigma_j^2,\qquad
+ \det(I_m\otimes\Sigma_U)=\prod_{j=1}^{K+1}(\sigma_j^2)^{mq_j}.
+\end{align}
+For $q_{K+1}=d-R>0$,
+\begin{equation}
+ \sigma_{K+1}\downarrow0\quad\Longrightarrow\quad
+ \operatorname{KL}(Q_{W,U,\sigma}\|P)\longrightarrow\infty.
+\end{equation}
+\end{proposition}
+\begin{proof}
+For positive definite $\Sigma\in\RR^{D\times D}$ and $Q=\mathcal N(\mu,\Sigma)$,
+\begin{align}
+ \log\frac{\mathrm dQ}{\mathrm dP}(x)
+ &=\tfrac12\log\frac{\det(\sigma_0^2I_D)}{\det\Sigma}
+ -\tfrac12(x-\mu)^\top\Sigma^{-1}(x-\mu)
+ +\frac{\|x\|^2}{2\sigma_0^2},\\
+ \EE_Q(x-\mu)^\top\Sigma^{-1}(x-\mu)&=D,\qquad
+ \EE_Q\|x\|^2=\|\mu\|^2+\tr\Sigma,\\
+ \log\det\Sigma_U&=\sum_jq_j\log\sigma_j^2,\quad
+ \tr\Sigma_U=\sum_jq_j\sigma_j^2.
+\end{align}
+\end{proof}
+Positive residual variance keeps the posterior full rank and gives finite
+complexity relative to the full-rank Gaussian prior. Under this isotropic
+prior, the displayed KL depends on block dimensions and variances, while
+posterior orientation can affect the perturbed loss. To obtain a statement
+about the trained parameter $W$, the next result controls both empirical and
+population changes induced by the Gaussian perturbation.
+
+\begin{corollary}[A deterministic-center bound]\label{cor:rigid-pac-center}
+In addition to $0\le\ell\le1$, suppose $\ell(\cdot,z)$ has
+$L_\ell$-Lipschitz gradient for every $z$. On the event of
+Theorem~\ref{thm:rigid-pac}, simultaneously for all data-dependent
+$W,U,\sigma_j>0$,
+set $v_\sigma:=m\sum_jq_j\sigma_j^2$,
+$a_Q:=\min\{1,F_S(W)+L_\ell v_\sigma/2\}$. Then
+\begin{equation}
+ F_\mathcal D(W)\le\min\left\{1,\frac{L_\ell v_\sigma}{2}
+           +\operatorname{kl}_+^{-1}(a_Q,k_Q/n)\right\},
+\end{equation}
+where $k_Q$ uses the exact Gaussian KL above. In particular,
+\begin{align}
+ F_\mathcal D(W)
+ &\le F_S(W)+L_\ell m\sum_jq_j\sigma_j^2\\
+ &\quad+\sqrt{\frac{\|W\|_F^2/(2\sigma_0^2)
+ +\frac m2\sum_jq_j[\sigma_j^2/\sigma_0^2-1-\log(\sigma_j^2/\sigma_0^2)]
+ +\log(\Xi_n/\delta)}{2n}}.
+\end{align}
+\end{corollary}
+\begin{proof}
+For $E\sim\mathcal N(0,I_m\otimes\Sigma_U)$,
+\begin{gather}
+ |\ell(W+E,z)-\ell(W,z)-\langle\nabla\ell(W,z),E\rangle|
+                  \le\tfrac12L_\ell\|E\|_F^2,\\
+ \EE E=0,\quad\EE\|E\|_F^2=m\sum_jq_j\sigma_j^2,\\
+ |L(Q)-F_\mathcal D(W)|\le\tfrac12L_\ell m\sum_jq_j\sigma_j^2,\quad
+ |\widehat L_S(Q)-F_S(W)|\le\tfrac12L_\ell m\sum_jq_j\sigma_j^2.
+\end{gather}
+Insert these two Taylor bounds into the inverse-KL certificate; monotonicity
+of $\operatorname{kl}_+^{-1}$ in its first argument gives the first assertion.
+Applying Pinsker only afterward gives the displayed analytic relaxation.
+\end{proof}

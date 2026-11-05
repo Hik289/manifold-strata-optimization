@@ -1,0 +1,208 @@
+\subsection{Directional PAC--Bayes complexity and optimal flag variances}
+The previous Gaussian bound uses one curvature constant for all directions.
+An anisotropic envelope instead charges perturbations according to the
+curvature of each flag block. We optimize the variance within every block,
+then examine the effect of refining the flag and of tracking its oracle
+inexactly. These are comparisons of posterior bounds under the stated
+evaluation-loss assumptions.
+
+\begin{assumption}[Anisotropic curvature envelope]\label{ass:directional-curvature}
+For the bounded evaluation loss $0\le\ell(w,z)\le1$, assume a sample-independent
+matrix $H_0\succeq0$ such that, globally in $w,z$,
+\begin{equation}
+ -H_0\preceq\nabla_w^2\ell(w,z)\preceq H_0.
+\end{equation}
+For $\mathcal P_j:=I_m\otimes\Pi_j(U)$, set
+\begin{gather}
+ d_j:=mq_j,\quad C_j(U):=\tr(\mathcal P_jH_0),\quad
+ \overline h_j(U):=C_j(U)/d_j,\quad s_j:=\sigma_j^2>0,\\
+ \Sigma_U:=\sum_j s_j\Pi_j(U),\quad
+ \widetilde\Sigma_U:=I_m\otimes\Sigma_U=\sum_j s_j\mathcal P_j,\quad
+ c_{n,\delta}:=\log(\Xi_n/\delta).
+\end{gather}
+The curvature assumption concerns the bounded evaluation loss; it does not
+assert that unbounded training cross-entropy lies in $[0,1]$.
+\end{assumption}
+\begin{theorem}[Optimized directional posterior]\label{thm:directional-pac}
+Under Assumption~\ref{ass:directional-curvature}, fix
+$P=\mathcal N(0,\sigma_0^2I_N)$ independently of the sample. With probability
+at least $1-\delta$, simultaneously for every learned $W,U$ and every $\lambda>0$,
+\begin{align}
+ F_\mathcal D(W)
+ &\le F_S(W)+\frac{\|W\|_F^2}{2\lambda\sigma_0^2}
+ +\frac{c_{n,\delta}}\lambda+\frac\lambda{8n}
+ +\mathcal C_\lambda(U),\\
+ \mathcal C_\lambda(U)
+ &:=\frac1{2\lambda}\sum_{j=1}^{K+1}d_j
+                 \log(1+2\lambda\sigma_0^2\overline h_j(U)).
+ \label{eq:directional-complexity}
+\end{align}
+The optimal positive posterior variances in this bound are exactly
+\begin{equation}
+ s_j^\star(U,\lambda)
+ =\frac{\sigma_0^2}{1+2\lambda\sigma_0^2\overline h_j(U)}.
+\end{equation}
+\end{theorem}
+\begin{proof}
+For $E\sim\mathcal N(0,\widetilde\Sigma_U)$, Taylor's formula gives
+\begin{align}
+ |\ell(W+E,z)-\ell(W,z)-\langle\nabla\ell(W,z),E\rangle|
+ &\le\tfrac12 E^\top H_0E,\\
+ |L(Q)-F_\mathcal D(W)|,\quad|\widehat L_S(Q)-F_S(W)|
+ &\le\tfrac12\tr(H_0\widetilde\Sigma_U)=\tfrac12\sum_j C_js_j.
+\end{align}
+On the single event of Theorem~\ref{thm:rigid-pac},
+\begin{align}
+ F_\mathcal D(W)
+ &\le F_S(W)+\sum_jC_js_j+
+ \sqrt{\frac{\|W\|_F^2/(2\sigma_0^2)
+   +\frac12\sum_jd_j[s_j/\sigma_0^2-1-\log(s_j/\sigma_0^2)]
+   +c_{n,\delta}}{2n}},\\
+ \sqrt{a/(2n)}&\le a/\lambda+\lambda/(8n)\quad(a\ge0,\lambda>0).
+\end{align}
+For each $j$, define the strictly convex scalar objective
+\begin{gather}
+ J_j(s):=C_js+\frac{d_j}{2\lambda}
+                       [s/\sigma_0^2-1-\log(s/\sigma_0^2)],\\
+ J_j'(s)=C_j+\frac{d_j}{2\lambda}(\sigma_0^{-2}-s^{-1}),\quad
+ J_j''(s)=\frac{d_j}{2\lambda s^2}>0,\\
+ J_j'(s_j^\star)=0,\quad
+ J_j(s_j^\star)=\frac{d_j}{2\lambda}
+                                  \log(1+2\lambda\sigma_0^2C_j/d_j).
+\end{gather}
+The event is uniform over all posteriors; optimization over data-dependent
+$U,s_j,\lambda$ therefore requires no additional union bound.
+\end{proof}
+The optimal variance is smaller in blocks with greater average curvature:
+perturbations there have a larger loss cost. The logarithmic complexity results
+from balancing that cost against the KL penalty for shrinking variance.
+Here $\lambda$ is a bound-optimization parameter; it is separate from the
+optimizer's learning rate and from weight-decay notation used earlier.
+The closed form optimizes this analytic envelope; an evaluated certificate
+can be tighter by using the inverse-KL bound before its scalar relaxation.
+
+\begin{proposition}[A strict benefit of posterior flag refinement]
+\label{prop:directional-refinement}
+Suppose a block $\mathcal P$ of dimension $d$ is refined into orthogonal blocks
+$\mathcal P_1,\ldots,\mathcal P_J$, with
+\begin{gather}
+ \mathcal P=\sum_{j=1}^J\mathcal P_j,\quad d=\sum_jd_j,\quad
+ h_j:=\tr(\mathcal P_jH_0)/d_j,\quad \overline h:=\sum_j(d_j/d)h_j.
+\end{gather}
+Then
+\begin{equation}
+ \sum_j\frac{d_j}{2\lambda}\log(1+2\lambda\sigma_0^2h_j)
+ \le\frac d{2\lambda}\log(1+2\lambda\sigma_0^2\overline h).
+\end{equation}
+For $d_j>0$, equality holds if and only if $h_1=\cdots=h_J$. Thus refining a
+fixed flag can strictly improve the optimized posterior bound when the block
+curvatures differ. This concerns the posterior family, not an ordering of the
+trained optimizers' test errors.
+More quantitatively, let $h_-:=\min_jh_j$, $h_+:=\max_jh_j$,
+$V_h:=\sum_j(d_j/d)(h_j-\overline h)^2$, and let $\mathcal G_\lambda$ be
+the coarse cost minus the refined cost. Then
+\begin{equation}
+ \frac{d\lambda\sigma_0^4 V_h}{(1+2\lambda\sigma_0^2h_+)^2}
+ \le\mathcal G_\lambda\le
+ \frac{d\lambda\sigma_0^4 V_h}{(1+2\lambda\sigma_0^2h_-)^2}.
+\end{equation}
+The two sides agree to leading order as the block curvatures coalesce.
+\end{proposition}
+\begin{proof}
+\begin{gather}
+ f(h):=\log(1+2\lambda\sigma_0^2h),\qquad
+ f''(h)=-\frac{(2\lambda\sigma_0^2)^2}{(1+2\lambda\sigma_0^2h)^2}<0,\\
+ \sum_j(d_j/d)f(h_j)\le f(\sum_j(d_j/d)h_j).
+\end{gather}
+For the quantitative statement apply Taylor's formula at $\overline h$.
+The weighted linear term cancels, and $-f''$ lies between its values at
+$h_+$ and $h_-$. Multiplication by $d/(2\lambda)$ gives the two-sided
+strong-concavity remainder. Continuity of $f''$ proves the local sharpness.
+\end{proof}
+Refinement permits different variances where a coarser posterior required a
+shared one. Strict concavity makes this flexibility useful precisely when the
+subblocks have unequal average curvature. Whether a covariance-trained flag
+discovers such directions is a separate alignment question. The next result
+controls the change in complexity caused by tracking a chosen oracle
+inexactly, without assuming that oracle minimizes the curvature cost.
+
+\begin{proposition}[Tracking error in the directional complexity]
+\label{prop:directional-tracking}
+Partition $H_0\in\RR^{md\times md}$ into $d\times d$ row-coordinate blocks
+$H_{ab}$, and define $A_0:=\sum_{a=1}^m H_{aa}\succeq0$. Then
+Set $s_A:=\lambda_{\max}(A_0)-\lambda_{\min}(A_0)$. Then
+\begin{gather}
+ C_j(U)=\tr(\Pi_j(U)A_0),\\
+ |\mathcal C_\lambda(U)-\mathcal C_\lambda(V)|
+ \le\sigma_0^2 s_A\sqrt d\,d_P(U,V).
+\end{gather}
+In the regular oracle chart, let $\widehat x_t^\star$ and $x_t^\star$ be the
+oracles for $\widehat C_t$ and $C_t$, respectively, and $U_t=\psi(x_t)$. Then
+\begin{align}
+ |\mathcal C_\lambda(U_t)-\mathcal C_\lambda(\psi(x_t^\star))|
+ &\le\sigma_0^2 s_A\sqrt d\,J_P
+ \left(\|x_t-\widehat x_t^\star\|+
+     \frac{2J_\psi}{\mu_\phi}\sum_k\omega_k\sqrt{r_k}\epsilon_{k,t}\right).
+\end{align}
+\end{proposition}
+\begin{proof}
+Centering by $c_A:=(\lambda_{\max}(A_0)+\lambda_{\min}(A_0))/2$ costs
+nothing because every projector difference is traceless. The trace/nuclear
+norm duality and the exact overlap identity give
+For $g_j(c):=d_j(2\lambda)^{-1}\log(1+2\lambda\sigma_0^2c/d_j)$,
+\begin{align}
+ 0\le g_j'(c)&=\frac{\sigma_0^2}{1+2\lambda\sigma_0^2c/d_j}\le\sigma_0^2,\\
+ |C_j(U)-C_j(V)|
+ &\le\|A_0-c_AI\|_{\op}\|\Pi_j(U)-\Pi_j(V)\|_*\\
+ &\le\tfrac{s_A}{2}\sqrt{2q_j}\|\Pi_j(U)-\Pi_j(V)\|_F,\\
+ \sum_{j=1}^{K+1}\|\Pi_j(U)-\Pi_j(V)\|_F^2
+ &\le2d_P(U,V)^2,\\
+ \sum_j\sqrt{2q_j}\|\Pi_j(U)-\Pi_j(V)\|_F
+ &\le\sqrt{2\sum_jq_j}\sqrt{2d_P(U,V)^2}=2\sqrt d\,d_P(U,V).
+\end{align}
+Apply the triangle inequality and Lemma~\ref{lem:tf-oracle} to the two oracle branches.
+In particular $A_0=cI$ gives zero orientation cost exactly. The bound depends
+on spectral spread, removing an isotropic component that cannot distinguish flags.
+\end{proof}
+\begin{proposition}[A sample-independent anisotropic flag prior]
+\label{prop:directional-prior}
+Let a fixed prior flag $V$ have projectors $\Pi_l^0$ and ranks $q_l^0$, and let
+\begin{gather}
+ \Lambda_0:=\sum_l\tau_l^2\Pi_l^0\succ0,\quad
+ P_V:=\mathcal N(0,I_m\otimes\Lambda_0),\quad
+ Q_U:=\mathcal N(\operatorname{vec}W,I_m\otimes\Sigma_U),\\
+ T_{lj}:=\tr(\Pi_l^0\Pi_j(U)),\quad T_{lj}\ge0,\quad
+ \sum_jT_{lj}=q_l^0,\quad\sum_lT_{lj}=q_j.
+\end{gather}
+Then the exact orientation-dependent cost is
+\begin{align}
+ \operatorname{KL}(Q_U\|P_V)
+ &=\tfrac12\tr(W\Lambda_0^{-1}W^\top)
+ +\tfrac m2\left[\sum_{l,j}\frac{\sigma_j^2}{\tau_l^2}T_{lj}-d
+ +\sum_lq_l^0\log\tau_l^2-\sum_jq_j\log\sigma_j^2\right].
+\end{align}
+A data-dependent $V$ is admissible if it is learned from an independent pilot
+sample $S_0$ and the bound is evaluated on a disjoint iid sample $S_1$ of size $n_1$:
+\begin{gather}
+ S_0\perp S_1,\quad V=V(S_0),\\
+ \mathcal E(S_0):=\left\{\begin{aligned}
+ &\forall Q\ll P_{V(S_0)}:\\
+ &\operatorname{kl}(\widehat L_{S_1}(Q)\|L(Q))
+ \le\frac{\operatorname{KL}(Q\|P_{V(S_0)})+\log(\Xi_{n_1}/\delta)}{n_1}
+ \end{aligned}\right\},\\
+ \PP_{S_1\mid S_0}(\mathcal E(S_0))\ge1-\delta.
+\end{gather}
+The posterior may use both samples; the empirical term in this bound uses $S_1$.
+\end{proposition}
+\begin{proof}
+\begin{align}
+ \tr(\Lambda_0^{-1}\Sigma_U)
+ &=\sum_{l,j}\tau_l^{-2}\sigma_j^2\tr(\Pi_l^0\Pi_j),\\
+ T_{lj}&=\tr(\Pi_j\Pi_l^0\Pi_j)=\|\Pi_l^0\Pi_j\|_F^2\ge0,\\
+ \log\det\Lambda_0-\log\det\Sigma_U
+ &=\sum_lq_l^0\log\tau_l^2-\sum_jq_j\log\sigma_j^2.
+\end{align}
+Substitution in the Gaussian density-ratio identity proves the first assertion.
+Conditioning on $S_0$ makes the prior independent of $S_1$; apply
+Theorem~\ref{thm:rigid-pac} conditionally, then integrate over $S_0$.
+\end{proof}

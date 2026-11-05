@@ -1,0 +1,435 @@
+\subsection{Full-state replace-one stability and generalization}
+Replacing one training example perturbs more than the current parameter
+gradient. It also changes covariance sketches, subsequent flags, and both
+moment states, which can feed back into later parameter updates. We therefore
+couple two runs with shared randomness and track five distances. The
+nonnegative transition matrix records how each component can amplify the
+others over the remaining training horizon.
+
+\begin{definition}[Neighboring samples and synchronized coupling]
+\begin{gather}
+ S=(z_1,\ldots,z_n)\sim\mathcal D^n,\quad z_i'\sim\mathcal D,\quad
+ S^{(i)}=(z_1,\ldots,z_{i-1},z_i',z_{i+1},\ldots,z_n),\\
+ F_S(w):=\frac1n\sum_{i=1}^n\ell(w,z_i),\quad
+ F_\mathcal D(w):=\EE_{z\sim\mathcal D}\ell(w,z),\\
+ A_T(S;\vartheta)=w_T,\quad A_T(S^{(i)};\vartheta)=w_T',\quad
+ \vartheta=(U_0,\Omega_{1:K},\text{batch indices, augmentations, masks}),\\
+ I_t:=\mathbf1_{i\in\mathcal I_t},\quad |\mathcal I_t|=b_t,\quad
+ \PP(I_t=1)=b_t/n.
+\end{gather}
+The initial state, probes, schedule, counters, and random seed are shared.
+The marginal sampling condition permits fresh uniform subsets and uniform random
+permutations; conditional independence from past states is not required below.
+\end{definition}
+\begin{assumption}[Uniform regularity for a coupled pair]\label{ass:rigid-stability}
+On the trajectories under consideration, assume deterministic envelopes
+\begin{gather}
+ |\ell(w,z)-\ell(v,z)|\le L_0\|w-v\|,\quad
+ \|\nabla\ell(w,z)\|\le G_\star,\quad
+ \|\nabla\ell(w,z)-\nabla\ell(v,z)\|\le L_g\|w-v\|,\\
+ \Omega_k^\top\Omega_k=I,\quad
+ \sym(\Omega_k^\top Y_k)+\gamma I\succeq\gamma I,\quad\|Y_k\|_{\op}\le Y_\star,\\
+ \|\widetilde C_k\|_{\op}\le C_\star,\quad
+ \inf_{s\in[0,1]}\sigma_{\min}(X+s(X'-X))\ge a_Q>0,\\
+ X:=U+\xi\operatorname{grad}\Phi(U;\widetilde C),\quad
+ \min\{\sigma_{\min}(\overline U_k^\top U_k),
+       \sigma_{\min}(\overline U_k'^\top U_k')\}\ge a_O>0,\\
+ 0\le\eta_t\lambda\le1,\quad a_k\ge0,\quad a_\perp\ge0.
+\end{gather}
+The gradient passed to the optimizer may additionally undergo the same
+nonexpansive norm clipping in both runs.
+\end{assumption}
+\begin{definition}[Five distances and deterministic constants]
+\begin{gather}
+ u_t:=\|w_t-w_t'\|,\quad v_t:=\|U_t-U_t'\|_F,\quad
+ y_t:=\sum_k\omega_k\|Y_{k,t-1}-Y_{k,t-1}'\|_F,\\
+ m_t:=\sum_k\|M_{k,t-1}^+-M_{k,t-1}^{+\prime}\|_F,\quad
+ s_t:=\sum_k\|\sqrt{V_{k,t-1}^+}-\sqrt{V_{k,t-1}^{+\prime}}\|_F,\\
+ z_t:=(u_t,v_t,y_t,m_t,s_t)^\top\in\RR_+^5,\\
+ \bar\rho:=\max_k\rho_k,\quad
+ \bar\beta_j:=\max_k\beta_{jk},\quad\underline\beta_j:=\min_k\beta_{jk},\\
+ c_Y:=2G_\star\sum_k\omega_k(1-\rho_k),\quad
+ c_M:=\sqrt K(1-\underline\beta_1),\quad
+ c_S:=\sqrt K\sqrt{1-\underline\beta_2},\\
+ H_\star:=2\sqrt R C_\star\sum_k\omega_k,\quad
+ L_U:=2C_\star\sum_k\omega_k+4H_\star,\quad
+ L_Y:=2\sqrt R\max_k L_{N,k},\\
+ L_Q:=\sqrt2/a_Q,\quad L_O:=1/a_O,\quad c_O:=\sqrt K L_O,\\
+ A_M:=((1-\bar\beta_1)\epsilon)^{-1},\quad
+ A_S:=\frac{G_\star}{(1-\bar\beta_1)\epsilon^2\sqrt{1-\bar\beta_2}},\quad
+ H_0:=G_\star/\epsilon,\quad a_\star:=\max_k a_k.
+\end{gather}
+For multiple matrices and dense fallback parameters, concatenate their distances;
+the same construction gives a larger nonnegative matrix, or a five-state bound
+using valid aggregate envelopes.
+\end{definition}
+\begin{lemma}[Gradient, covariance, and horizontal-gradient perturbations]
+\label{lem:rigid-state-primitives}
+Under Assumption~\ref{ass:rigid-stability},
+\begin{align}
+ \delta G_t&:=\|G_t-G_t'\|_F\le L_gu_t+(2G_\star/b_t)I_t,\\
+ \|G_t^\top G_t-G_t'^\top G_t'\|_F&\le2G_\star\delta G_t,\\
+ y_t^-&:=\sum_k\omega_k\|Y_{k,t}^--Y_{k,t}^{-\prime}\|_F
+             \le\bar\rho y_t+c_Y\delta G_t,\\
+ \|\operatorname{grad}\Phi(U;\widetilde C)
+        -\operatorname{grad}\Phi(U';\widetilde C')\|_F
+ &\le L_U\|U-U'\|_F+L_Y\sum_k\omega_k\|Y_k-Y_k'\|_F,\\
+ \sum_k\|Z_k-Z_k'\|_F&\le\sqrt K(\delta G_t+G_\star v_t).
+\end{align}
+\end{lemma}
+\begin{proof}
+\begin{align}
+ G_t-G_t'&=\frac1{b_t}\sum_{j\in\mathcal I_t}
+       [\nabla\ell(w_t,z_j)-\nabla\ell(w_t',z_j)]
+       \notag\\
+ &\quad+\frac{I_t}{b_t}[\nabla\ell(w_t',z_i)-\nabla\ell(w_t',z_i')],\\
+ G^\top G-G'^\top G'&=(G-G')^\top G+G'^\top(G-G'),\\
+ \|\mathsf H_U(H)-\mathsf H_{U'}(H)\|_F
+ &\le4\|H\|_F\|U-U'\|_F,\quad\|\mathsf H_U\|_{F\to F}=1,\\
+ \|H(U;C)-H(U';C')\|_F
+ &\le2C_\star\sum_k\omega_k\|U-U'\|_F
+       +2\sum_k\omega_k\sqrt{r_k}\|C_k-C_k'\|_{\op},\\
+ \sum_k\|(G-G')U_k\|_F&\le\sqrt K\|(G-G')U\|_F\le\sqrt K\delta G_t,\\
+ \sum_k\|G'(U_k-U_k')\|_F&\le\sqrt K G_\star\|U-U'\|_F.
+\end{align}
+\end{proof}
+\begin{definition}[An explicit nonnegative transition matrix]\label{def:rigid-transition}
+Let $e_w,e_U,e_Y,e_M,e_S$ be the standard row vectors in $\RR^5$.
+The following rows and scalars define $\mathcal M_t\in\RR_+^{5\times5}$ and
+$d_t\in\RR_+^5$ without implicit constants:
+\begin{align}
+ r_g&:=L_g e_w,& d_g&:=2G_\star/b_t,\\
+ r_y&:=\bar\rho e_Y+c_Yr_g,& d_y&:=c_Yd_g,\\
+ r_h&:=L_Q[(1+\xi L_U)e_U+\xi L_Yr_y],&d_h&:=L_Q\xi L_Yd_y,\\
+ r_o&:=\chi_t c_O(r_h+e_U),&d_o&:=\chi_t c_Od_h,\\
+ r_U&:=(1-\chi_t)e_U+\chi_t r_h+r_o,&d_U&:=\chi_t d_h+d_o,\\
+ r_m^-&:=\bar\beta_1 e_M+c_M(r_g+G_\star e_U),&d_m^-&:=c_Md_g,\\
+ r_s^-&:=\sqrt{\bar\beta_2}e_S+c_S(r_g+G_\star e_U),&d_s^-&:=c_Sd_g,\\
+ r_M&:=r_m^-+G_\star r_o,&d_M&:=d_m^-+G_\star d_o,\\
+ r_S&:=(1-\chi_t)r_s^-,&d_S&:=(1-\chi_t)d_s^-,\\
+ \end{align}
+\begin{align}
+ r_D&:=a_\star(A_Mr_m^-+A_Sr_s^-+H_0\sqrt K e_U)\notag\\
+ &\quad+(a_\perp/\epsilon)(r_g+2G_\star e_U),\\
+ d_D&:=a_\star(A_Md_m^-+A_Sd_s^-)+(a_\perp/\epsilon)d_g,\\
+ r_w&:=(1-\eta_t\lambda)e_w+\eta_t r_D,\\
+ d_w&:=\eta_t d_D.
+\end{align}
+\begin{gather}
+ \mathcal M_t:=\begin{pmatrix}r_w\\r_U\\r_y\\r_M\\r_S\end{pmatrix},\quad
+ d_t:=(d_w,d_U,d_y,d_M,d_S)^\top.
+\end{gather}
+\end{definition}
+\begin{theorem}[Full-state stability with all feedback paths]\label{thm:tf-stability}
+Under Assumption~\ref{ass:rigid-stability}, Definition~\ref{def:rigid-map} satisfies,
+componentwise,
+\begin{align}
+ z_{t+1}&\preceq\mathcal M_tz_t+d_tI_t,\qquad z_0=0,\\
+ \EE z_T&\preceq\sum_{t=0}^{T-1}
+       (\mathcal M_{T-1}\cdots\mathcal M_{t+1})d_t\frac{b_t}{n},\\
+ \epsilon_T^{\mathrm{stab}}
+ &:=\sup_{S\sim S',z}\EE_\vartheta
+       |\ell(A_T(S;\vartheta),z)-\ell(A_T(S';\vartheta),z)|\\
+ &\le\frac{L_0}{n}e_w\sum_{t=0}^{T-1}b_t
+             (\mathcal M_{T-1}\cdots\mathcal M_{t+1})d_t.
+ \label{eq:rigid-stability-product}
+\end{align}
+Empty products equal $I_5$. The supremum is over pairs satisfying the stated
+uniform envelopes; a uniform result over all neighboring samples requires those
+envelopes uniformly over the sample domain.
+\end{theorem}
+\begin{proof}
+At a refresh, Lemmas~\ref{lem:rigid-qr-lip} and~\ref{lem:rigid-polar} imply
+\begin{align}
+ \|\overline U-\overline U'\|_F&\le r_hz_t+d_hI_t,\\
+ \sum_k\|O_k-O_k'\|_F
+ &\le\sqrt K L_O(\|\overline U-\overline U'\|_F+\|U-U'\|_F)
+ \le r_oz_t+d_oI_t,\\
+ \|\overline UO-\overline U'O'\|_F
+ &\le\|\overline U-\overline U'\|_F+\sum_k\|O_k-O_k'\|_F,\\
+ \sum_k\|M_k^-O_k^\top-M_k'^{-}O_k'^\top\|_F
+ &\le\sum_k\|M_k^--M_k'^{-}\|_F+G_\star\sum_k\|O_k-O_k'\|_F.
+\end{align}
+The root-state inequality and the synchronized reset give
+\begin{align}
+ \sum_k\|M_k^--M_k'^{-}\|_F&\le r_m^-z_t+d_m^-I_t,\\
+ \sum_k\|\sqrt{V_k^-}-\sqrt{V_k'^{-}}\|_F&\le r_s^-z_t+d_s^-I_t,\\
+ \sum_k\|\sqrt{V_k^+}-\sqrt{V_k'^{+}}\|_F
+ &=(1-\chi_t)\sum_k\|\sqrt{V_k^-}-\sqrt{V_k'^{-}}\|_F.
+\end{align}
+For the parameter direction,
+\begin{align}
+ \|HU^\top-H'U'^\top\|_F
+ &\le\|H-H'\|_F+\|H'\|_{\op}\|U-U'\|_F,\\
+ \|G(I-UU^\top)-G'(I-U'U'^\top)\|_F
+ &\le\delta G_t+2G_\star v_t,\\
+ \|D_t-D_t'\|_F&\le r_Dz_t+d_DI_t,\\
+ u_{t+1}&\le(1-\eta_t\lambda)u_t+\eta_t\|D_t-D_t'\|_F.
+\end{align}
+Every entry of $\mathcal M_t,d_t$ is deterministic and nonnegative. Consequently,
+\begin{align}
+ \EE z_{t+1}&\preceq\mathcal M_t\EE z_t+d_t\EE I_t
+ =\mathcal M_t\EE z_t+d_tb_t/n,\\
+ \EE|\ell(w_T,z)-\ell(w_T',z)|&\le L_0 e_w\EE z_T.
+\end{align}
+\end{proof}
+The matrix product retains every feedback path after the changed example is
+sampled. A scalar bound follows if a weighted combination of state distances
+has controlled growth. Such a weight is an additional property of the coupled
+dynamics; bounding each one-step map by smoothness alone need not produce
+contraction.
+
+\begin{corollary}[Weighted small-gain and contraction bounds]\label{cor:rigid-smallgain}
+Suppose a fixed row $a\in\RR_{>0}^5$, $a_w\ge1$, satisfies
+\begin{gather}
+ a\mathcal M_t\preceq(1+\nu\eta_t)a,\qquad
+ b_t a d_t\le c\eta_t.
+\end{gather}
+Then
+\begin{align}
+ \epsilon_T^{\mathrm{stab}}
+ &\le\frac{L_0c}{n}\sum_{t<T}\eta_t\prod_{s=t+1}^{T-1}(1+\nu\eta_s)\\
+ &\le\begin{cases}
+ \dfrac{L_0c}{n\nu}(e^{\nu S_T}-1),&\nu>0,\\[2pt]
+ \dfrac{L_0c}{n}S_T,&\nu=0.
+ \end{cases}
+\end{align}
+If instead $a\mathcal M_t\preceq(1-\nu\eta_t)a$, $0<\nu\eta_t\le1$, then
+\begin{equation}
+ \epsilon_T^{\mathrm{stab}}\le\frac{L_0c}{n\nu}
+             \left[1-\prod_{t<T}(1-\nu\eta_t)\right]\le\frac{L_0c}{n\nu}.
+\end{equation}
+\end{corollary}
+\begin{proof}
+\begin{gather}
+ a\EE z_{t+1}\le(1\pm\nu\eta_t)a\EE z_t+c\eta_t/n,\qquad
+ \sum_{t<T}\nu\eta_t\prod_{s>t}(1\pm\nu\eta_s)
+ =\begin{cases}\prod_t(1+\nu\eta_t)-1,&+,\\1-\prod_t(1-\nu\eta_t),&-.
+ \end{cases}
+\end{gather}
+\end{proof}
+\begin{proposition}[Regularity failure probability]\label{prop:rigid-exit}
+If $0\le\ell\le B_\ell$, and the coupled regularity conditions fail before $T$
+with probability at most $p_T$, then the same matrix-product upper bound, denoted
+$\epsilon_{T,\mathrm{reg}}$, gives
+\begin{equation}
+ \epsilon_T^{\mathrm{stab}}\le\epsilon_{T,\mathrm{reg}}+B_\ell p_T.
+\end{equation}
+\end{proposition}
+\begin{proof}
+Let $\tau_\mathrm{exit}$ be the first failure time. Nonnegative killed distances
+$\widetilde z_t:=z_t\mathbf1_{\tau_\mathrm{exit}>t}$ satisfy
+\begin{gather}
+ \widetilde z_{t+1}\preceq\mathcal M_t\widetilde z_t+d_tI_t,\\
+ \EE|\ell(w_T,z)-\ell(w_T',z)|
+ \le L_0e_w\EE\widetilde z_T+B_\ell\PP(\tau_\mathrm{exit}\le T).
+\end{gather}
+\end{proof}
+\begin{theorem}[Expected generalization and concentration]\label{thm:rigid-generalization}
+For iid $S$, independent algorithm randomness, and uniform replace-one stability
+$\epsilon_T^{\mathrm{stab}}=\epsilon_T$,
+\begin{equation}\label{eq:tf-gen}
+ \left|\EE_{S,\vartheta}\left[F_\mathcal D(A_T(S;\vartheta))
+                          -F_S(A_T(S;\vartheta))\right]\right|\le\epsilon_T.
+\end{equation}
+If also $0\le\ell\le B_\ell$, define
+$f(S):=\EE_\vartheta[F_\mathcal D(A_T(S))-F_S(A_T(S))]$. Then, with probability
+at least $1-\delta$ over $S$,
+\begin{equation}
+ |f(S)|\le\epsilon_T+(2n\epsilon_T+B_\ell)
+                         \sqrt{\frac{\log(2/\delta)}{2n}}.
+\end{equation}
+For a bound on a single randomized run, the latter assertion requires the same
+uniform stability constant for every fixed seed $\vartheta$; it then holds over
+$(S,\vartheta)$.
+\end{theorem}
+\begin{proof}
+Exchangeability and independence imply
+\begin{align}
+ \EE_{S,\vartheta}F_\mathcal D(A_T(S))
+ &=\frac1n\sum_i\EE_{S,z_i',\vartheta}\ell(A_T(S),z_i'),\\
+ \EE_{S,z_i',\vartheta}\ell(A_T(S^{(i)}),z_i')
+ &=\EE_{S,\vartheta}\ell(A_T(S),z_i),\\
+ \EE(F_\mathcal D-F_S)
+ &=\frac1n\sum_i\EE[\ell(A_T(S),z_i')-\ell(A_T(S^{(i)}),z_i')].
+\end{align}
+For neighboring $S,S'$,
+\begin{align}
+ |f(S)-f(S')|
+ &\le\EE_\vartheta|F_\mathcal D(A_T(S))-F_\mathcal D(A_T(S'))|\\
+ &\quad+\frac1n\sum_{j\ne i}\EE_\vartheta
+             |\ell(A_T(S),z_j)-\ell(A_T(S'),z_j)|+B_\ell/n\\
+ &\le(2-1/n)\epsilon_T+B_\ell/n\le2\epsilon_T+B_\ell/n.
+\end{align}
+The bounded-differences inequality \citep{mcdiarmid1989bounded} yields
+\begin{gather}
+ \PP(|f(S)-\EE f(S)|\ge r)
+ \le2\exp\left(-\frac{2r^2}{n(2\epsilon_T+B_\ell/n)^2}\right),\quad
+ |\EE f(S)|\le\epsilon_T.
+\end{gather}
+\end{proof}
+\begin{corollary}[Bousquet--Klochkov--Zhivotovskiy concentration]\label{cor:sharp-stability-tail}
+Under the bounded-loss and uniform expected-stability hypotheses above, there
+is a numerical constant $C$ such that, for $n\ge2$, with probability at least
+$1-\delta$ over $S$,
+\begin{equation}
+ |f(S)|\le C\left[
+ \epsilon_T\log(2n)\log(2/\delta)
+       +B_\ell\sqrt{\frac{\log(2/\delta)}n}\right].
+\end{equation}
+If the stability bound holds for every fixed random seed with the same
+constant, this bound also applies to a single run over $(S,\vartheta)$.
+\end{corollary}
+\begin{proof}
+Define the deterministic, sample-dependent loss
+$\overline\ell_S(z):=\EE_\vartheta\ell(A_T(S;\vartheta),z)$.
+It takes values in $[0,B_\ell]$ and satisfies
+\begin{equation}
+ |\overline\ell_S(z)-\overline\ell_{S'}(z)|
+ \le\EE_\vartheta|\ell(A_T(S;\vartheta),z)-\ell(A_T(S';\vartheta),z)|
+ \le\epsilon_T.
+\end{equation}
+Apply Corollary 8 of \citet{bousquet2020sharper} to this uniformly stable
+loss-valued algorithm. Its generalization gap is exactly $f(S)$. For the
+single-run assertion condition on the seed and integrate the failure
+probability. This improves the stability dependence from
+$\epsilon_T\sqrt n$ in the elementary bounded-differences bound to
+$\epsilon_T\log n$, up to confidence factors and a universal constant;
+we make no claim that the numerical constant $C$ is optimal.
+\end{proof}
+
+\subsection{Effective noise dimension, excess risk, and horizon dependence}
+The next results separate directional noise reduction from generalization and
+from state storage. The trace identity measures how a predictable
+preconditioner transforms gradient noise; the excess-risk bound also needs
+optimization and stability estimates. Compressing optimizer state leaves the
+parameter domain unchanged, as Proposition~\ref{prop:rigid-domain} makes explicit.
+
+\begin{proposition}[Exact directional-noise identities]\label{prop:rigid-noise}
+For predictable symmetric $B_t$ and conditional noise covariance
+$\Sigma_t:=\EE_t[\zeta_t\zeta_t^\top]$,
+\begin{gather}
+ \EE_t\|B_t\zeta_t\|^2=\tr(B_t^2\Sigma_t),\quad
+ \lambda_{\max}(\Sigma_t)\tr(B_t^2)\ge\tr(B_t^2\Sigma_t),\\
+ B=\sum_{j=1}^{K+1}a_j\Pi_j\quad\Longrightarrow\quad
+ \tr(B^2)=\sum_{j=1}^{K+1}q_ja_j^2.
+\end{gather}
+For $m$ rows with independent isotropic noise variance $\sigma^2$ per coordinate,
+\begin{equation}
+ \EE\|\zeta B\|_F^2=m\sigma^2
+       \left(\sum_{j=1}^Kq_ja_j^2+(d-R)a_\perp^2\right).
+\end{equation}
+\end{proposition}
+\begin{proof}
+\begin{align}
+ \EE_t\|B_t\zeta_t\|^2
+ &=\EE_t\tr(B_t\zeta_t\zeta_t^\top B_t)=\tr(B_t^2\Sigma_t),\\
+ B^2&=\sum_ja_j^2\Pi_j,\quad\tr\Pi_j=q_j.
+\end{align}
+\end{proof}
+\begin{corollary}[Population excess risk under empirical PL]\label{cor:rigid-risk}
+Suppose every $F_S$ is $\mu$-PL, a random output $A_J$ satisfies
+$\EE\|\nabla F_S(A_J)\|^2\le R_T$, and its uniform expected stability is
+$\epsilon_T$. Then for every fixed population minimizer $w_\mathcal D^\star$,
+\begin{equation}
+ \EE[F_\mathcal D(A_J)-F_\mathcal D(w_\mathcal D^\star)]
+ \le R_T/(2\mu)+\epsilon_T.
+\end{equation}
+If, under the additional hypotheses of the stationarity and small-gain results,
+\begin{gather}
+ R_T/(2\mu)\le A/\sqrt T+R_{\mathrm{disc}},\quad
+ \epsilon_T\le B\sqrt T/n,
+\end{gather}
+then
+\begin{gather}
+ \EE[F_\mathcal D(A_J)-F_\mathcal D(w_\mathcal D^\star)]
+ \le A/\sqrt T+B\sqrt T/n+R_{\mathrm{disc}},\\
+ T_\mathrm{cont}^\star=An/B,\quad
+ \inf_{T>0}\{A/\sqrt T+B\sqrt T/n\}=2\sqrt{AB/n}.
+\end{gather}
+The two assumed rates must hold with constants uniform in the selected horizon.
+\end{corollary}
+\begin{proof}
+\begin{align}
+ F_S(A_J)-\inf_wF_S(w)&\le\|\nabla F_S(A_J)\|^2/(2\mu),\\
+ \EE\inf_wF_S(w)&\le\EE F_S(w_\mathcal D^\star)
+ =F_\mathcal D(w_\mathcal D^\star),\\
+ \EE[F_\mathcal D(A_J)-F_\mathcal D(w_\mathcal D^\star)]
+ &\le\EE[F_\mathcal D(A_J)-F_S(A_J)]
+       +\EE[F_S(A_J)-\inf_wF_S(w)],\\
+ \frac{\mathrm d}{\mathrm dT}(AT^{-1/2}+BT^{1/2}/n)
+ &=-\tfrac A2T^{-3/2}+\tfrac B{2n}T^{-1/2}.
+\end{align}
+\end{proof}
+The horizon balance expresses a conditional early-stopping tradeoff: more
+updates reduce optimization error while the stability term can increase.
+Its minimizing horizon is meaningful only when both assumed rates hold
+uniformly over the horizons being compared. The movement bound below remains
+available with fewer state-regularity requirements, though it can be much looser.
+
+\begin{proposition}[A movement-only bound]\label{prop:tf-movement}
+For a deterministic common initialization $w_0$, $L_0$-Lipschitz losses, and
+$w_{t+1}=w_t-\eta_td_t$,
+\begin{equation}
+ \left|\EE[F_\mathcal D(w_T)-F_S(w_T)]\right|
+ \le2L_0\sum_{t<T}\eta_t\EE\|d_t\|.
+\end{equation}
+\end{proposition}
+\begin{proof}
+\begin{gather}
+ \EE[F_\mathcal D(w_0)-F_S(w_0)]=0,\quad
+ |(F_\mathcal D-F_S)(w_T)-(F_\mathcal D-F_S)(w_0)|\le2L_0\|w_T-w_0\|,\\
+ \|w_T-w_0\|\le\sum_{t<T}\eta_t\|d_t\|.
+\end{gather}
+\end{proof}
+\begin{proposition}[State dimension versus parameter domain]\label{prop:rigid-domain}
+For $m\ge d$, the stored floating-point matrix-state counts are
+\begin{gather}
+ N_{\mathrm{STRATA}}=2mR+dR+2d\sum_{k=1}^K\min(d,r_k+p),\qquad
+ N_{\mathrm{Adam}}=2md,\\
+ \dim\mathfrak F=dR-\tfrac12(R^2+\sum_kq_k^2),\qquad
+ \mathcal W_{\mathrm{STRATA}}=\mathcal W_{\mathrm{Adam}}=\RR^{m\times d},\\
+ U\in\St(d,R)\quad\not\Longrightarrow\quad \operatorname{rank}(W)\le R.
+\end{gather}
+Fixed probes are included in $N_{\mathrm{STRATA}}$; temporary workspaces,
+parameters, gradients, scalar counters, and fallback states are excluded.
+\end{proposition}
+\begin{proof}
+\begin{gather}
+ N_M+N_V=2m\sum_kq_k=2mR,\quad N_U=dR,\quad
+ N_Y=N_\Omega=d\sum_k\min(d,r_k+p),\\
+ W_0=\begin{pmatrix}I_d\\0\end{pmatrix}\quad\Longrightarrow\quad
+ \operatorname{rank}(W_0)=d>R,\qquad U_0^\top U_0=I_R.
+\end{gather}
+No projection of $W$ onto a rank-constrained set occurs in
+Definition~\ref{def:rigid-map}.
+\end{proof}
+\begin{corollary}[Explicit local regularity radii]\label{cor:rigid-regularity-radius}
+At a refresh, let $Z=\xi\operatorname{grad}\Phi(U;\widetilde C)$ and
+$Z'=\xi\operatorname{grad}\Phi(U';\widetilde C')$. If
+\begin{gather}
+ \max(\|Z\|_F,\|Z'\|_F)\le z_\star,\quad
+ e_\star:=(1+z_\star^2)z_\star^2<1,\quad
+ \|(U+Z)-(U'+Z')\|_{\op}\le r_X<1,
+\end{gather}
+then the QR and Procrustes regularity assumptions hold with
+\begin{equation}
+ a_Q=1-r_X,\qquad a_O=1-e_\star.
+\end{equation}
+If $\|\mathrm D\psi\|\le J_\psi$ on a convex chart domain, then also
+\begin{equation}
+ d_P(\psi(x),\psi(y))\le\sqrt{2K}J_\psi\|x-y\|.
+\end{equation}
+\end{corollary}
+\begin{proof}
+\begin{align}
+ \sigma_{\min}(U+Z)^2
+ &=\lambda_{\min}(I+Z^\top Z)\ge1,\\
+ \sigma_{\min}(X+s(X'-X))&\ge\sigma_{\min}(X)-s\|X'-X\|_{\op}\ge1-r_X,\\
+ \sigma_{\min}(\overline U_j^\top U_j)
+ &\ge1-\|\overline U_j-U_j-Z_j\|_F\ge1-e_\star,\\
+ \left\|\frac{\mathrm d}{\mathrm ds}(P_1,\ldots,P_K)
+                     (\psi(y+s(x-y)))\right\|_F
+ &\le\sqrt{2K}J_\psi\|x-y\|.
+\end{align}
+\end{proof}

@@ -1,0 +1,40 @@
+\section{Mathematical Analysis}
+\label{app:theory-full}
+\providecommand{\tr}{\operatorname{tr}}
+\providecommand{\sym}{\operatorname{sym}}
+\providecommand{\skw}{\operatorname{skew}}
+\providecommand{\diag}{\operatorname{diag}}
+\providecommand{\blkdiag}{\operatorname{blkdiag}}
+\providecommand{\St}{\operatorname{St}}
+\providecommand{\Hor}{\mathcal H}
+\providecommand{\Ver}{\mathcal V}
+\providecommand{\EE}{\mathbb E}
+\providecommand{\PP}{\mathbb P}
+\providecommand{\RR}{\mathbb R}
+\providecommand{\op}{\mathrm{op}}
+\providecommand{\Id}{\mathrm{Id}}
+\providecommand{\sgn}{\operatorname{sign}}
+The analysis follows the two interacting parts of STRATA: learning a flag from
+gradient statistics and updating parameters with state expressed in that flag.
+We first establish the geometry and covariance-to-tracking estimates, then
+propagate state errors into descent and sample sensitivity. The final two
+subsections treat current-gradient normalization directly and optimize a
+directional generalization bound. The linear surrogate, the implemented
+adaptive map, and the Gaussian posterior each serve a different role; their
+assumptions are stated at the point where each is used.
+Three structural reductions sharpen the estimates: prefix overlap becomes a
+transportation cost, spectral centering removes isotropic curvature, and
+inverse binary KL preserves the empirical-risk dependence. We distinguish
+these exact identities and sharp comparison constants from conditional
+envelopes for covariance approximation and optimizer-state variation.
+
+\input{sections/theory/01_geometry}
+\input{sections/theory/02_variational_spectral}
+\input{sections/theory/03_statistics_tracking}
+\input{sections/theory/04_adaptive_state}
+\input{sections/theory/05_convergence}
+\input{sections/theory/06_generalization}
+\input{sections/theory/07_mechanistic_rates}
+\input{sections/theory/08_pac_bayes}
+\input{sections/theory/09_actual_adam_dynamics}
+\input{sections/theory/10_directional_generalization}

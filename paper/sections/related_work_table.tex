@@ -1,0 +1,39 @@
+\begin{table*}[!t]
+\centering
+\caption{\textbf{Where STRATA sits among related methods.} Keywords describe the mechanism; symbols describe structural properties, not empirical superiority. The final row combines nested subspaces with separate covariance timescales inside the optimizer.}
+\label{tab:related-work-features}
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.22}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{.215\linewidth}>{\raggedright\arraybackslash}p{.255\linewidth}*{4}{>{\centering\arraybackslash}X}@{}}
+\toprule
+\textbf{Method / family} & \textbf{Core mechanism} & \textbf{Low-rank moments} & \textbf{Online tracking} & \textbf{Nested subspaces} & \textbf{Multiple covariance EMAs} \\
+\midrule
+AdamW~\cite{adamw2019} & Diagonal adaptivity & \rwcross & \rwcross & \rwcross & \rwcross \\
+GaLore~\cite{zhao2024galore} & Periodic SVD & \rwcheck & \rwcross & \rwcross & \rwcross \\
+OSD~\cite{liang2024osd} & Online PCA & \rwcheck & \rwcheck & \rwcross & \rwcross \\
+SubTrack++~\cite{rajabi2025subtrackpp} & Grassmann tracking & \rwcheck & \rwcheck & \rwcross & \rwcross \\
+APOLLO~\cite{apollo2024} & Random-projection scaling & \rwcheck & \rwcross & \rwcross & \rwcross \\
+\addlinespace[2pt]
+SOAP~\cite{vyas2024soap} & Eigenbasis Adam & \rwcross & \rwcross & \rwcross & \rwcross \\
+Muon~\cite{jordan2024muon} & Polar update direction & \rwcross & \rwcross & \rwcross & \rwcross \\
+\midrule
+Flag methods~\cite{lai2022simpler,szwagier2025nested} & Nested projectors & \rwna & \rwna & \rwcheck & \rwna \\
+Single-Grassmann\newline (our control) & One tracked subspace & \rwcheck & \rwcheck & \rwcross & \rwcross \\
+\midrule
+\rowcolor{oursbg}
+\textbf{STRATA (ours)} & \textbf{Multi-timescale flag state} & \rwcheck & \rwcheck & \rwcheck & \rwcheck \\
+\bottomrule
+\end{tabularx}
+\par\vspace{4pt}
+\begin{minipage}{\linewidth}
+\scriptsize
+\rwcheck\ present; \rwcross\ absent in the listed formulation; \rwna\ not an adaptive-optimizer property.
+\emph{Low-rank moments}: adaptive statistics are stored in compressed coordinates (including APOLLO's auxiliary scaling state).
+\emph{Online tracking}: incremental data-driven tracking of a compressed gradient subspace, excluding periodic SVD/random refresh and full eigenbasis changes.
+\emph{Nested}: a nontrivial chain with $K>1$; a lone subspace is not counted as a multi-level flag.
+\emph{Multiple covariance EMAs}: distinct decays for the same gradient covariance, not merely Adam's different first-/second-moment decays or SOAP's row/column factors.
+\end{minipage}
+\endgroup
+\end{table*}

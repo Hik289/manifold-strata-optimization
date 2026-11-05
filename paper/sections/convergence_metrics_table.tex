@@ -1,0 +1,23 @@
+\begin{longtable}{llrrrr}
+\caption{Selected classifier convergence diagnostics. AUC integrates raw training loss over the observed archived epoch indices (0--999); $g_{\rm log}$ is the mean logged gradient norm, not a claim to the exact full-objective gradient. Missing gradient norms were not recorded in those archives and are left absent. Configurations use the selection rule of Figure~\ref{fig:loss-classification}.}\\
+\toprule Dataset & Method & Loss AUC & Train loss & Val loss & $g_{\rm log}$\\\midrule\endfirsthead
+\toprule Dataset & Method & Loss AUC & Train loss & Val loss & $g_{\rm log}$\\\midrule\endhead
+\rowcolor{oursbg}
+mnist & strata & 21.9 & 0.0144 & 0.0917 & 4.92 \\
+mnist & single & 40.8 & 0.0513 & 0.0969 & 15.8 \\
+mnist & adamw & 6.13 & 7.5e-05 & 0.759 & -- \\
+mnist & galore & 7.21 & 7.76e-05 & 0.133 & 0.0133 \\
+\rowcolor{oursbg}
+fashion & strata & 35.2 & 0.0059 & 0.939 & 0.639 \\
+fashion & single & 32.4 & 0.0131 & 1.16 & 1.99 \\
+\rowcolor{oursbg}
+cifar10 & strata & 19.4 & 1.77e-05 & 0.527 & 0.00133 \\
+cifar10 & single & 16 & 4.69e-06 & 0.578 & 0.000361 \\
+cifar10 & adamw & 17.4 & 3.19e-06 & 0.688 & -- \\
+cifar10 & galore & 27.3 & 1.81e-05 & 0.607 & -- \\
+\rowcolor{oursbg}
+cifar100 & strata & 59 & 0.000286 & 3.56 & 0.00343 \\
+cifar100 & single & 49.2 & 0.000261 & 3.98 & 0.00111 \\
+cifar100 & adamw & 48.7 & 0.000259 & 3.53 & -- \\
+cifar100 & galore & 101 & 0.000407 & 3.05 & -- \\
+\bottomrule\end{longtable}

@@ -1,0 +1,281 @@
+\subsection{Variational structure, spectral assignment, and local curvature}
+Each prefix of the flag is evaluated against a covariance with its own memory
+scale. Consequently a direction assigned to an inner block contributes to
+several prefix objectives, as encoded by $A_j$. The assignment theorem below
+resolves these competing contributions under simultaneous diagonalization,
+while respecting the prescribed capacity of every block.
+
+\begin{definition}[Flag energy]
+\begin{gather}
+ C_k=C_k^\top\succeq0,\quad \omega_k>0,\quad
+ A_j:=\sum_{k=j}^K\omega_k C_k,\quad A_{K+1}:=0,\\
+ \Phi(U;C):=\sum_{k=1}^K\omega_k\tr(P_k(U)C_k)
+ =\sum_{j=1}^K\tr(U_j^\top A_jU_j),
+ \label{eq:tf-objective}\\
+ H(U;C):=2\sum_k\omega_k C_kUF_k,\quad
+ \operatorname{grad}\Phi(U;C)=\mathsf H_U(H(U;C)).
+\end{gather}
+\end{definition}
+\begin{proposition}[First and second variations]\label{prop:rigid-variation}
+For $Z\in\Hor_U$, $Q=[U,U_\perp]$, and horizontal $\Omega$ with
+$Z=(Q\Omega)_{:R}$,
+\begin{align}
+ \mathrm D\Phi(U)[Z]&=2\sum_k\omega_k\tr(Z^\top C_kUF_k)
+ =\langle\operatorname{grad}\Phi,Z\rangle_F,\\
+ \left.\frac{\mathrm d^2}{\mathrm ds^2}\Phi((Qe^{s\Omega})_{:R};C)\right|_{s=0}
+ &=\sum_k\omega_k\tr\bigl(Q^\top C_kQ[\Omega,[\Omega,\widehat F_k]]\bigr),\\
+ \operatorname{grad}\Phi(U;C)=0
+ &\Longrightarrow\quad
+ \langle Z,\operatorname{Hess}\Phi(U)[Z]\rangle_F
+ =\sum_k\omega_k\tr\bigl(Q^\top C_kQ[\Omega,[\Omega,\widehat F_k]]\bigr).
+\end{align}
+\end{proposition}
+\begin{proof}
+\begin{align}
+ \mathrm D(UF_kU^\top)[Z]&=ZF_kU^\top+UF_kZ^\top,\\
+ \frac{\mathrm d}{\mathrm ds}(e^{s\Omega}\widehat F_ke^{-s\Omega})
+ &=e^{s\Omega}[\Omega,\widehat F_k]e^{-s\Omega},\\
+ \frac{\mathrm d^2}{\mathrm ds^2}(e^{s\Omega}\widehat F_ke^{-s\Omega})
+ &=e^{s\Omega}[\Omega,[\Omega,\widehat F_k]]e^{-s\Omega},\\
+ (\Phi\circ\gamma)''(0)
+ &=\operatorname{Hess}\Phi[\dot\gamma(0),\dot\gamma(0)]
+   +\langle\operatorname{grad}\Phi,\nabla_{\dot\gamma}\dot\gamma\rangle_F.
+\end{align}
+\end{proof}
+\begin{theorem}[Commuting case: integral assignment]\label{thm:tf-assignment}
+Suppose
+\begin{gather}
+ C_k=Q\diag(\lambda_{k1},\ldots,\lambda_{kd})Q^\top,\quad
+ b_{ji}:=\sum_{k=j}^K\omega_k\lambda_{ki},\quad b_{K+1,i}:=0,\\
+ \mathcal X:=\{x\ge0:\sum_{j=1}^{K+1}x_{ji}=1,
+                    \ \sum_{i=1}^d x_{ji}=q_j\}.
+\end{gather}
+Then
+\begin{align}
+ \max_{[U]\in\mathfrak F}\Phi(U;C)
+ &=\max_{x\in\mathcal X}\sum_{j,i}b_{ji}x_{ji}\\
+ &=\max_{\substack{\{S_j\}\text{ partition }[d]\\ |S_j|=q_j}}
+       \sum_{j=1}^{K+1}\sum_{i\in S_j}b_{ji}\\
+ &=\min_{\alpha\in\RR^d,\,\beta\in\RR^{K+1}}
+       \left\{\sum_i\alpha_i+\sum_jq_j\beta_j:
+                    \alpha_i+\beta_j\ge b_{ji}\right\}.
+\end{align}
+\end{theorem}
+\begin{proof}
+\begin{align}
+ x_{ji}(U)&:=e_i^\top Q^\top\Pi_j(U)Qe_i\ge0,\\
+ \sum_jx_{ji}(U)&=1,\qquad \sum_ix_{ji}(U)=\tr\Pi_j=q_j,\\
+ \Phi(U;C)&=\sum_{j,i}b_{ji}x_{ji}(U)
+ \le\max_{x\in\mathcal X}\langle b,x\rangle.
+\end{align}
+Changing the signs of the block-sum rows turns the constraint matrix into a
+directed bipartite incidence matrix. It is totally unimodular, so the
+Hoffman--Kruskal integrality theorem~\citep{hoffman1956integral}, with integer
+margins $(q_j,1)$, gives integral vertices. Column sums of one then give
+$x_{ji}\in\{0,1\}$. For $S_j:=\{i:x_{ji}=1\}$ choose
+$U_j=Q_{:,S_j}$. Then $x(U)=x$. Finally,
+\begin{align}
+ \mathcal L(x,\alpha,\beta)
+ &=\sum_i\alpha_i+\sum_jq_j\beta_j+
+       \sum_{j,i}(b_{ji}-\alpha_i-\beta_j)x_{ji},\\
+ \sup_{x\ge0}\mathcal L<\infty
+ &\Longleftrightarrow\alpha_i+\beta_j\ge b_{ji},\\
+ \varnothing\ne\mathcal X\text{ compact}
+ &\Longrightarrow\max\langle b,x\rangle=\min\mathcal L_{\mathrm{dual}}.
+\end{align}
+\end{proof}
+\begin{corollary}[Common order and strict assignment margin]\label{cor:tf-common-order}
+If $\lambda_{k1}\ge\cdots\ge\lambda_{kd}$ for every $k$, then
+$U^\star=Q_{:,1:R}$ maximizes $\Phi$. More generally, let an optimal partition
+$S^\star$ admit a dual optimum satisfying
+\begin{gather}
+ s_{ji}:=\alpha_i+\beta_j-b_{ji},\quad
+ s_{ji}=0\ (i\in S_j^\star),\quad s_{ji}\ge\delta>0\ (i\notin S_j^\star),\\
+ W(U):=\sum_j\sum_{i\notin S_j^\star}x_{ji}(U).
+\end{gather}
+Then
+\begin{align}
+ \Phi(U^\star)-\Phi(U)&=\sum_{j,i}s_{ji}x_{ji}(U)\ge\delta W(U),\\
+ d_P(U,U^\star)^2&\le K W(U),\\
+ \Phi(U^\star)-\Phi(U)&\ge\frac{\delta}{K}d_P(U,U^\star)^2.
+\end{align}
+The factor $K$ in the distance comparison is attained by a rotation between
+the first and residual blocks.
+\end{corollary}
+\begin{proof}
+Ky Fan's maximum principle~\citep{fan1949weyl} gives the common-order optimum.
+For the quantitative bound let $T_{ja}:=\tr(\Pi_j(U)\Pi_a(U^\star))$, including
+the residual block. Its row and column sums both equal the block capacities.
+\begin{align}
+ \tr(P_kC_k)&\le\sum_{i=1}^{r_k}\lambda_{ki}
+ =\tr(P_k(U^\star)C_k),\\
+ \|\Pi_j(U)-\Pi_j(U^\star)\|_F^2
+ &=2q_j-2\sum_{i\in S_j^\star}x_{ji}
+ =2\sum_{i\notin S_j^\star}x_{ji},\\
+ \|P_k(U)-P_k(U^\star)\|_F^2
+ &=2\sum_{j\le k<a}T_{ja}
+ =\sum_{j\le k<a}T_{ja}+\sum_{a\le k<j}T_{ja},\\
+ d_P^2&=\sum_{j,a}|j-a|T_{ja}\le K\sum_{j\ne a}T_{ja}=KW(U).
+\end{align}
+For a rotation of angle $\theta$ between a vector of block $1$ and one of
+block $K+1$, $W=2\sin^2\theta$ and $d_P^2=2K\sin^2\theta$. Thus the geometric
+constant cannot be reduced. The dual-slack identity gives the objective bound.
+\end{proof}
+\begin{proposition}[Perturbation and matched-rank reconstruction]
+\label{prop:tf-value}
+For $\|\widehat C_k-C_k\|_{\op}\le\epsilon_k$, define
+$D_C:=\sum_k\omega_kr_k\epsilon_k$. If $U^\star,\widehat U$ maximize their
+respective objectives, then
+\begin{gather}
+ \sup_U|\Phi(U;\widehat C)-\Phi(U;C)|\le D_C,\qquad
+ 0\le\Phi(U^\star;C)-\Phi(\widehat U;C)\le2D_C.
+\end{gather}
+For every rank-$R$ projector $Q_R$ containing $\operatorname{range}P_k$,
+\begin{equation}\label{prop:tf-budget}
+ \|G-GQ_R\|_F^2\le\|G-GP_k\|_F^2.
+\end{equation}
+\end{proposition}
+\begin{proof}
+\begin{align}
+ |\tr(P_k\Delta C_k)|&\le\|P_k\|_*\|\Delta C_k\|_{\op}=r_k\epsilon_k,\\
+ \Phi(U^\star;C)-\Phi(\widehat U;C)
+ &\le\Phi(U^\star;C)-\Phi(U^\star;\widehat C)
+       +\Phi(\widehat U;\widehat C)-\Phi(\widehat U;C),\\
+ Q_R-P_k&\succeq0,\quad
+ \|G-GP_k\|_F^2-\|G-GQ_R\|_F^2
+ =\tr((Q_R-P_k)G^\top G)\ge0.
+\end{align}
+\end{proof}
+\begin{proposition}[A strict nonglobal local maximum]\label{prop:tf-cycle}
+Let
+\begin{gather}
+ d=3,\quad K=2,\quad(r_1,r_2)=(1,2),\quad\omega_1=\omega_2=1,\\
+ C_1=\diag(3,\tfrac52,\tfrac12),\quad
+ C_2=\diag(0,2,\tfrac32),\quad
+ (b_{ji})=\begin{pmatrix}3&9/2&2\\0&2&3/2\\0&0&0\end{pmatrix},\\
+ U_0=(e_1,e_2),\qquad U_\star=(e_2,e_3).
+\end{gather}
+Then $[C_1,C_2]=0$, $\Phi(U_0)=5<6=\Phi(U_\star)$, and
+\begin{equation}
+ \Phi((e^{\Omega})_{:2})=5-\tfrac12\Omega_{12}^2
+                              -\Omega_{13}^2-\tfrac12\Omega_{23}^2
+                              +O(\|\Omega\|_F^3).
+\end{equation}
+\end{proposition}
+\begin{proof}
+For eigen-indices $i\in S_a$, $l\in S_b$, $a<b$, put
+\begin{gather}
+ \Delta_{ai,bl}:=b_{ai}+b_{bl}-b_{al}-b_{bi},\\
+ \left.\frac{\mathrm d^2}{\mathrm ds^2}\Phi((Qe^{s\Omega})_{:R})\right|_{0}
+ =-2\sum_{a<b}\sum_{i\in S_a,l\in S_b}\Delta_{ai,bl}\Omega_{il}^2.
+\end{gather}
+At $U_0$,
+\begin{gather}
+ \Delta_{11,22}=\tfrac12,\quad \Delta_{11,33}=1,\quad
+ \Delta_{22,33}=\tfrac12,\quad
+ \operatorname{grad}\Phi(U_0)=0,\quad\operatorname{Hess}\Phi(U_0)\prec0.
+\end{gather}
+The six assignment scores are $5,9/2,9/2,6,2,4$.
+\end{proof}
+The counterexample distinguishes global allocation from local improvement:
+every infinitesimal pairwise rotation at $U_0$ decreases the objective, although
+a different assignment has greater value. Commutativity therefore provides an
+exact global characterization without ensuring that ascent finds it. The
+oracle used subsequently is an interior stationary branch with uniform local
+curvature; the analysis requires the iterates to remain in its regular chart.
+
+\begin{assumption}[A regular oracle chart]\label{ass:tf-chart}
+Let $\psi:\mathcal D\subset\RR^p\to\mathfrak F$ be a smooth chart on a convex
+set, $f_C:=\Phi(\psi(\cdot);C)$, and
+\begin{gather}
+ \nabla f_C(x_C^\star)=0,\quad
+ -L_\phi I\preceq\nabla^2 f_C(x)\preceq-\mu_\phi I\quad(x\in\mathcal D),\\
+ 0<\mu_\phi\le L_\phi,\quad
+ \|\mathrm D\psi(x)\|_{2\to F}\le J_\psi,\quad
+ \|\nabla^3 f_C(x)\|\le T_\phi.
+\end{gather}
+\end{assumption}
+\begin{lemma}[Oracle sensitivity and differentiability]\label{lem:tf-oracle}
+If $C,\widehat C$ satisfy Assumption~\ref{ass:tf-chart} in the same chart,
+then, with $E_C:=2J_\psi\sum_k\omega_k\sqrt{r_k}\epsilon_k$,
+\begin{align}
+ \sup_x\|\nabla f_{\widehat C}(x)-\nabla f_C(x)\|&\le E_C,\\
+ \|x_{\widehat C}^\star-x_C^\star\|&\le E_C/\mu_\phi,\\
+ \mathrm D x_C^\star[\Delta C]
+ &=-[\nabla^2 f_C(x_C^\star)]^{-1}
+                 \nabla f_{\Delta C}(x_C^\star).
+\end{align}
+If $\|\nabla^2f_{\Delta C}\|\le E_H$, and $v=x_{C+\Delta C}^\star-x_C^\star$,
+\begin{equation}
+ \|v-\mathrm D x_C^\star[\Delta C]\|
+ \le\frac{T_\phi}{2\mu_\phi^3}E_C^2+
+                         \frac{E_H}{\mu_\phi^2}E_C.
+\end{equation}
+\end{lemma}
+\begin{proof}
+\begin{align}
+ \|H(U;\Delta C)\|_F&\le2\sum_k\omega_k\epsilon_k\|UF_k\|_F
+ =2\sum_k\omega_k\sqrt{r_k}\epsilon_k,\\
+ \mu_\phi\|v\|^2
+ &\le-\langle\nabla f_C(x_C^\star+v)-\nabla f_C(x_C^\star),v\rangle
+ \le E_C\|v\|,\\
+ 0&=\nabla f_{C+\Delta C}(x_C^\star+v)
+ =\nabla^2 f_C(x_C^\star)v+\nabla f_{\Delta C}(x_C^\star)+R,\\
+ \|R\|&\le\tfrac12T_\phi\|v\|^2+E_H\|v\|,\\
+ v&=-[\nabla^2 f_C(x_C^\star)]^{-1}
+                  (\nabla f_{\Delta C}(x_C^\star)+R).
+\end{align}
+\end{proof}
+The factor $\mu_\phi^{-1}$ measures how strongly estimation errors can move the
+local flag optimum. A nearly flat objective can change its preferred flag
+substantially under a small covariance perturbation. The next spectral bound
+exhibits the corresponding gap dependence for a single projector; a general
+multi-covariance flag uses the chart curvature above.
+
+\begin{proposition}[Residual Davis--Kahan bound]\label{prop:rigid-gap}
+Let $C=Q_1\Lambda_1Q_1^\top+Q_2\Lambda_2Q_2^\top$, $\dim Q_1=r$, and
+$g:=\lambda_r(C)-\lambda_{r+1}(C)>0$. If $\widehat C=C+E$,
+$\|E\|_{\op}\le\epsilon<g$, and $\widehat P$ is its leading rank-$r$ projector,
+set $s_r:=\min(r,d-r)$ and
+$g_{\rm sep}:=\lambda_{\min}(\widehat\Lambda_1)-\lambda_{\max}(\Lambda_2)$.
+Then $g_{\rm sep}\ge g-\epsilon>0$ and
+\begin{equation}
+ \|\widehat P-Q_1Q_1^\top\|_F
+ \le\frac{\sqrt2\|Q_2^\top E\widehat Q_1\|_F}{g_{\rm sep}}
+ \le\frac{\sqrt{2s_r}\,\epsilon}{g-\epsilon}.
+\end{equation}
+The left side is also at most $\sqrt{2s_r}$. Keeping the off-diagonal residual
+can be substantially sharper than replacing it by $\sqrt{s_r}\epsilon$.
+\end{proposition}
+\begin{proof}
+This is the Sylvester-equation form of the Davis--Kahan
+$\sin\Theta$ theorem~\citep{davis_kahan}; Weyl's inequality supplies the
+separation from the unperturbed gap.
+\begin{align}
+ \widehat C\widehat Q_1&=\widehat Q_1\widehat\Lambda_1,\quad
+ X:=Q_2^\top\widehat Q_1,\quad
+ X\widehat\Lambda_1-\Lambda_2X=Q_2^\top E\widehat Q_1=:B,\\
+ \lambda_{\min}(\widehat\Lambda_1)-\lambda_{\max}(\Lambda_2)
+ &\ge g-\epsilon,\\
+ X_{ij}&=B_{ij}/(\widehat\lambda_j-\lambda_{r+i}),\quad
+ \|X\|_F\le\|B\|_F/g_{\rm sep},\quad
+ \|B\|_F\le\sqrt{s_r}\|E\|_{\op},\\
+ \|\widehat P-P\|_F^2&=2r-2\tr(\widehat P P)=2\|Q_2^\top\widehat Q_1\|_F^2.
+\end{align}
+\end{proof}
+\begin{corollary}[Local curvature at a common-order flag]
+If $\lambda_{k1}\ge\cdots\ge\lambda_{kd}$, then for $i\in I_a$, $l\in I_b$,
+\begin{gather}
+ \Delta_{ai,bl}=\sum_{k=a}^{b-1}\omega_k(\lambda_{ki}-\lambda_{kl}),
+ \quad \lambda_{k\cdot}:=0\ (k>K),\\
+ \delta_\star:=\min_{a<b,\,i\in I_a,\,l\in I_b}\Delta_{ai,bl}>0
+ \ \Longrightarrow\quad
+ -\operatorname{Hess}\Phi(U^\star)[Z,Z]\ge\delta_\star\|Z\|_F^2.
+\end{gather}
+For orthonormal chart coordinates at $U^\star$, and
+$\|\nabla^2f(x)-\nabla^2f(0)\|\le T_\phi\|x\|$,
+\begin{equation}
+ \|x\|\le\delta_\star/(2T_\phi)
+ \quad\Longrightarrow\quad-\nabla^2f(x)\succeq(\delta_\star/2)I.
+\end{equation}
+\end{corollary}

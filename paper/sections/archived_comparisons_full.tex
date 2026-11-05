@@ -1,0 +1,76 @@
+\input{sections/loss_curves_main}
+
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Validation-audited head-to-head endpoints.} PINNs restrict both methods to rank 64 and select by terminal PDE loss. Classifiers select by validation accuracy. Bold compares the two methods; all values use seed 42.}
+\label{tab:head-audited}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{llrr}
+\toprule
+Task & Metric & Single-G & STRATA \\
+\midrule
+burgers & Rel-$L_2$ $\downarrow$ & \textbf{0.02607} & \cellcolor{oursbg}0.02666 \\
+burgersg2 & Rel-$L_2$ $\downarrow$ & 0.02617 & \cellcolor{oursbg}\textbf{0.02615} \\
+poisson & Rel-$L_2$ $\downarrow$ & 2.04357 & \cellcolor{oursbg}\textbf{0.18741} \\
+mnist & Accuracy $\uparrow$ & 0.98011 & \cellcolor{oursbg}\textbf{0.98273} \\
+fashion & Accuracy $\uparrow$ & \textbf{0.90328} & \cellcolor{oursbg}0.89907 \\
+cifar10 & Accuracy $\uparrow$ & \textbf{0.94034} & \cellcolor{oursbg}0.94014 \\
+cifar100 & Accuracy $\uparrow$ & \textbf{0.72574} & \cellcolor{oursbg}0.71402 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+\begin{table}[t]
+\centering
+\caption{Archived benchmark endpoints. Bold marks the better of STRATA and Single-Grassmann only; these are single-seed endpoints, not multi-seed estimates.}
+\label{tab:main}
+\footnotesize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lrrrrl}
+\toprule
+Task & AdamW & GaLore & Single-G & STRATA & Verdict \\
+\midrule
+Burgers rel-$L_2$ $\downarrow$ & 0.0286 & 0.436 & \textbf{0.0261} & \cellcolor{oursbg}0.0267 & tie \\
+Burgers-g2 rel-$L_2$ $\downarrow$ & 0.0486 & -- & 0.0262 & \cellcolor{oursbg}\textbf{0.0262} & tie \\
+Poisson rel-$L_2$ $\downarrow$ & 0.0079 & -- & 2.0436 & \cellcolor{oursbg}\textbf{0.1874} & SG unstable \\
+MNIST acc. $\uparrow$ & 0.987 & 0.985 & 0.9801 & \cellcolor{oursbg}\textbf{0.9827} & tie \\
+Fashion acc. $\uparrow$ & -- & -- & \textbf{0.9033} & \cellcolor{oursbg}0.8991 & tie \\
+CIFAR-10 acc. $\uparrow$ & 0.9419 & 0.9412 & \textbf{0.9403} & \cellcolor{oursbg}0.9401 & tie \\
+CIFAR-100 acc. $\uparrow$ & 0.7358 & 0.7051 & \textbf{0.7257} & \cellcolor{oursbg}0.7140 & SG slight \\
+ogbn-arxiv val acc. $\uparrow$ & 0.7351 & 0.7234 & \textbf{0.7349} & \cellcolor{oursbg}0.7337 & tie \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\paragraph{Archived comparison.} Table~\ref{tab:main} and Table~\ref{tab:head-audited} support a restrained conclusion. STRATA becomes stable after the numerical fixes, but it is not a universal improvement over Single-Grassmann. In the archived Burgers, Burgers-g2, MNIST, Fashion, CIFAR-10, and ogbn-arxiv comparisons, the practical conclusion is a tie or near-tie. In CIFAR-100, Single-Grassmann is ahead by 0.0117. In Poisson, STRATA is much better than Single-Grassmann in a grid where the latter is unstable, but full AdamW is still substantially better at 0.0079 versus 0.1874.
+
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Epoch-axis nesting diagnostics.} First/last values and early/late-half means use the complete retained diagnostic trajectory. Spearman $\rho$ uses recorded epochs. Diagnostic trends do not establish a performance ranking.}
+\label{tab:dnest}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lrrrrr}
+\toprule
+Task & First & Last & Early mean & Late mean & $\rho$ \\
+\midrule
+ogbn-arxiv & 0.047 & 0.493 & 0.330 & 0.477 & +0.998 \\
+MNIST & 0.309 & 0.204 & 0.249 & 0.204 & -0.766 \\
+Fashion & 0.322 & 0.345 & 0.344 & 0.335 & -0.065 \\
+Burgers & 0.880 & 0.690 & 0.416 & 0.618 & +0.901 \\
+Poisson & 0.573 & 0.415 & 0.287 & 0.407 & +0.822 \\
+CIFAR & 0.512 & 0.601 & 0.397 & 0.434 & +0.224 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+\paragraph{$\delta_{\mathrm{nest}}$ is descriptive.} The epoch-axis rejudgment is crucial. Graph is unique only in its low starting point, approximately 0.05, followed by collapse to about 0.49. It is not unique in rising: Burgers and Poisson also rise strongly, with Spearman correlations 0.901 and 0.822, and Burgers after its short initial dip has Spearman 0.993. Because rising, flat, and falling diagnostics all map mostly to head-to-head ties, $\delta_{\mathrm{nest}}$ is useful for describing gradient structure but not for predicting STRATA's performance.
+
+\paragraph{A5 mechanism ablation.} Setting $a_1=\cdots=a_K=a_\perp$ makes $\Gamma^a=0$ in the linear surrogate, while coordinatewise Adam remains basis dependent (Appendix~\ref{app:theory-full}). Equalizing scalar layer weights does not substantially degrade the tested cells: in Burgers at lr $5\times10^{-3}$ and rank 64, full STRATA gives 0.0267 and A5 gives 0.0270; in Poisson at lr $5\times10^{-4}$ and rank 32, full STRATA gives 0.0603 and A5 gives 0.0673. These archived cells alone do not establish a benefit from distinct layer weights. The new PubMed controls below test a different empirical regime, with every intervention and adverse outcome retained.
+
+
+\input{sections/breadth_results}

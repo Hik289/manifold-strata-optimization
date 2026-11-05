@@ -1,0 +1,315 @@
+\subsection{The implemented adaptive map and its coordinate errors}
+This subsection fixes the order of operations in the implemented optimizer.
+The parameter step uses the current flag; a scheduled refresh then aligns the
+new basis, transports first moments, and resets second moments. Keeping their
+ages separate is essential because the two statistics retain different
+amounts of history after a refresh.
+
+\begin{definition}[One exact matrix-state transition]\label{def:rigid-map}
+Let $W_t,G_t\in\RR^{m\times d}$, $U_t\in\St(d,R)$, and
+$\chi_t:=\mathbf1_{t\equiv0\pmod\tau}$. Operations $\odot$, division, and square
+roots below are entrywise. Assume $0\le\beta_{jk}<1$, $\epsilon,\gamma,\xi>0$,
+$\tau\in\mathbb N$. Before the refresh,
+\begin{align}
+ Y_{k,t}^-&=\rho_kY_{k,t-1}+(1-\rho_k)G_t^\top G_t\Omega_k,\\
+ Z_{k,t}&=G_tU_{k,t},\\
+ M_{k,t}^-&=\beta_{1k}M_{k,t-1}^++(1-\beta_{1k})Z_{k,t},\\
+ V_{k,t}^-&=\beta_{2k}V_{k,t-1}^++(1-\beta_{2k})Z_{k,t}^{\odot2},\\
+ c_{M,k,t}^-&=c_{M,k,t-1}^++1,\quad c_{V,k,t}^-=c_{V,k,t-1}^++1,\\
+ \widehat M_{k,t}&=M_{k,t}^-/(1-\beta_{1k}^{c_{M,k,t}^-}),\quad
+ \widehat V_{k,t}=V_{k,t}^-/(1-\beta_{2k}^{c_{V,k,t}^-}),\\
+ H_{k,t}&=\widehat M_{k,t}/(\sqrt{\widehat V_{k,t}}+\epsilon),\\
+ D_t&=\sum_k a_kH_{k,t}U_{k,t}^\top+
+   a_\perp\mathcal R_\epsilon(G_t(I-U_tU_t^\top)),
+ \label{eq:rigid-direction}\\
+ \mathcal R_\epsilon(X)&:=X/(\|X\|_F/\sqrt{md}+\epsilon),\\
+ W_{t+1}&=(1-\eta_t\lambda)W_t-\eta_tD_t.
+\end{align}
+If $\chi_t=1$,
+\begin{align}
+ \widetilde C_{k,t}&:=\mathcal N_\gamma(Y_{k,t}^-),\quad
+ \overline U_t:=\operatorname{qf}(U_t+\xi\operatorname{grad}\Phi(U_t;\widetilde C_t)),\\
+ O_{k,t}&:=\operatorname{polar}(\overline U_{k,t}^\top U_{k,t}),\quad
+ U_{k,t+1}:=\overline U_{k,t}O_{k,t},\\
+ M_{k,t}^+&:=M_{k,t}^-O_{k,t}^\top,\quad
+ V_{k,t}^+:=0,\quad c_{V,k,t}^+:=0,\quad c_{M,k,t}^+:=c_{M,k,t}^-.
+\end{align}
+If $\chi_t=0$, set $(U_{t+1},M_t^+,V_t^+,c_t^+)=(U_t,M_t^-,V_t^-,c_t^-)$. In both
+cases $Y_{k,t}=Y_{k,t}^-$. Thus $D_t$ uses $U_t$, not $U_{t+1}$.
+\end{definition}
+\begin{lemma}[Procrustes optimization and polar sensitivity]\label{lem:rigid-polar}
+For orthonormal $A,B\in\RR^{d\times q}$ and nonsingular $A^\top B=L\Sigma R^\top$,
+\begin{gather}
+ \arg\min_{O\in\mathrm O(q)}\|AO-B\|_F^2=LR^\top,\qquad
+ \min_O\|AO-B\|_F^2=2q-2\|A^\top B\|_*,\\
+ \|\operatorname{polar}(X)-\operatorname{polar}(Y)\|_F
+ \le\frac{2\|X-Y\|_F}{\sigma_{\min}(X)+\sigma_{\min}(Y)}.
+\end{gather}
+\end{lemma}
+\begin{proof}
+\begin{align}
+ \|AO-B\|_F^2&=2q-2\tr(O^\top A^\top B),\\
+ \tr(O^\top L\Sigma R^\top)&=\tr(\Sigma R^\top O^\top L)
+ \le\tr\Sigma,\\
+ X&=PH,\quad Y=P'H',\quad Q=P^\top P',\quad E=X-Y,\\
+ P^\top E-E^\top P'&=H(I-Q)+(I-Q)H',\\
+ \langle T,HT+TH'\rangle_F
+ &\ge(\lambda_{\min}(H)+\lambda_{\min}(H'))\|T\|_F^2,\\
+ \|I-Q\|_F&\le\frac{\|P^\top E-E^\top P'\|_F}
+                         {\lambda_{\min}(H)+\lambda_{\min}(H')}
+ \le\frac{2\|E\|_F}{\sigma_{\min}(X)+\sigma_{\min}(Y)}.
+\end{align}
+\end{proof}
+\begin{proposition}[Exact least-squares transport and implemented discrepancy]
+\label{prop:rigid-transport}
+For old and new block bases $U,V\in\St(d,q)$, $A:=MU^\top$, the unique minimizer is
+\begin{align}
+ M_\mathrm{LS}&:=\arg\min_N\|NV^\top-A\|_F^2=MU^\top V,\\
+ \|NV^\top-A\|_F^2
+ &=\|N-MU^\top V\|_F^2+\|MU^\top(I-VV^\top)\|_F^2.
+\end{align}
+For $V=\overline U O$ and the implemented $M^+=MO^\top$,
+\begin{align}
+ \|M^+V^\top-MU^\top\|_F^2
+ &=\|M(O^\top-U^\top V)\|_F^2+
+                              \|MU^\top(I-VV^\top)\|_F^2,\\
+ \|MU^\top(I-VV^\top)\|_F
+ &\le\|M\|_{\op}\|UU^\top-VV^\top\|_F/\sqrt2.
+\end{align}
+In particular,
+\begin{gather}
+ \overline U=UR,\quad O=R^\top,\quad V=U,\quad M^+=MR,\\
+ d_P(U,V)=0,\qquad \|M^+V^\top-MU^\top\|_F=\|M(R-I)\|_F.
+\end{gather}
+\end{proposition}
+\begin{proof}
+\begin{align}
+ NV^\top-A&=(N-AV)V^\top-A(I-VV^\top),\\
+ \langle(N-AV)V^\top,A(I-VV^\top)\rangle_F&=0,\\
+ \|U^\top(I-VV^\top)\|_F^2
+ &=q-\tr(UU^\top VV^\top)=\tfrac12\|UU^\top-VV^\top\|_F^2,\\
+ \operatorname{polar}((UR)^\top U)&=R^\top.
+\end{align}
+\end{proof}
+The transport identity separates two losses of information. Projection onto a
+changed subspace discards the component outside it, while a coordinate mismatch
+can perturb the represented moment even inside the new subspace. Least-squares
+transport minimizes their total squared error. The implemented rotation has
+an additional, explicitly retained discrepancy, including in the pure-basis
+example above.
+
+\begin{lemma}[First-moment unrolling and boundedness]\label{lem:rigid-moment}
+If $M_0=0$, $M_t^-=\beta M_{t-1}^++(1-\beta)Z_t$, $M_t^+=M_t^-T_t$, and
+$\|T_t\|_{\op}\le1$, then
+\begin{align}
+ M_t^-&=(1-\beta)\sum_{i=1}^t\beta^{t-i}Z_iT_iT_{i+1}\cdots T_{t-1},\\
+ \|Z_i\|_F\le G_\star
+ &\Longrightarrow\|M_t^-\|_F\le(1-\beta^t)G_\star,\quad
+ \|\widehat M_t\|_F\le G_\star.
+\end{align}
+For $T_t=O_t^\top$ or $T_t=U_t^\top U_{t+1}$, $\|T_t\|_{\op}\le1$. If the second
+moment age is $a_t\ge1$ and $\|Z_i\|_F\le G_\star$, then
+\begin{gather}
+ \|\sqrt{\widehat V_t}\|_F^2\le G_\star^2,\quad
+ \|H_t\|_F\le G_\star/\epsilon,\quad
+ \|D_t\|_F\le\epsilon^{-1}G_\star\sum_k|a_k|+|a_\perp|\sqrt{md}.
+\end{gather}
+\end{lemma}
+\begin{proof}
+\begin{align}
+ \|M_t^-\|_F&\le(1-\beta)G_\star\sum_{i=1}^t\beta^{t-i}
+ =(1-\beta^t)G_\star,\\
+ \tr\widehat V_t&=\frac{1-\beta_2}{1-\beta_2^{a_t}}
+                 \sum_{j=0}^{a_t-1}\beta_2^j\|Z_{t-j}\|_F^2\le G_\star^2,\\
+ \|H_t\|_F&\le\|\widehat M_t\|_F/\epsilon,\quad
+ \|\mathcal R_\epsilon(X)\|_F
+ =\frac{\|X\|_F}{\|X\|_F/\sqrt{md}+\epsilon}\le\sqrt{md}.
+\end{align}
+\end{proof}
+\begin{lemma}[Square-root state and normalization]\label{lem:rigid-root}
+For $S=\sqrt V$, define
+$\mathcal S_\beta(S,Z):=\sqrt{\beta S^{\odot2}+(1-\beta)Z^{\odot2}}$. Then
+\begin{align}
+ \|\mathcal S_\beta(S,Z)-\mathcal S_\beta(S',Z')\|_F
+ &\le\sqrt\beta\|S-S'\|_F+\sqrt{1-\beta}\|Z-Z'\|_F,\\
+ \left\|\frac{M}{S+\epsilon}-\frac{M'}{S'+\epsilon}\right\|_F
+ &\le\epsilon^{-1}\|M-M'\|_F+
+          \epsilon^{-2}\|M'\|_{\max}\|S-S'\|_F.
+\end{align}
+For synchronized ages $c\ge1,a\ge1$ and $\|M'\|_{\max}\le G_\star$,
+\begin{align}
+ \|H-H'\|_F&\le A_M\|M-M'\|_F+A_S\|S-S'\|_F,\\
+ A_M&:=\frac1{(1-\beta_1)\epsilon},\quad
+ A_S:=\frac{G_\star}{(1-\beta_1)\epsilon^2\sqrt{1-\beta_2}}.
+\end{align}
+\end{lemma}
+\begin{proof}
+\begin{align}
+ |\mathcal S_\beta(s,z)-\mathcal S_\beta(s',z')|
+ &=\big|\|(\sqrt\beta s,\sqrt{1-\beta}z)\|_2
+       -\|(\sqrt\beta s',\sqrt{1-\beta}z')\|_2\big|\\
+ &\le\sqrt{\beta|s-s'|^2+(1-\beta)|z-z'|^2},\\
+ \frac{m}{s+\epsilon}-\frac{m'}{s'+\epsilon}
+ &=\frac{m-m'}{s+\epsilon}
+   +\frac{m'(s'-s)}{(s+\epsilon)(s'+\epsilon)}.
+\end{align}
+\end{proof}
+Using $\sqrt V$ as the state distance avoids differentiating the square-root
+function at a zero variance entry. The resulting normalization bound remains
+finite because of $\epsilon$, but its sensitivity can scale as
+$\epsilon^{-2}$. This identifies a concrete connection between numerical
+regularization and the later stability constants.
+
+\begin{proposition}[Radial residual map]\label{prop:rigid-radial}
+Writing $x=\operatorname{vec}X$, $N=md$, $r=\|x\|$, the eigenvalues of
+$\mathrm D\mathcal R_\epsilon(x)$ are
+\begin{gather}
+ \lambda_{\mathrm{rad}}=\frac{\epsilon}{(r/\sqrt N+\epsilon)^2},\quad
+ \lambda_{\mathrm{tan}}=\frac1{r/\sqrt N+\epsilon},\\
+ 0\preceq\mathrm D\mathcal R_\epsilon(x)\preceq\epsilon^{-1}I,\quad
+ \|\mathcal R_\epsilon(x)-\mathcal R_\epsilon(y)\|\le\epsilon^{-1}\|x-y\|,\\
+ \langle x,\mathcal R_\epsilon(x)\rangle
+ =\frac{r^2}{r/\sqrt N+\epsilon}\ge0.
+\end{gather}
+At $x=0$, $\mathrm D\mathcal R_\epsilon(0)=\epsilon^{-1}I$.
+\end{proposition}
+\begin{proof}
+\begin{equation}
+ \mathrm D\mathcal R_\epsilon(x)
+ =\frac{I}{r/\sqrt N+\epsilon}
+    -\frac{xx^\top}{\sqrt N\,r(r/\sqrt N+\epsilon)^2}\quad(r>0).
+\end{equation}
+\end{proof}
+\begin{proposition}[Coordinatewise Adam is not a quotient map]\label{prop:tf-gauge}
+For $U=(e_1,e_2)\in\St(3,2)$, $G=(1,0,0)$, zero initial moments, and
+$R=2^{-1/2}\left(\begin{smallmatrix}1&-1\\1&1\end{smallmatrix}\right)$,
+\begin{gather}
+ UU^\top=(UR)(UR)^\top,\\
+ \frac{GU}{|GU|+\epsilon}U^\top=\frac{e_1^\top}{1+\epsilon},\qquad
+ \frac{GUR}{|GUR|+\epsilon}R^\top U^\top
+                 =\frac{e_1^\top}{2^{-1/2}+\epsilon}.
+\end{gather}
+For a signed permutation $Q$, the transformations
+\begin{gather}
+ U'=UQ,\quad Z'=ZQ,\quad M'=MQ,\quad V'=V|Q|,\\
+ H'=HQ,\quad H'U'^\top=HU^\top
+\end{gather}
+are equivariant. The corresponding identities do not hold for general
+$Q\in\mathrm O(q)$.
+\end{proposition}
+\begin{proof}
+\begin{gather}
+ (ZQ)^{\odot2}=Z^{\odot2}|Q|\quad(Q\text{ signed permutation}),\\
+ (ZR)^{\odot2}\ne Z^{\odot2}R\quad\text{in general},\qquad
+ (|ZR|+\epsilon)^{-1}\odot ZR\ne((|Z|+\epsilon)^{-1}\odot Z)R.
+\end{gather}
+\end{proof}
+\begin{proposition}[Linear projector surrogate]\label{prop:tf-B}
+Set $a_{K+1}:=a_\perp$ and
+\begin{align}
+ B(U)&:=\sum_{j=1}^Ka_j\Pi_j(U)+a_\perp\Pi_{K+1}(U)\\
+ &=a_\perp I+\sum_{k=1}^K(a_k-a_{k+1})P_k(U),\\
+ a_-I&\preceq B(U)\preceq a_+I,\quad
+ a_-:=\min_j a_j>0,\quad a_+:=\max_j a_j,\\
+ \Gamma^a&:=\sum_k|a_k-a_{k+1}|,\quad
+ \|B(U)-B(V)\|_{\op}\le\Gamma^a d_P(U,V).
+ \label{eq:tf-B-error}
+\end{align}
+In particular, $a_1=\cdots=a_K=a_\perp=a$ implies $B(U)=aI$.
+\end{proposition}
+\begin{proof}
+\begin{align}
+ x^\top B(U)x&=\sum_{j=1}^{K+1}a_j\|\Pi_jx\|^2,\quad
+ \sum_j\|\Pi_jx\|^2=\|x\|^2,\\
+ \|B(U)-B(V)\|_{\op}
+ &\le\sum_k|a_k-a_{k+1}|\|P_k(U)-P_k(V)\|_F.
+\end{align}
+\end{proof}
+For the linear surrogate, equal block coefficients remove all dependence on
+the flag through $\Gamma^a=0$. Proposition~\ref{prop:tf-gauge} shows why the
+corresponding Adam ablation has a narrower interpretation: entrywise
+normalization still depends on the basis. The following decomposition keeps
+moment lag and changing normalizers explicit when applying surrogate descent
+results to the implemented update.
+
+\begin{definition}[Exact predictable-surrogate decomposition]\label{def:rigid-error}
+For any $\mathcal F_{t-1}$-measurable positive operator $B_t$ on
+$\RR^{m\times d}$, define
+\begin{gather}
+ e_t^{\mathrm{alg}}:=D_t-B_tG_t,\qquad
+ e_t:=e_t^{\mathrm{alg}}+\lambda W_t,\\
+ W_{t+1}=W_t-\eta_t(B_tG_t+e_t).
+\end{gather}
+For a rowwise lagged diagonal surrogate, let
+\begin{gather}
+ h_{k,ij,t}^-:=(\sqrt{\widehat V_{k,ij,t-1}}+\epsilon)^{-1},\quad
+ b_{i,t}^-:=\sum_k a_k U_{k,t}\diag(h_{k,i:,t}^-)U_{k,t}^\top
+                     +a_\perp c_t^-\Pi_{K+1,t},\\
+ (B_tG)_{i:}:=G_{i:}b_{i,t}^-,\qquad c_t^->0\text{ predictable}.
+\end{gather}
+Then, exactly,
+\begin{align}
+ e_t^{\mathrm{alg}}
+ &=\sum_k a_k\left[
+ (\widehat M_{k,t}-Z_{k,t})\odot h_{k,t}^-
+ +\widehat M_{k,t}\odot(h_{k,t}-h_{k,t}^-)
+ \right]U_{k,t}^\top\\
+ &\quad+a_\perp(c_t-c_t^-)G_t\Pi_{K+1,t},\quad
+ c_t:=(\|G_t\Pi_{K+1,t}\|_F/\sqrt{md}+\epsilon)^{-1},\\
+ \|e_t^{\mathrm{alg}}\|_F
+ &\le\sum_k|a_k|\left[
+ \epsilon^{-1}\|\widehat M_{k,t}-Z_{k,t}\|_F+
+ G_\star\|h_{k,t}-h_{k,t}^-\|_{\max}\right]
+ +|a_\perp|G_\star|c_t-c_t^-|.
+\end{align}
+Set $h_{k,t}^-=\epsilon^{-1}\mathbf1$ when the lagged second-moment age is zero.
+The moment-lag term includes the transport discrepancy of
+Proposition~\ref{prop:rigid-transport}.
+\end{definition}
+\begin{lemma}[Clipping bias]\label{lem:rigid-clipping}
+Let $\widetilde g$ be an unbiased gradient, $g=\widetilde g\min(1,c/\|\widetilde g\|)$,
+$h=\EE\widetilde g$, and $\EE\|\widetilde g\|^p\le M_p$, $p>1$. Then
+\begin{align}
+ b_c&:=\EE g-h,\quad
+ \|b_c\|\le\EE(\|\widetilde g\|-c)_+
+ \le\frac{(p-1)^{p-1}}{p^p}\frac{M_p}{c^{p-1}}.
+\end{align}
+\end{lemma}
+\begin{proof}
+\begin{gather}
+ \|g-\widetilde g\|=(\|\widetilde g\|-c)_+,\qquad
+ \sup_{x>c}\frac{x-c}{x^p}
+ =\frac{(p-1)^{p-1}}{p^pc^{p-1}},\quad x_{\max}=pc/(p-1).
+\end{gather}
+\end{proof}
+\begin{proposition}[Second-order coordinate error for a horizontal QR step]
+\label{prop:rigid-small-transport}
+Let $Z\in\Hor_U$, $\overline U=\operatorname{qf}(U+Z)=U+Z+E$,
+$e:=\|E\|_F<1$, and, blockwise, $C_j:=\overline U_j^\top U_j=O_jH_j$.
+Then
+\begin{gather}
+ U_j^\top Z_j=0,\quad \|C_j-I\|_F\le e_j:=\|E_j\|_F,\quad
+ H_j=U_j^\top(\overline U_jO_j),\\
+ \|O_j-I\|_F\le\frac{2e_j}{2-e_j},\quad
+ \|H_j-I\|_F\le e_j,\quad
+ \|O_j^\top-U_j^\top(\overline U_jO_j)\|_F
+                 \le\left(1+\frac2{2-e_j}\right)e_j,\\
+ e\le(1+\|Z\|_{\op}^2)\|Z\|_F^2.
+\end{gather}
+Consequently the coordinate part of the transport discrepancy obeys
+\begin{equation}
+ \|M_j(O_j^\top-U_j^\top U_j^+)\|_F
+ \le\|M_j\|_{\op}\left(1+\frac2{2-e}\right)
+                    (1+\|Z\|_{\op}^2)\|Z\|_F^2.
+\end{equation}
+\end{proposition}
+\begin{proof}
+\begin{align}
+ C_j&=I+Z_j^\top U_j+E_j^\top U_j=I+E_j^\top U_j,\\
+ \sigma_{\min}(C_j)&\ge1-e_j,\qquad C_j^\top O_j=H_j,\\
+ \|O_j-I\|_F&\le2\|C_j-I\|_F/(\sigma_{\min}(C_j)+1),\\
+ \|C_j-I\|_F^2-\|H_j-I\|_F^2
+ &=2\tr(H_j)-2\tr(O_jH_j)\ge0,\\
+ \|O_j^\top-H_j\|_F&\le\|O_j-I\|_F+\|I-H_j\|_F.
+\end{align}
+\end{proof}

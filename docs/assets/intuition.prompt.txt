@@ -1,0 +1,9 @@
+Asset: original PNG intuition diagram, generated with the built-in image-generation tool.
+Title: STRATA. Subtitle: Nested subspaces. Multiple timescales.
+Scientific content: three memory timescales track gradient structure; a line inside
+a plane inside a surrounding space illustrates a nested flag U1 subset U2 subset U3;
+separate blockwise adaptive directions and a residual combine into an unconstrained
+weight update. A lower feedback loop represents flag refresh, coordinate alignment
+and first-moment transport. This is a conceptual picture, not measured evidence.
+Style: white background, generous space, crisp typography, navy/teal/blue/amber,
+three panels labeled Track, Organize, Update; no conference logos or performance claims.

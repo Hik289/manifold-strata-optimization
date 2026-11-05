@@ -1,0 +1,489 @@
+\subsection{Convergence of the actual current-gradient-normalized update}
+The second-moment update includes the current stochastic gradient, so its
+normalizer and gradient are dependent. We analyze their combined nonlinear
+field. The proof first establishes monotonicity of that field, then compares
+the conditional noise distribution with its reflection. This provides a
+descent term together with a quantitative cost for gradient bias and noise
+asymmetry, before momentum and refresh errors are introduced.
+
+\begin{definition}[Conditional normalization field]\label{def:actual-field}
+Condition on $\mathcal F_{t-1}$, with $U_t$, the stored moments, and their ages
+fixed. Use rowwise vectorization, $N=md$, and let $\mathcal P_{k,t}$ be the
+orthogonal parameter-coordinate projector induced by $\Pi_{k,t}$.
+For each active coordinate $i$ of block $k$ set
+\begin{gather}
+ \alpha_{k,t}:=\frac{1-\beta_{2k}}{1-\beta_{2k}^{c_{V,k,t}}},\quad
+ c_{i,t}:=\frac{\beta_{2k}V_{i,t-1}^+}{1-\beta_{2k}^{c_{V,k,t}}},\quad
+ h_{i,t}(z):=\frac{a_k}{\sqrt{c_{i,t}+\alpha_{k,t}z^2}+\epsilon},\\
+ \mathcal B_t(g):=\bigoplus_{k=1}^K\diag_i h_{i,t}((\operatorname{mat}(g)U_{k,t})_i)
+ \ \oplus\ \frac{a_\perp}{\|\operatorname{mat}(g)\Pi_{K+1,t}\|/\sqrt N+\epsilon}I_{m(d-R)},\\
+ \mathcal T_t(g):=\mathcal B_t(g)g.
+\end{gather}
+The direct sum is expressed in the orthonormal block frame and lifted back to
+parameter space. In particular, $\mathcal B_t(g)$ depends on the current $g$.
+\end{definition}
+\begin{lemma}[Strong monotonicity of the normalization field]\label{lem:actual-normalization}
+Suppose $\|g_s\|\le G$ for all preceding steps, $a_k,a_\perp>0$, and
+\begin{gather}
+ M:=\epsilon^{-1}\max\{a_1,\ldots,a_K,a_\perp\},\\
+ \kappa:=\min\left\{\min_k\frac{a_k\epsilon}{(3G+\epsilon)^2},
+                 \frac{a_\perp\epsilon}{(3G/\sqrt N+\epsilon)^2}\right\}>0.
+\end{gather}
+Then, on $\|x\|,\|y\|\le3G$,
+\begin{gather}
+ \mathcal T_t(-x)=-\mathcal T_t(x),\quad
+ \|\mathcal T_t(x)-\mathcal T_t(y)\|\le M\|x-y\|,\\
+ \langle x-y,\mathcal T_t(x)-\mathcal T_t(y)\rangle
+                              \ge\kappa\|x-y\|^2.
+\end{gather}
+\end{lemma}
+\begin{proof}
+The exact reset-age recursion gives
+\begin{align}
+ V_{i,t-1}^+&\le(1-\beta_{2k}^{c_{V,k,t}-1})G^2,\\
+ 0\le c_{i,t}&\le(1-\alpha_{k,t})G^2,\quad0<\alpha_{k,t}\le1,\\
+ s(z)&:=\sqrt{c_{i,t}+\alpha_{k,t}z^2},\quad
+ f(z):=a_kz/(s(z)+\epsilon),\\
+ f'(z)&=\frac{a_k(c_{i,t}/s(z)+\epsilon)}{(s(z)+\epsilon)^2}
+ \quad(s(z)>0),\\
+ |z|\le3G&\Longrightarrow s(z)\le3G,\quad
+ \frac{a_k\epsilon}{(3G+\epsilon)^2}\le f'(z)\le a_k/\epsilon.
+\end{align}
+For $c_{i,t}=z=0$, $f'(0)=a_k/\epsilon$ by continuity. On the residual block,
+Proposition~\ref{prop:rigid-radial} gives the same bounds with
+$3G$ replaced by $3G/\sqrt N$. Thus
+\begin{gather}
+ \kappa I\preceq\mathrm D\mathcal T_t(x)\preceq MI,\quad\|x\|\le3G,\\
+ \mathcal T_t(x)-\mathcal T_t(y)
+ =\int_0^1\mathrm D\mathcal T_t(y+s(x-y))(x-y)\,\mathrm ds.
+\end{gather}
+\end{proof}
+\begin{definition}[Bias and symmetry defect]\label{def:actual-symmetry}
+\begin{gather}
+ h_t:=\nabla F(w_t),\quad\overline h_t:=\EE_tg_t,\quad
+ b_t:=\overline h_t-h_t,\quad\xi_t:=g_t-\overline h_t,\\
+ \nu_t:=\mathcal L(\xi_t\mid\mathcal F_{t-1}),\quad
+ \nu_t^-:=(-\Id)_\#\nu_t,\quad
+ \delta_t:=W_1(\nu_t,\nu_t^-),\quad D_t:=\|b_t\|+\delta_t/2,\\
+ \mathfrak a_t:=\|\EE_t\mathcal T_t(\xi_t)\|,\qquad
+ \widehat D_t:=\|b_t\|+\mathfrak a_t/M,\\
+ W_1(\mu,\nu):=\inf_{(X,Y):\,X\sim\mu,Y\sim\nu}\EE\|X-Y\|.
+\end{gather}
+\end{definition}
+\begin{theorem}[Odd-field coercivity and Kantorovich--Rubinstein calibration]
+\label{thm:actual-coercivity}
+If $\|g_t\|,\|h_t\|\le G$, then
+\begin{align}
+ \langle h_t,\EE_t[\mathcal B_t(g_t)g_t]\rangle
+ &\ge\kappa\|h_t\|^2-M\widehat D_t\|h_t\|\\
+ &\ge\tfrac\kappa2\|h_t\|^2-\frac{M^2}{2\kappa}\widehat D_t^2.
+\end{align}
+Moreover,
+\begin{gather}
+ \mathfrak a_t\le\min\{M\delta_t/2,\mathsf H_t\},\quad
+ \widehat D_t\le D_t,\\
+ \mathsf H_t^2:=m\sum_{k=1}^K\frac{q_ka_k^2}{\alpha_{k,t}}+Na_\perp^2.
+\end{gather}
+If $b_t=0$ and $\nu_t=\nu_t^-$, the stronger lower bound is
+$\kappa\|h_t\|^2$; more generally $b_t=0$ and $\mathfrak a_t=0$ suffice.
+\end{theorem}
+\begin{proof}
+Strong monotonicity applies on the segment from $\xi_t$ to $\xi_t+h_t$,
+whose norm is at most $3G$. Lipschitz continuity controls the shift $b_t$:
+\begin{align}
+ \|\EE_t[\mathcal T_t(g_t)-\mathcal T_t(h_t+\xi_t)]\|
+ &\le M\|b_t\|,\\
+ \langle h_t,\EE_t[\mathcal T_t(h_t+\xi_t)-\mathcal T_t(\xi_t)]\rangle
+ &\ge\kappa\|h_t\|^2,\\
+ M\widehat D_t\|h_t\|&\le\tfrac\kappa2\|h_t\|^2
+                              +\tfrac{M^2}{2\kappa}\widehat D_t^2.
+\end{align}
+For a unit vector $v$, $v^\top\mathcal T_t$ is $M$-Lipschitz and odd.
+Kantorovich--Rubinstein duality~\citep{villani2009optimal} therefore gives
+\begin{equation}
+ 2\mathfrak a_t
+ =\left\|\int\mathcal T_t\,\mathrm d\nu_t-
+                  \int\mathcal T_t\,\mathrm d\nu_t^-\right\|
+ \le M W_1(\nu_t,\nu_t^-).
+\end{equation}
+Each active normalized coordinate has magnitude at most
+$a_k/\sqrt{\alpha_{k,t}}$, and the residual norm is at most
+$a_\perp\sqrt N$. Orthogonality gives $\|\mathcal T_t(\xi_t)\|\le\mathsf H_t$,
+which supplies the second calibration without a factor $\epsilon^{-1}$.
+\end{proof}
+Bias and asymmetry enter through different mechanisms. Even an unbiased
+gradient can acquire a nonzero mean update under nonlinear normalization if
+its noise is asymmetric. Conversely, conditional symmetry cancels the odd
+normalization field at zero signal even when the noise has substantial
+variance. The directly normalized defect $\mathfrak a_t$ can be smaller than
+the Wasserstein envelope $M\delta_t/2$; the latter is a convenient sufficient
+bound, while the saturation calibration avoids introducing an unnecessary
+$\epsilon^{-1}$ factor into the asymmetry numerator.
+
+\begin{proposition}[Exact ambient momentum and refresh defect]\label{prop:actual-momentum}
+Write $G_t:=\operatorname{mat}(g_t)$. Let $\widehat M_{k,t}$ denote the bias-corrected first moment before refresh,
+$A_{k,t}:=\widehat M_{k,t}U_{k,t}^\top$, and
+\begin{gather}
+ m_t:=\operatorname{vec}\left(\sum_k A_{k,t}+G_t\Pi_{K+1,t}\right),\quad
+ \theta_{k,t}:=\frac{\beta_{1k}(1-\beta_{1k}^{t-1})}{1-\beta_{1k}^t},\quad
+ \Theta_t:=\sum_k\theta_{k,t}\mathcal P_{k,t},\\
+ \beta:=\max_k\beta_{1k}<1,\quad G_m:=\sqrt{K+1}G.
+\end{gather}
+With the first-moment ages $c_{M,k,t}=t$, exactly,
+\begin{gather}
+ m_t=\Theta_tm_{t-1}+(I-\Theta_t)g_t+u_t,\qquad
+ d_t=\mathcal B_t(g_t)m_t,\qquad \|m_t\|\le G_m,\\
+ u_t=\operatorname{vec}\sum_k\theta_{k,t}
+ \left[\widehat M_{k,t-1}O_{k,t-1}^\top U_{k,t}^\top
+                          -\operatorname{mat}(m_{t-1})\Pi_{k,t}\right].
+\end{gather}
+Here $O_{k,t-1}=I$ without a preceding refresh. Furthermore,
+\begin{align}
+ \|u_t\|
+ &\le\beta\sum_k\left[
+ G\|O_{k,t-1}^\top-U_{k,t-1}^\top U_{k,t}\|_{\op}
+ +G_m\|\Pi_{k,t}-\Pi_{k,t-1}\|_{\op}\right],\\
+ \chi_{t-1}=0&\Longrightarrow u_t=0.
+\end{align}
+\end{proposition}
+\begin{proof}
+\begin{align}
+ \widehat M_{k,t}
+ &=\theta_{k,t}\widehat M_{k,t-1}O_{k,t-1}^\top
+                         +(1-\theta_{k,t})G_tU_{k,t},\\
+ \|m_t\|^2&=\sum_k\|\widehat M_{k,t}\|_F^2+\|G_t\Pi_{K+1,t}\|_F^2
+ \le(K+1)G^2,\\
+ A_{k,t-1}(I-\Pi_{k,t-1})&=0,\quad
+ (\operatorname{mat}(m_{t-1})-A_{k,t-1})\Pi_{k,t-1}=0,\\
+ \widehat M_{k,t-1}O^\top U_{k,t}^\top-A_{k,t-1}\Pi_{k,t}
+ &=\widehat M_{k,t-1}(O^\top-U_{k,t-1}^\top U_{k,t})U_{k,t}^\top,\\
+ (\operatorname{mat}(m_{t-1})-A_{k,t-1})\Pi_{k,t}
+ &=\operatorname{mat}(m_{t-1})(I-\Pi_{k,t-1})
+                                     (\Pi_{k,t}-\Pi_{k,t-1}).
+\end{align}
+\end{proof}
+\begin{theorem}[Actual Adam normalization, momentum, and flag transport]
+\label{thm:actual-convergence}
+Assume $F$ is $L$-smooth, lower bounded, $\|h_t\|,\|g_t\|\le G$, $\lambda=0$,
+and the exact map of Definition~\ref{def:rigid-map} is used. Define
+\begin{gather}
+ B_t:=\mathcal B_t(g_t),\quad
+ C_t:=\eta_tB_t(I-\Theta_t)^{-1}\Theta_t,\quad C_0:=0\text{ before step }1,\\
+ z_t:=w_t-C_{t-1}m_{t-1},\quad
+ r_t:=(C_{t-1}-C_t)m_{t-1}-\eta_tB_t(I-\Theta_t)^{-1}u_t,\\
+ \overline\eta:=\sup_t\eta_t,\quad
+ G_z:=G+L\overline\eta M\beta G_m/(1-\beta),\quad
+ S_T:=\sum_{t=1}^T\eta_t,\quad\mathsf J_t:=\min\{MG,\mathsf H_t\}.
+\end{gather}
+Then
+\begin{align}
+ \frac\kappa2\sum_{t=1}^T\eta_t\EE\|\nabla F(w_t)\|^2
+ &\le\Delta_0+L\sum_{t=1}^T\eta_t^2\EE\mathsf J_t^2
+       +LG_m\sum_{t=1}^T\eta_t\EE[\mathsf J_t\|C_{t-1}\|_{\op}]\\
+ &\quad+\frac{M^2}{2\kappa}\sum_{t=1}^T\eta_t\EE \widehat D_t^2
+       +G_z\sum_{t=1}^T\EE\|r_t\|+L\sum_{t=1}^T\EE\|r_t\|^2,
+ \label{eq:actual-main-rate}\\
+ \|r_t\|&\le G_m\|C_t-C_{t-1}\|_{\op}
+                      +\frac{\eta_tM}{1-\beta}\|u_t\|.
+\end{align}
+Here $\Delta_0:=\EE F(w_1)-F_{\inf}$. No predictability assumption on $B_t$ is used.
+\end{theorem}
+\begin{proof}
+The virtual-iterate identity is algebraic, hence remains valid for random $B_t$:
+\begin{align}
+ z_{t+1}&=z_t-\eta_tB_tg_t+r_t,\\
+ \|w_t-z_t\|&\le G_m\|C_{t-1}\|_{\op},\quad
+ \|C_t\|_{\op}\le\eta_t M\beta/(1-\beta),\quad
+ \|B_tg_t\|\le\mathsf J_t,\\
+ F(z_{t+1})&\le F(z_t)-\eta_t\langle\nabla F(z_t),B_tg_t\rangle
+                 +\langle\nabla F(z_t),r_t\rangle
+                 +L\eta_t^2\|B_tg_t\|^2+L\|r_t\|^2,\\
+ \left|\langle\nabla F(z_t)-h_t,B_tg_t\rangle\right|
+ &\le LG_m\mathsf J_t\|C_{t-1}\|_{\op},\\
+ \EE_t\langle h_t,B_tg_t\rangle
+ &\ge\tfrac\kappa2\|h_t\|^2-\tfrac{M^2}{2\kappa}\widehat D_t^2,\\
+ \|\nabla F(z_t)\|&\le\|h_t\|+L\|w_t-z_t\|\le G_z.
+\end{align}
+Take conditional expectations and sum, using $z_1=w_1$ and $F(z_{T+1})\ge F_{\inf}$.
+\end{proof}
+The bound now separates current-normalization bias, momentum lag, and the
+variation/transport remainder $r_t$. The virtual-iterate identity remains exact
+even though $B_t$ is random and depends on $g_t$; the descent argument uses
+coercivity of the combined field. A rate follows only when the accumulated
+state changes and noise defect satisfy the budgets specified next.
+
+\begin{corollary}[Observable variation and batch-size conditions]\label{cor:actual-rate}
+Set $\eta_t=\eta_0T^{-1/2}$ and define
+\begin{gather}
+ V_T^B:=\sum_{t=1}^T\|B_t-B_{t-1}\|_{\op},\quad
+ V_T^\Theta:=\sum_{t=1}^T\|\Theta_t-\Theta_{t-1}\|_{\op},\quad
+ U_T:=\sum_{t=1}^T\|u_t\|,\quad B_0=\Theta_0=0.
+\end{gather}
+Then
+\begin{align}
+ \sum_t\|C_t-C_{t-1}\|_{\op}
+ &\le\eta\left[\frac\beta{1-\beta}V_T^B+
+                             \frac{M}{(1-\beta)^2}V_T^\Theta\right],\\
+ \EE[V_T^B+V_T^\Theta+U_T]=O(\sqrt T)
+ &\Longrightarrow\quad
+ \frac1T\sum_{t=1}^T\EE\|\nabla F(w_t)\|^2
+ =O(T^{-1/2})+\frac{M^2}{\kappa^2T}\sum_t\EE \widehat D_t^2.
+\end{align}
+For an average of $b$ independent unbiased sample gradients with conditional
+variance at most $\sigma^2$, without clipping,
+\begin{equation}
+ \widehat D_t^2\le\EE_t\|g_t-h_t\|^2\le\sigma^2/b.
+\end{equation}
+Consequently the displayed variation condition and $b\gtrsim\sqrt T$ give
+$T^{-1/2}$ stationarity. With norm clipping, replace the last error by
+$2\|b_t^{\mathrm{clip}}\|^2+2\sigma^2/b$.
+\end{corollary}
+\begin{proof}
+\begin{align}
+ (I-\Theta)^{-1}\Theta&=(I-\Theta)^{-1}-I,\\
+ \|(I-\Theta)^{-1}-(I-\Theta')^{-1}\|_{\op}
+ &\le(1-\beta)^{-2}\|\Theta-\Theta'\|_{\op},\\
+ W_1(\nu_t,\nu_t^-)&\le2\EE_t\|\xi_t\|
+ \le2\sqrt{\EE_t\|\xi_t\|^2},\\
+ \|r_t\|&\le O(\eta),\quad
+ \sum_t\EE\|r_t\|=O(\eta\sqrt T)=O(1),\\
+ \sum_t\EE\|r_t\|^2&\le(\sup_t\|r_t\|)\sum_t\EE\|r_t\|=O(\eta).
+\end{align}
+Clipping is nonexpansive, so for independent copies $X,X'$,
+\begin{gather}
+ \operatorname{Var}(\operatorname{clip}(X))
+ =\tfrac12\EE\|\operatorname{clip}(X)-\operatorname{clip}(X')\|^2
+ \le\tfrac12\EE\|X-X'\|^2=\operatorname{Var}(X),\\
+ \widehat D_t^2\le D_t^2=(\|b_t\|+\delta_t/2)^2
+ \le2\|b_t\|^2+2\operatorname{Var}_t(g_t).
+\end{gather}
+\end{proof}
+\begin{proposition}[An exact asymmetry-induced stationary bias]\label{prop:actual-skew-counterexample}
+Consider a fixed one-coordinate flag branch with $\beta_1=\beta_2=0$, $a=1$,
+$F(w)=w^2/2$, and unbiased additive noise
+\begin{gather}
+ \PP(\xi=3\sigma)=1/10,\quad\PP(\xi=-\sigma/3)=9/10,\quad
+ \EE\xi=0,\quad\EE\xi^2=\sigma^2,\\
+ (\xi_t)_{t\ge1}\text{ iid},\quad w_{t+1}=w_t-\eta_t\frac{w_t+\xi_t}{|w_t+\xi_t|+\epsilon}.
+\end{gather}
+Its expected update field has a unique root
+\begin{gather}
+ \Psi_\epsilon(w):=\frac1{10}\frac{w+3\sigma}{|w+3\sigma|+\epsilon}
+ +\frac9{10}\frac{w-\sigma/3}{|w-\sigma/3|+\epsilon},\\
+ w_\epsilon=\tfrac12\left[
+ \sqrt{(8\sigma/3+5\epsilon/4)^2+4\sigma^2}
+                      -(8\sigma/3+5\epsilon/4)\right]\in(0,\sigma/3),\\
+ \lim_{\epsilon\downarrow0}w_\epsilon=\sigma/3>0.
+\end{gather}
+For deterministic $\eta_t>0$, $\sup_t\eta_t<\infty$,
+$\sum_t\eta_t=\infty$, $\sum_t\eta_t^2<\infty$, the iterates satisfy
+\begin{equation}
+ w_t\longrightarrow w_\epsilon\quad\text{a.s.},\qquad
+ \|\nabla F(w_t)\|^2\longrightarrow w_\epsilon^2>0\quad\text{a.s.}
+\end{equation}
+\end{proposition}
+\begin{proof}
+\begin{align}
+ \Psi_\epsilon'(w)&>0,\quad\Psi_\epsilon(0)<0,\quad
+                                 \Psi_\epsilon(\sigma/3)>0,\\
+ \Psi_\epsilon(w)=0,\quad0<w<\sigma/3
+ &\Longleftrightarrow
+ (w+3\sigma)(w-\sigma/3)+\tfrac54\epsilon w=0.
+\end{align}
+The scalar branch embeds in the exact flag algorithm as
+\begin{gather}
+ W=\begin{pmatrix}w&0\\0&0\end{pmatrix},\quad U=e_1\in\St(2,1),\quad
+ G=\begin{pmatrix}w+\xi&0\\0&0\end{pmatrix},\\
+ G\Pi_\perp=0,\quad C_k=\diag(c_k,0),\quad
+ \operatorname{grad}\Phi(U;C)=0.
+\end{gather}
+If $w>\sigma/3$, every update decreases $w$; if $w<-3\sigma$, every update
+increases $w$. Since every increment has magnitude at most $\eta_t$, all iterates
+lie in a deterministic compact interval $\mathcal I$. On $\mathcal I$,
+$\Psi_\epsilon'(w)\ge c_\mathcal I>0$, choosing
+$c_\mathcal I\le(2\sup_t\eta_t)^{-1}$. Thus
+\begin{align}
+ \EE_t(w_{t+1}-w_\epsilon)^2
+ &\le(w_t-w_\epsilon)^2-2\eta_t(w_t-w_\epsilon)\Psi_\epsilon(w_t)+\eta_t^2\\
+ &\le(1-2c_\mathcal I\eta_t)(w_t-w_\epsilon)^2+\eta_t^2.
+\end{align}
+The almost-supermartingale theorem gives convergence of $(w_t-w_\epsilon)^2$
+and $\sum_t\eta_t(w_t-w_\epsilon)^2<\infty$; hence its limit is zero.
+\end{proof}
+The counterexample converges to a zero of the expected normalized update field
+that is separated from the minimizer of $F$. Its gradient noise is unbiased
+and has bounded variance, so those properties alone cannot remove this
+stationary bias. This gives a concrete reason to retain the symmetry-defect
+term when interpreting the convergence bound for the actual algorithm.
+
+\begin{proposition}[Resolving the variation budgets into actual state changes]
+\label{prop:actual-budget-resolution}
+For the exact preconditioner let $S_{k,t}:=\sqrt{\widehat V_{k,t}}$ and
+$c_t:=(\|G_t\Pi_{K+1,t}\|_F/\sqrt N+\epsilon)^{-1}$. With constant $a_k$,
+\begin{align}
+ \|B_t-B_{t-1}\|_{\op}
+ &\le\sum_k a_k\left[
+ \epsilon^{-2}\|S_{k,t}-S_{k,t-1}\|_{\max}
+ +2\epsilon^{-1}\|U_{k,t}-U_{k,t-1}\|_{\op}\right]\\
+ &\quad+a_\perp|c_t-c_{t-1}|
+       +(a_\perp/\epsilon)\|P_{K,t}-P_{K,t-1}\|_{\op},\\
+ |c_t-c_{t-1}|
+ &\le\frac{\|G_t-G_{t-1}\|_F+
+                    G\|P_{K,t}-P_{K,t-1}\|_{\op}}{\epsilon^2\sqrt N},\\
+ V_T^\Theta
+ &\le\sum_k\beta_{1k}+\beta\sum_{t=2}^T\sum_k
+                                  \|\Pi_{k,t}-\Pi_{k,t-1}\|_{\op}.
+\end{align}
+At refresh $s$ let $Z_s=\xi_s\operatorname{grad}\Phi(U_s;\widetilde C_s)$,
+$z_s=\|Z_s\|_F$, and $e_s=(1+z_s^2)z_s^2<1$. The transport budget obeys
+\begin{align}
+ U_T&\le\beta\sqrt K\sum_{s\le S}\left[
+ G\left(1+\frac2{2-e_s}\right)e_s
+ +2G_m\left(z_s+e_s+\frac{2e_s}{2-e_s}\right)\right].
+\end{align}
+Consequently $z_s\le H\xi_0/\sqrt S$ and $S=O(T)$ imply
+$U_T+V_T^\Theta=O(\sqrt T)$. This does not by itself control $V_T^B$:
+second-moment resets and persistent gradient fluctuations remain explicit in
+$\|S_{k,t}-S_{k,t-1}\|$ and $|c_t-c_{t-1}|$. A constant refresh step does not
+imply the required variation rate.
+\end{proposition}
+\begin{proof}
+Let $\mathcal U_{k,t}=I_m\otimes U_{k,t}$. Since
+$B_{k,t}=a_k\mathcal U_{k,t}\diag((S_{k,t}+\epsilon)^{-1})\mathcal U_{k,t}^\top$,
+\begin{gather}
+ \|\diag((S+\epsilon)^{-1}-(S'+\epsilon)^{-1})\|_{\op}
+ \le\epsilon^{-2}\|S-S'\|_{\max},\\
+ \|\mathcal U\mathcal H\mathcal U^\top-
+          \mathcal U'\mathcal H\mathcal U'^\top\|_{\op}
+ \le2\|\mathcal H\|_{\op}\|U-U'\|_{\op}.
+\end{gather}
+Also $\theta_{k,t}\uparrow\beta_{1k}$, so its total scalar variation is
+$\beta_{1k}$. Proposition~\ref{prop:rigid-small-transport} gives
+\begin{gather}
+ \|U^+-U\|_F\le z_s+e_s+2e_s/(2-e_s),\\
+ \sum_k\|\Pi_k^+-\Pi_k\|_{\op}
+ \le2\sqrt K\|U^+-U\|_F,\quad
+ \sum_k\|O_k^\top-U_k^\top U_k^+\|_{\op}
+ \le\sqrt K(1+2/(2-e_s))e_s.
+\end{gather}
+Insert these inequalities into Proposition~\ref{prop:actual-momentum}, and use
+$\sum_sz_s=O(\sqrt S)$, $\sum_se_s=O(1)$.
+\end{proof}
+\begin{corollary}[Complete networks and dense fallback tensors]
+\label{cor:actual-network}
+For finitely many parameter blocks, apply the constructions blockwise and set
+\begin{gather}
+ B_t=\bigoplus_lB_{l,t},\quad\Theta_t=\bigoplus_l\Theta_{l,t},\quad
+ m_t=(m_{1,t},\ldots,m_{L,t}),\quad u_t=(u_{1,t},\ldots,u_{L,t}),\\
+ M=\max_lM_l,\quad\kappa=\min_l\kappa_l,\quad
+ \beta=\max_l\beta_l,\quad G^2=\sum_lG_l^2,\quad G_m^2=\sum_lG_{m,l}^2.
+\end{gather}
+Set $\mathsf H_t^2:=\sum_l\mathsf H_{l,t}^2$ and
+$\mathsf J_t:=\min\{MG,\mathsf H_t\}$ for the joint normalized field.
+A dense fallback tensor is a fixed full-coordinate block with diagonal
+$B_{l,t}$, scalar $\Theta_{l,t}$ and $u_{l,t}=0$. Theorem~\ref{thm:actual-convergence}
+then holds for the joint, coupled network objective, using these aggregate
+constants and a joint conditional symmetry defect. For decoupled weight decay
+$w_{t+1}=(1-\eta_t\lambda)w_t-\eta_tB_tm_t$, its algebraic identity becomes
+\begin{equation}
+ z_{t+1}=z_t-\eta_tB_tg_t+\widetilde r_t,\qquad
+ \widetilde r_t=r_t-\eta_t\lambda w_t.
+\end{equation}
+The finite-time inequality remains valid with $r_t$ replaced by
+$\widetilde r_t$; decay is not silently absorbed into an unbiased data gradient.
+\end{corollary}
+\begin{proof}
+\begin{gather}
+ \|\bigoplus_lB_l\|_{\op}=\max_l\|B_l\|_{\op},\quad
+ \sum_l\langle h_l,\mathcal T_l(h_l+\xi_l^s)-\mathcal T_l(\xi_l^s)\rangle
+ \ge(\min_l\kappa_l)\sum_l\|h_l\|^2,\\
+ \|m_t\|^2=\sum_l\|m_{l,t}\|^2\le\sum_lG_{m,l}^2.
+\end{gather}
+Apply the same virtual-iterate identity and smoothness inequality to the direct sum.
+\end{proof}
+\begin{lemma}[State-dependent curvature of the normalization field]
+\label{lem:actual-mature-variance}
+In Definition~\ref{def:actual-field}, write $a_i=a_{k(i)}$ and
+$\alpha_{i,t}=\alpha_{k(i),t}$. Restrict active coordinate $i$ to
+$|z_i|\le H_i$, and the residual to radius $H_\perp$. Set
+\begin{gather}
+ s_{i,\max}:=\sqrt{c_{i,t}+\alpha_{i,t}H_i^2},\qquad
+ \kappa_{i,t}:=\frac{a_i(c_{i,t}/s_{i,\max}+\epsilon)}
+                               {(s_{i,\max}+\epsilon)^2},\\
+ \kappa_t:=\min\left\{\min_i\kappa_{i,t},
+           \frac{a_\perp\epsilon}{(H_\perp/\sqrt N+\epsilon)^2}\right\}.
+\end{gather}
+The value at $s_{i,\max}=0$ is interpreted as $a_i/\epsilon$. These are exact
+lower Jacobian bounds on the stated product domain. In particular,
+\begin{gather}
+ c_{i,t}\ge\nu^2>0,\quad s_{i,\max}\le S
+ \quad\Longrightarrow\quad
+ \kappa_{i,t}\ge\frac{a_i\nu^2}{S(S+\epsilon)^2},\\
+ c_{i,t}=0\quad\Longrightarrow\quad
+ \kappa_{i,t}=\frac{a_i\epsilon}{(\sqrt{\alpha_{i,t}}H_i+\epsilon)^2}.
+\end{gather}
+Thus a mature variance floor removes the explicit vanishing-$\epsilon$ factor
+in an active block, whereas a reset restores it. The residual can still be the
+limiting block. If the support domains cover $\xi_t+sh_t$, $0\le s\le1$,
+Theorem~\ref{thm:actual-coercivity} holds with the predictable $\kappa_t$.
+\end{lemma}
+\begin{proof}
+For $s>0$,
+\begin{equation}
+ \frac{\mathrm d}{\mathrm ds}\left(\frac{c/s+\epsilon}{(s+\epsilon)^2}\right)
+ =-\frac{c}{s^2(s+\epsilon)^2}
+   -\frac{2(c/s+\epsilon)}{(s+\epsilon)^3}<0.
+\end{equation}
+The active derivative is minimized at the maximal allowed $|z_i|$; the radial
+residual derivative is minimized at its maximal radius. Apply the integral
+Jacobian identity on the same convex product domain.
+\end{proof}
+The state-dependent lower bound explains why reset times deserve separate
+attention. A positive historical variance can maintain curvature of an active
+normalization field as $\epsilon$ decreases; immediately after resetting it,
+the lower bound again depends explicitly on $\epsilon$. The residual may still
+limit the joint constant, so this observation alone does not prescribe an
+optimal regularization value.
+
+\begin{corollary}[PL contraction for the actual normalized momentum map]
+\label{cor:actual-PL}
+Under Theorem~\ref{thm:actual-convergence}, additionally suppose, along the
+actual iterates,
+\begin{gather}
+ \tfrac12\|\nabla F(w_t)\|^2\ge\mu(F(w_t)-F^\star),\quad
+ 0<\mu\kappa\eta_t\le1,\quad
+ a_t:=\EE[F(z_t)-F^\star],\\
+ A_t:=GG_m\|C_{t-1}\|_{\op}
+                    +\tfrac L2G_m^2\|C_{t-1}\|_{\op}^2,\\
+ Q_t:=\mu\kappa\eta_t\EE A_t+L\eta_t^2\EE\mathsf J_t^2
+       +LG_m\eta_t\EE[\mathsf J_t\|C_{t-1}\|_{\op}]\\
+ \hphantom{Q_t:=} +\frac{M^2\eta_t}{2\kappa}\EE \widehat D_t^2
+                    +G_z\EE\|r_t\|+L\EE\|r_t\|^2.
+\end{gather}
+Then, with $q_t:=1-\mu\kappa\eta_t$,
+\begin{align}
+ a_{t+1}&\le q_ta_t+Q_t,\\
+ a_{T+1}&\le\left(\prod_{t=1}^Tq_t\right)a_1
+          +\sum_{t=1}^T\left(\prod_{s=t+1}^Tq_s\right)Q_t.
+\end{align}
+For constant $\eta$ and $Q_t\le K_0\eta^2+Z_0\eta$,
+\begin{equation}
+ a_{T+1}\le(1-\mu\kappa\eta)^Ta_1+
+              \frac{K_0\eta+Z_0}{\mu\kappa}
+                               [1-(1-\mu\kappa\eta)^T].
+\end{equation}
+The forcing explicitly retains bias/symmetry, moment normalization, and
+transport/reset variation; the stated inequality on $Q_t$ is an additional
+condition on these quantities.
+\end{corollary}
+\begin{proof}
+\begin{align}
+ |F(w_t)-F(z_t)|
+ &\le\|\nabla F(w_t)\|\|w_t-z_t\|+\tfrac L2\|w_t-z_t\|^2\le A_t,\\
+ -\tfrac\kappa2\eta_t\|\nabla F(w_t)\|^2
+ &\le-\mu\kappa\eta_t(F(w_t)-F^\star)\\
+ &\le-\mu\kappa\eta_t(F(z_t)-F^\star)+\mu\kappa\eta_t A_t.
+\end{align}
+Insert this in the one-step inequality in the proof of
+Theorem~\ref{thm:actual-convergence} and expand the scalar recurrence.
+\end{proof}

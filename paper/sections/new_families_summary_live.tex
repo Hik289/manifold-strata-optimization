@@ -1,0 +1,14 @@
+\begin{table*}[t]\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\caption{\textbf{Completed new-task positive cases.} Terminal-100 test metrics after equal-count validation search. All five methods are shown; bold marks the best value. MSE/RMSE are lower-is-better and accuracy is higher-is-better. The full six-setting matrix and selected losses are in Appendix~\ref{app:new-family-results}.}
+\label{tab:new-task-positive}\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{llrrrrr}\toprule Setting & Metric & STRATA & Single-G & AdamW & GaLore & Indep.\\\midrule
+ETTh2 / H24 & MSE & \cellcolor{oursbg}\textbf{1.74404} & 2.37970 & 2.16884 & 1.79170 & 2.18874 \\
+MovieLens100K / ratings & RMSE & \cellcolor{oursbg}0.96949 & 1.00529 & \textbf{0.93295} & 0.95778 & 1.01755 \\
+MovieLens1M / ratings & RMSE & \cellcolor{oursbg}1.05052 & 1.09444 & 0.98066 & \textbf{0.91712} & 1.08146 \\
+Gas sensors / fine-tuning & acc & \cellcolor{oursbg}0.85453 & 0.85375 & 0.82335 & \textbf{0.90656} & 0.80659 \\
+Gas sensors / replay & acc & \cellcolor{oursbg}0.96506 & 0.96409 & \textbf{0.96536} & 0.96232 & 0.96343 \\
+\bottomrule\end{tabular}\end{adjustbox}\end{table*}
+\paragraph{Transfer to forecasting, recommendation, and sensor drift.} All 180 configurations across six settings have completed their 1000-epoch budgets. Each of five methods selects among six candidates using terminal-100 validation metrics (Appendix~\ref{app:prospective-real-tasks}). STRATA improves on same-rank Single-Grassmann in 5/6 completed settings. Table~\ref{tab:new-task-positive} highlights these positive cases after observing the complete matrix; all settings, including ETTh1, appear in Table~\ref{tab:new-families-complete}. The results use seed 42 and describe the tested configurations.
+\paragraph{Forecasting.} On ETTh2/H24, STRATA attains MSE 1.74404, the lowest among the five methods, reducing error by 26.7\%, 19.6\%, and 2.7\% relative to Single-Grassmann, AdamW, and GaLore, respectively. It stores 36.9\% of AdamW's optimizer tensor state. The common forecaster is an MLP; this comparison tests the optimizer under the specified chronological split.
+\paragraph{Recommendation.} STRATA reduces RMSE relative to Single-Grassmann by 3.56\% on MovieLens100K and 4.01\% on MovieLens1M. AdamW and GaLore remain stronger on both datasets.
+\paragraph{Sensor drift.} Fine-tuning gives 85.453\% accuracy, 3.118 percentage points above AdamW, while GaLore is stronger. With replay, STRATA reaches 96.506\%, versus AdamW's 96.536\%, using 55.1\% of its stored optimizer state. State counts include probes and buffers. These same-rank comparisons do not equalize geometric-method state, and stored-state savings do not imply peak-memory or throughput gains.

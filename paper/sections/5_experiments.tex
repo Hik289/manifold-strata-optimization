@@ -1,0 +1,52 @@
+\section{Experiments}
+\input{sections/execution_snapshot_live}
+\paragraph{Execution snapshot.} At \experimentSnapshot, the original 856 configurations include 556 complete, 21 retained unfinished, 278 deferred, and 1 failed. The reduced scope is explicit in Appendix~\ref{app:reduced-scope}; deferred runs supply no evidence.
+\paragraph{Protocol.} All runs use a single seed, seed 42. We therefore report long-run endpoints and curves as deterministic case studies, not as high-confidence statistical estimates. The revision recomputes configuration selection on validation criteria within each method (Appendix~\ref{app:revision-audit}); and the main comparison is against same-maximum-rank Single-Grassmann. PINN metrics are relative $L_2$ error where lower is better; classification and graph metrics are accuracies where higher is better.
+
+\input{sections/evidence_main_live}
+
+\input{sections/positive_case_studies}
+
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Numerical specification fixes.} The MNIST epsilon check is a diagnostic configuration; gradient norm and accuracy are the recorded values for that check.}
+\label{tab:bugs}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lrrr}
+\toprule
+Projected $\epsilon$ & Max. $\|g\|$ & Test acc. $\uparrow$ & Separate counters \\
+\midrule
+$10^{-8}$ & $1.87\times10^5$ & 0.686 & -- \\
+$10^{-6}$ & 14.2 & \textbf{0.969} & -- \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Counter handling at a flag refresh.} Transported mature first moments and reinitialized second moments have different statistical ages.}
+\label{tab:counter-fix}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lll}
+\toprule
+Rule & First-moment age & Second-moment age \\
+\midrule
+Shared reset & Reset despite transport & Reset \\
+Separate counters & Retain mature age & Reset \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+\paragraph{Numerical stability findings.} Tables~\ref{tab:bugs} and~\ref{tab:counter-fix} summarize the engineering contribution. The counter bug was diagnosed by observing gradient-norm oscillations synchronized with flag updates; transporting $M$ while resetting a shared counter made $\hat M$ roughly ten times too large after reset. The epsilon bug was diagnosed by decomposing update components: residual updates stayed bounded, while a flag-block Adam branch exploded because $V\approx0$ and epsilon was $10^{-8}$. On MNIST at the diagnostic setting, $\epsilon=10^{-8}$ produced max gradient norm $1.87\times10^5$ and test accuracy 0.686, while $\epsilon=10^{-6}$ produced max gradient norm 14.2 and test accuracy 0.969.
+
+\paragraph{Memory/state accounting.} The revised tensor count includes both fixed probes and EMA sketches. For ranks $(16,32,64)$ and $p=8$, the STRATA/full-AdamW ratios for individual eligible matrices are 1.8125 for $128\times128$, 0.9063 for $256\times256$, 0.3393 for $784\times512$, 0.2070 for $512\times2048$, and 0.1035 for $4096\times1024$. Earlier reported model ratios excluded probes and are not treated as complete measured state. Archived peak-allocation logs show about 0.709 versus 0.772 GB on CIFAR, while STRATA takes about 24.2 versus 15.5 seconds per epoch; these small-model observations do not establish a large-model memory advantage. New runs retain actual tensor-state and peak-allocation measurements.
+
+\paragraph{Completed continual-learning comparisons.} The Rotated-MNIST fine-tuning and replay grids each complete all ten candidates (five methods, two rates), with 1000 epochs across ten rotations, a two-layer 256-wide MLP, rank 64 and seed 42. Each method selects its rate by terminal-100 seen-task validation accuracy. In fine-tuning, STRATA attains 57.655\% test accuracy versus Single-Grassmann 57.109\% (+0.546 percentage points) and Independent 57.278\%; AdamW (62.193\%) and GaLore (59.691\%) remain stronger. With replay, STRATA reaches 88.582\%, above Single-Grassmann 87.170\% (+1.412 points) and Independent 87.140\%, while AdamW (90.720\%) and GaLore (88.880\%) remain higher. Thus both completed settings support a gain over Single-Grassmann, not an overall baseline ranking. Table~\ref{tab:new-cohorts} retains the full comparisons and replay protocol; Appendix~\ref{app:breadth-loss-updates} gives every selected loss trajectory. EWC remains deferred.
+
+\paragraph{Tabular classification.} Completed 512-wide MLP grids give comparison-specific gains after all ten trials finish and each method selects its rate on validation. Red Wine Quality yields STRATA 71.500\% versus Single-Grassmann 69.702\% (+1.798 percentage points), with AdamW at 71.491\%. Adult gives 81.509\% versus Single-Grassmann 81.281\% (+0.227 points); AdamW and GaLore remain higher at 81.909\% and 81.838\%. Covertype gives 96.644\%, above AdamW's 96.448\% (+0.196 points) and GaLore's 96.597\%. Single-Grassmann is effectively tied at 96.642\%, while Independent is higher at 96.755\%. These are single-seed descriptive differences. The corresponding 256-wide models do not improve on Single-Grassmann. Table~\ref{tab:new-cohorts} retains all methods and completed settings; Appendix~\ref{app:breadth-loss-updates} gives the selected training and validation losses.
+
+\paragraph{Token-budget language modeling.} The completed WikiText-103/GPT-2-small rank-16 grid gives STRATA test perplexity 144.54 versus GaLore 192.20, a 24.8\% reduction after two-rate validation selection. AdamW (80.00), Single-Grassmann (139.67), and Independent (140.81) remain stronger. Every candidate trains from scratch for 10000 updates and 20.48 million tokens, comprising 1000 ten-step evaluation units rather than corpus epochs. Table~\ref{tab:gpt2-complete} reports the full comparison and measured resources; Appendix~\ref{app:breadth-loss-updates} retains all selected loss trajectories.
+
+\input{sections/new_families_summary_live}

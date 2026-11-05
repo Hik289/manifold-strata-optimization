@@ -1,0 +1,74 @@
+\section{Diagnostics of the Actual Adaptive-Update Theory}
+\label{app:actual-theory-diagnostics}
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Exact normalization-bias counterexample.} Symmetric and asymmetric zero-mean noises have variance $\sigma^2$, $\sigma=.3$. The true optimum is zero. The asymmetric stationary root is given by Proposition~\ref{prop:actual-skew-counterexample}.}
+\label{tab:actual-normalization}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{rrr}
+\toprule
+$\epsilon$ & Symmetric root & Asymmetric root \\
+\midrule
+0.0001 & 0 & 0.09998750 \\
+0.001 & 0 & 0.09987514 \\
+0.01 & 0 & 0.09876392 \\
+0.1 & 0 & 0.08877693 \\
+1 & 0 & 0.04300047 \\
+10 & 0 & 0.00676348 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Finite-trajectory diagnostics at $\epsilon=.01$.} Means use the final 5000 of 30000 seed-42 stochastic-approximation iterates. These are finite-run observations, not asymptotic estimates.}
+\label{tab:normalization-tail}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lr}
+\toprule
+Update / noise & Final-5000 mean $w$ \\
+\midrule
+Normalized / skew & 0.09878739 \\
+Normalized / symmetric & 0.06416802 \\
+SGD / skew & 0.00508841 \\
+SGD / symmetric & 0.00119654 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\paragraph{Implementation-level identity checks.}
+A float64 test calls the unmodified STRATA matrix update for 100 steps with 20 flag refreshes on an $8\times6$ matrix, ranks $(1,2,3)$ and nonidentical moment decays. It reconstructs the ambient moment, exact adaptive direction, and virtual iterate using the actual stored states. Maximum identity errors are $2.18\times10^{-16}$, $2.20\times10^{-15}$, and $3.56\times10^{-17}$, respectively. These tests exercise the exact identities in Proposition~\ref{prop:actual-momentum} and Theorem~\ref{thm:actual-convergence}, including refresh steps; they do not assert that the variation budgets vanish on neural benchmarks. The analytic asymmetric root has update-field residual $6.3\times10^{-15}$. One hundred scalar posterior-variance checks give maximum first-order residual $5.4\times10^{-15}$ and nonnegative refinement gains, checking Theorem~\ref{thm:directional-pac} and Proposition~\ref{prop:directional-refinement}. Source hashes and complete numerical outputs are retained.
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Implementation-level variation-budget checks.} The float64 trajectory has 100 steps and 20 flag refreshes. Maxima summarize each sequence separately; inequalities are checked step by step. A violation means slack below $-10^{-10}$.}
+\label{tab:actual-state-budgets}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lrrrrr}
+\toprule
+Quantity & Steps & Max observed & Max bound & Min slack & Violations \\
+\midrule
+Preconditioner & 99 & 7.231e+01 & 1.443e+03 & +1.049e+02 & 0 \\
+Momentum coefficient & 99 & 4.737e-01 & 1.302e+00 & +1.019e-11 & 0 \\
+Transport defect & 100 & 4.782e-03 & 8.445e-02 & -1.242e-16 & 0 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Exact adaptive-update identities.} Maximum residual over the same 100-step trajectory.}
+\label{tab:actual-identities}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lr}
+\toprule
+Identity & Maximum residual \\
+\midrule
+ambient momentum & 2.173e-16 \\
+exact direction & 2.199e-15 \\
+virtual iterate & 3.560e-17 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+

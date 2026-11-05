@@ -1,0 +1,29 @@
+\input{sections/theory_full}
+\input{sections/theory_main_expanded}
+
+\section{Complete Matrices and Reproducibility Notes}
+The full PINN STRATA grid with $\epsilon=10^{-6}$ gives Burgers $(0.066,0.027,0.428,0.187,0.454,0.440)$ over lr/rank cells $(5e{-3}/32,5e{-3}/64,1e{-3}/32,1e{-3}/64,5e{-4}/32,5e{-4}/64)$; Burgers-g2 $(0.049,0.026,0.445,0.393,0.472,0.443)$; and Poisson $(1.768,2.932,0.177,0.187,0.060,0.718)$. The corresponding Single-Grassmann grid is Burgers $(1.947,2.777,0.084,0.052,0.335,0.156)$, Burgers-g2 $(0.046,0.026,0.140,0.144,0.426,0.411)$, and Poisson $(\mathrm{NaN},\mathrm{NaN},0.973,\mathrm{NaN},\mathrm{NaN},1.496)$. The CNN grid gives CIFAR-10 STRATA $(0.9328,0.9401)$ and Single-Grassmann $(0.9349,0.9403)$ for lr $(3e{-4},1e{-3})$; CIFAR-100 STRATA $(0.6943,0.7140)$ and Single-Grassmann $(0.7125,0.7257)$. The MLP STRATA grid gives MNIST validation accuracies $(0.982,0.960,0.552)$ and Fashion $(0.901,0.899,0.897)$ over lr $(3e{-4},1e{-3},3e{-3})$.
+
+All formal training used seed 42. Raw data are in the project `experiments/' and `analysis/' directories, with independent verification scripts for the epoch-axis $\delta_{\mathrm{nest}}$ analysis and state-budget calculations. The paper uses the epoch-axis interpretation as primary; the learn-progress axis is retained only as a caveat because it can overweight late bins for tasks that reach near-convergence early.
+
+\input{sections/revision_audit}
+
+\input{sections/new_results}
+
+\input{sections/image_benchmark_protocol}
+
+\input{sections/loss_curves_appendix}
+\input{sections/actual_theory_diagnostics}
+
+\FloatBarrier
+\input{sections/evidence_appendix_live}
+\input{sections/language_shift_results_live}
+
+\FloatBarrier
+\section{Complete Comparison Matrices and Archived Diagnostics}
+\label{app:full-empirical-record}
+The main-text cases illustrate restricted positive comparisons. This appendix retains the full comparison matrix, archived non-improvements and losses; no result is removed according to its sign. The standard graph matrix contains twelve dataset--architecture settings, of which three improve on Single-Grassmann after the complete two-rate validation search. The other nine remain part of the empirical scope.
+\input{sections/archived_comparisons_full}
+\FloatBarrier
+\input{sections/new_families_protocol}
+\input{sections/new_families_results_live}

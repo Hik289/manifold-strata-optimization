@@ -1,0 +1,75 @@
+% !TeX program = pdflatex
+% ICML 2027 working manuscript. Official 2027 files were unavailable (404) on
+% 2026-11-02. Use the unmodified latest official style pending their release.
+\documentclass{article}
+\PassOptionsToPackage{table}{xcolor}
+\usepackage{microtype}
+\usepackage[preprint]{icml2026}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage{xurl}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xcolor}
+\usepackage{array,tabularx,pifont}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{placeins}
+\usepackage{adjustbox}
+\usepackage{etoolbox}
+\usepackage{hyperref}
+\hypersetup{pdftitle={STRATA-AdamW: Flag-Manifold Optimizer State},pdfsubject={ICML 2027 working manuscript; latest available official ICML style (2026)}}
+\definecolor{stratablue}{HTML}{1761C4}
+\definecolor{stratagreen}{HTML}{17834A}
+\definecolor{stratared}{HTML}{BB343B}
+% Table palette and rhythm follow WWW2027_Causal_code_review/main.tex.
+\definecolor{oursbg}{RGB}{230,244,233}
+\definecolor{oursgoodbg}{RGB}{198,232,205}
+\AtBeginEnvironment{table}{\footnotesize\renewcommand{\arraystretch}{1.12}}
+\AtBeginEnvironment{table*}{\footnotesize\renewcommand{\arraystretch}{1.12}}
+\AtBeginEnvironment{longtable}{\renewcommand{\arraystretch}{1.12}}
+\newcommand{\rwcheck}{\textcolor{stratagreen}{\ding{51}}}
+\newcommand{\rwcross}{\textcolor{stratared}{\ding{55}}}
+\newcommand{\rwna}{\textcolor{gray}{\textemdash}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\icmltitlerunning{STRATA-AdamW: Flag-Manifold Optimizer State}
+\icmlkeywords{manifold optimization, flag manifolds, low-rank adaptive optimization}
+\begin{document}
+\twocolumn[
+\icmltitle{STRATA-AdamW: A Cautionary Study of Flag-Manifold Optimizer State}
+\begin{icmlauthorlist}
+\icmlauthor{Anonymous Authors}{anon}
+\end{icmlauthorlist}
+\icmlaffiliation{anon}{Anonymous Institution}
+% Anonymous draft contact uses a reserved example address until authorship is set.
+\icmlcorrespondingauthor{Anonymous Authors}{anonymous@example.org}
+\vskip 0.3in
+]
+\printAffiliationsAndNotice{}
+\begin{abstract}
+STRATA-AdamW stores adaptive optimizer state on a nested flag manifold, using multi-timescale covariance sketches, transported first moments, and blockwise adaptive updates. Separate moment counters and a projected-statistic epsilon floor make the resulting update numerically stable. Completed seed-42 comparisons show gains over same-rank Single-Grassmann in three of twelve citation-graph settings and five of six newly tested forecasting, recommendation, and sensor-drift settings. On ETTh2, STRATA lowers MSE by 19.6\% relative to AdamW and 2.7\% relative to GaLore; sensor-drift replay reaches 96.506\% accuracy using 55.1\% of AdamW's stored state, versus AdamW's 96.536\%. On PubMed/SAGE, the full method exceeds all ten tested interventions, while a state-matched six-candidate comparison gives a smaller 0.460-percentage-point gain over Single-Grassmann. We develop detailed conditional guarantees for flag optimality, statistical tracking, adaptive-state perturbations, nonconvex and PL convergence, and generalization through coupled optimizer states and an inverse-KL, flag-aligned PAC--Bayes bound. Complete comparisons retain stronger baselines and identify the settings in which the combined design is effective.
+\end{abstract}
+\input{sections/1_introduction}
+\input{sections/2_related_work}
+\input{sections/3_preliminaries}
+\input{sections/4_methodology}
+\input{sections/theory_overview}
+\input{sections/5_experiments}
+\input{sections/6_conclusion}
+\bibliographystyle{icml2026}
+\bibliography{references}
+\clearpage
+\appendix
+\onecolumn
+\input{sections/appendix}
+\end{document}

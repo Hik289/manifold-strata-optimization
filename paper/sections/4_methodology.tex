@@ -1,0 +1,32 @@
+\section{STRATA-AdamW}
+Table~\ref{tab:method-update} gives the parameter and optimizer-state branches of one iteration. If long and short gradient timescales share a core but differ in outer directions, a nested state can store the core once and allocate extra rank where the faster timescale needs it. Each projection creates low-dimensional statistics whose numerical scale can differ from full-gradient AdamW.
+
+\begin{algorithm*}[t]
+\caption{STRATA-AdamW for one matrix parameter}
+\label{alg:strata}
+\begin{algorithmic}[1]
+\STATE Maintain flag $U_1\subset\cdots\subset U_K$, block moments $(M_k,V_k)$, counters $(c^M_k,c^V_k)$, and a stateless residual direction.
+\FOR{training step $t$}
+\STATE Receive gradient $G_t$ and compute projected block gradients $Z_{k,t}=G_t U^{[k]}$ plus residual component.
+\STATE Update first moments $M_k\leftarrow \beta_{1,k}M_k+(1-\beta_{1,k})Z_{k,t}$ and second moments $V_k\leftarrow \beta_{2,k}V_k+(1-\beta_{2,k})Z_{k,t}^{\odot 2}$.
+\STATE Form Adam-style block updates with epsilon $10^{-6}$ for projected/low-rank statistics.
+\STATE Combine updates as $D_t=\sum_k a_kH_{k,t}U^{[k]\top}_t+a_\perp G_{\perp,t}/(\|G_{\perp,t}\|_F/\sqrt{md}+\epsilon)$ and update $W$ with decoupled weight decay.
+\STATE Update all covariance sketches using the current gradient.
+\IF{$t$ is a flag-update step}
+\STATE Take a Riemannian flag step and retract; align old and new blocks by Procrustes.
+\STATE Transport $M_k$ through the block rotations, reset $V_k$, keep $c^M_k$ mature, and reset only $c^V_k$.
+\ENDIF
+\ENDFOR
+\end{algorithmic}
+\end{algorithm*}
+
+The two most important implementation details are precisely the ones exposed by the experiments. First, the first and second moment counters cannot be shared after a flag update: the first moment is transported and remains mature, while the second moment is reinitialized in the new projected coordinates. Second, projected block gradients may be genuinely near zero; using the standard AdamW epsilon can produce enormous normalized updates, so the projected optimizers use an epsilon floor of $10^{-6}$. Archived full-AdamW references retain their original settings; the new controlled revision cohorts use $10^{-6}$ for both full AdamW and projected Adam controls.
+
+For a matrix oriented as $m\times d$ with $d\le m$ and sketch widths $s_k=\min(d,r_k+p)$, the complete persistent tensor count in the flag branch is
+\begin{align}
+ \mathrm{state}_{\mathrm{STRATA}}&=2mR+dR+2d\sum_ks_k,\\
+ \mathrm{state}_{\mathrm{AdamW}}&=2md.
+\end{align}
+The terms are block moments $(M,V)$, the flag $U$, sketches $Y_k$, and the fixed probes $\Omega_k$. Earlier accounting omitted the probes, although the implementation stores them; its smaller formula is retained only as a historical partial count. The corrected ratio for $128\times128$, ranks $(16,32,64)$ and $p=8$ is 1.8125, so low-rank state is not automatically smaller. Noneligible parameters use full Adam state; workspaces, gradients and activations are additional costs.
+
+\paragraph{Theory summary.} Appendix~\ref{app:theory-full} gives complete statements and proofs. Commuting covariance optimization reduces to a capacity-constrained assignment; commutation alone does not eliminate strict nonglobal local maxima. Under explicit local curvature, statistical, sketch and drift errors yield a filtered flag-tracking bound. For predictable bounded preconditioners, nonconvex stationarity and PL contraction hold with an explicit discrepancy term for practical momentum, current-gradient normalization and transport. Generalization is controlled through a coupled recursion for parameters and the complete optimizer state. Equal scalar layer coefficients cancel flag dependence only in the linear projector surrogate, not in coordinatewise Adam. A5 therefore tests layer weighting rather than removal of all flag effects.

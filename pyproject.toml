@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "manifold-strata-optimization"
+version = "0.1.0"
+description = "Flag-manifold optimizer state with nested, multi-timescale gradient subspaces"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "STRATA contributors"}]
+dependencies = ["torch>=2.1", "numpy>=1.24", "scipy>=1.10"]
+
+[project.optional-dependencies]
+experiments = ["torchvision>=0.16", "matplotlib>=3.7", "requests>=2.31", "pillow>=10", "datasets>=2.19", "transformers>=4.40,<5", "pyarrow>=14", "torch-geometric>=2.5"]
+dev = ["pytest>=7"]
+
+[project.urls]
+Repository = "https://github.com/Hik289/manifold-strata-optimization"
+Issues = "https://github.com/Hik289/manifold-strata-optimization/issues"
+
+[tool.setuptools.packages.find]
+where = ["experiments"]
+include = ["strata_pkg*"]
