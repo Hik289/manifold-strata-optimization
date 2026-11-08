@@ -1,15 +1,23 @@
 # Experiment code
 
-Install the package from the repository root with `python -m pip install -e
-".[experiments]"`. See [the complete experiment guide](../docs/EXPERIMENTS.md)
-for data preparation, device requirements and copyable commands.
+Install the training dependencies from the repository root:
 
-- `strata_pkg/`: optimizer, geometry, baselines and diagnostics.
-- `test_numerical.py`: 13 float64 numerical checks, including the one-level reduction.
-- `train_*.py`: original vision, graph, Burgers and Poisson trainers.
-- `revision/`: expanded task families, controlled ablations, queues and audits.
-- `run_*.sh`: original full-budget launchers; inspect GPU assignments before use.
+```bash
+python -m pip install -e ".[experiments]"
+```
 
-All defaults use checkout-relative paths. Activate your Python environment
-before launching. Data, checkpoints and generated results are not part of the
-source distribution. To inspect a trainer without training, use `--help`.
+The [experiment guide](../docs/EXPERIMENTS.md) gives data-preparation steps,
+CPU/GPU requirements and commands for each task.
+
+| Path | Purpose |
+| --- | --- |
+| `strata_pkg/` | STRATA, the low-rank baselines and geometry functions. |
+| `test_numerical.py` | 13 float64 checks of the optimizer's mathematical identities. |
+| `train_*.py` | Original image, graph, Burgers and Poisson training scripts. |
+| `revision/` | Additional tasks, experiments that disable or change parts of the method, queue tools and result checks. |
+| `run_*.sh` | Original batch launchers. Review their GPU assignments before use. |
+
+Activate your Python environment before running a script. Paths refer to the
+repository rather than a particular machine. Datasets, checkpoints and new
+training logs are saved locally and ignored by Git. Use a training script's
+`--help` option to see its arguments without starting training.

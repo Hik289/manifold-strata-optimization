@@ -1,30 +1,46 @@
-# Expanded experiments and analysis
+# Additional experiments and result analysis
 
-Run direct trainer commands from `experiments/`. Start with
-[EXPERIMENTS.md](../../docs/EXPERIMENTS.md) and
-[the recipe catalog](../../configs/README.md).
+Run the training commands in this directory from `experiments/`. The
+[experiment guide](../../docs/EXPERIMENTS.md) covers data preparation and direct
+training commands. The [configuration guide](../../configs/README.md) explains
+how to run a selected group of jobs.
 
-Training/preparation modules cover graph learning, tabular data, continual and
-shifted tasks, real image streams, language, forecasting, recommendation,
-sensor drift and generated Darcy operators. Methods, split rules, full budgets
-and validation-based selection are described in the manuscript.
+The scripts cover graphs, tabular classification, continual learning, image
+data, language, forecasting, rating prediction, sensor drift and generated
+Darcy data. Each run fixes its method, data split, training length and settings.
+The paper describes how validation scores select configurations for comparison.
 
-Queue tools use `revision/queue.json`, protected by `queue.lock`. The live queue
-is intentionally absent from the distribution. `tools/init_queue.py` creates
-an explicit selected subset. A worker claims pending jobs and retains failures.
-The Linux activation, restart, priority and handoff helpers are advanced
-orchestration utilities; inspect them before running them.
+## Queue tools
 
-`pull_remote_snapshot.py` accepts `--host`, `--remote-root` and optional `--jump`
-for a read-only download. No connection configuration is shipped. Downloaded
-snapshots never replace an active local queue automatically.
+`tools/init_queue.py`, run from the repository root, creates a queue from the
+configurations you select. Workers read `revision/queue.json`, take pending
+jobs under a file lock and record whether each job completes or fails.
+The lock prevents two workers from claiming the same job at the same time.
+No active queue is included in the repository.
 
-Postprocessors collect only completed budgets. Selection audits use validation;
-full and adverse comparisons remain in the resulting tables. Resource audits
-require full trusted checkpoints and count unique tensor storage separately
-from peak allocation. Manuscript/curve publishers expect the corresponding
-local results; they do not manufacture missing trajectories.
+The activation, restart, priority and handoff scripts manage longer training
+sessions on Linux. Read a script's inputs before running it; these tools may
+change queue entries or launch many jobs.
 
-`archive_*` directories retain historical implementations for provenance and
-are not the documented current training entry points. The vendored Muon file
-is unchanged; its license and upstream commit are recorded beside it.
+## Downloading run records
+
+`pull_remote_snapshot.py` takes `--host`, `--remote-root` and an optional
+`--jump` argument. It downloads prepared run records without changing the
+remote files or automatically replacing an active local queue. Supply your own
+connection settings.
+
+## Analyzing results
+
+Collection scripts include only runs that reach their required training
+length. Comparison scripts select settings using validation scores and retain
+all competing methods. Memory analysis needs the relevant trusted checkpoints
+and reports optimizer-state storage separately from peak allocated GPU memory.
+
+Scripts that update paper tables and loss curves need the original local logs.
+The small saved result tables alone do not contain enough information to
+rebuild a full training curve or measure checkpoint tensors.
+
+The `archive_*` directories contain earlier implementations for reference.
+Use the current scripts named in the experiment guide for new runs. The Muon
+baseline is copied unchanged from its upstream repository, with its license
+and source commit recorded in `vendor/`.

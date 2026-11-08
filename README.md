@@ -1,48 +1,49 @@
 <div align="center">
-  <h1>STRATA: Flag-Manifold Optimizer State</h1>
+  <h1>STRATA: Optimization with Nested Gradient Subspaces</h1>
   <p align="center">
     <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/License-MIT-green.svg?style=flat"></a>
     <a href="pyproject.toml"><img alt="Python 3.9+" src="https://img.shields.io/badge/Python-3.9%2B-3776AB.svg?style=flat"></a>
   </p>
 </div>
 
-> A single subspace mixes persistent and rapidly changing gradient directions.
-> STRATA tracks them through a nested flag and combines blockwise adaptive
-> updates in the original, unconstrained weight space.
+> Gradient directions can change at different speeds during training. STRATA
+> tracks their history over several time scales and uses nested subspaces to
+> organize the optimizer's updates. Model weights remain unconstrained.
 
 <p align="center">
   <a href="fig_method_update_detailed.png">
-    <img src="fig_method_update_detailed.png" width="100%" alt="Detailed STRATA update: orthogonal gradient splitting, blockwise Adam, lifting and residual correction, followed by multi-timescale covariance sketches, flag retraction, Procrustes alignment and moment transport.">
+    <img src="fig_method_update_detailed.png" width="100%" alt="STRATA training step: split the gradient, apply Adam within each block, combine the updates, and update the model weights. A second path updates the nested subspaces and the optimizer's stored averages.">
   </a>
 </p>
 
-## The idea
+## How it works
 
-A single gradient subspace mixes directions that persist throughout training with
-directions that change quickly. **STRATA-AdamW** represents optimizer state on a
-nested flag, $\mathcal U_1\subset\mathcal U_2\subset\mathcal U_3$, and uses
-multi-timescale covariance sketches to track this structure online.
+**STRATA-AdamW** is a PyTorch optimizer. It stores adaptive gradient averages
+in several nested subspaces: each smaller subspace lies inside the next one.
+In mathematics, this structure is called a **flag**.
 
-| Track | Organize | Update |
-| :--- | :--- | :--- |
-| Exponential covariance sketches capture different memory horizons. | Nested cumulative subspaces define orthogonal incremental blocks. | Blockwise Adam directions and a normalized residual combine in the original weight space. |
+| Step | What STRATA does |
+| :--- | :--- |
+| Track gradient history | Update compact estimates of gradient correlations, with different decay rates for long and short memory. |
+| Update the subspaces | Adjust a shared orthonormal basis. Its first columns define the smallest subspace; additional columns extend it. |
+| Update the weights | Apply Adam within each separate block, map the updates back to the weight matrix, and add the remaining gradient component. |
 
-At a flag refresh, the optimizer aligns coordinates using blockwise Procrustes
-rotations, transports first moments, and restarts second-moment statistics with
-separate bias-correction counters. This changes **optimizer state**, not the
-model architecture or the feasible set of weights.
+When the basis changes, STRATA aligns the new coordinates with the old ones
+and rotates the stored gradient averages. It resets the squared-gradient
+averages and tracks their step counts separately. The
+[algorithm guide](docs/algorithm.md) explains these steps and their formulas.
 
-**Included:** the optimizer and geometric primitives; four baseline optimizers;
-all experiment trainers, data preparation, ablations, queue recipes, verification
-and plotting code; the manuscript source and a frozen results snapshot.
+This repository contains the optimizer, baselines, training scripts, data
+preparation, experiment configurations, checks, plotting tools, paper source,
+and saved result tables.
 
-[Algorithm specification](docs/algorithm.md) · [Optimizer API](docs/API.md) · [Reproducibility](docs/REPRODUCIBILITY.md)
+[Optimizer API](docs/API.md) · [Reproduction guide](docs/REPRODUCIBILITY.md)
 
 ## Quickstart
 
-The optimizer and numerical checks run on CPU. The image, stream, graph and
-language benchmark trainers generally require CUDA; see the experiment guide
-for per-trainer requirements. Linux is recommended for the queue workers.
+The example and numerical checks below run on CPU and need no dataset.
+Most image, graph, tabular and language training scripts require a CUDA GPU.
+See the [experiment guide](docs/EXPERIMENTS.md) for each task's requirements.
 
 ```bash
 git clone https://github.com/Hik289/manifold-strata-optimization.git
@@ -51,38 +52,40 @@ python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 
-# Install a PyTorch wheel appropriate for your CPU/CUDA platform first if needed.
+# If needed, first install a PyTorch build for your CPU or CUDA version.
 python -m pip install -e .
 python examples/quickstart.py --steps 40
 python experiments/test_numerical.py
 ```
 
-The quickstart is a small, data-free regression problem. The numerical suite
-checks orthogonality, nesting, gradient decomposition, energy conservation,
-gauge identities, retraction, transport and the one-level reduction to
-Single-Grassmann. Neither command launches a benchmark grid.
+The example trains a small regression model. The 13 numerical checks verify
+properties such as orthogonal basis columns, nested subspaces, correct gradient
+splitting and agreement with Single-Grassmann when only one level is used.
 
 ## Experiments
 
-Install the optional benchmark dependencies:
+Install the extra training dependencies from the repository root:
 
 ```bash
 python -m pip install -e ".[experiments]"
 ```
 
-| Task family | Included settings | Entry point |
+| Task | Datasets and models | Training script |
 | :--- | :--- | :--- |
 | Image classification | MNIST, Fashion-MNIST, CIFAR-10/100, Tiny-ImageNet, ImageNet-100 | [`train_vision.py`](experiments/train_vision.py), [`train_image_benchmarks.py`](experiments/revision/train_image_benchmarks.py) |
-| Continual learning & shifts | Rotated-MNIST, Split-CIFAR-100, CIFAR shifts, DomainNet, CORe50 | [`train_stream.py`](experiments/revision/train_stream.py), [`train_image_benchmarks.py`](experiments/revision/train_image_benchmarks.py) |
+| Continual learning and data shifts | Rotated-MNIST, Split-CIFAR-100, CIFAR shifts, DomainNet, CORe50 | [`train_stream.py`](experiments/revision/train_stream.py), [`train_image_benchmarks.py`](experiments/revision/train_image_benchmarks.py) |
 | Graph learning | Cora, CiteSeer, PubMed; GCN, GAT, GraphSAGE, GCNII | [`train_graph_extra.py`](experiments/revision/train_graph_extra.py) |
 | Tabular classification | Adult, Covertype, red/white Wine Quality | [`train_tabular.py`](experiments/revision/train_tabular.py) |
-| Language & sequences | GPT-2 Small/Medium, decoder baseline; WikiText-2 LSTM/GRU/Transformer | [`train_lm.py`](experiments/revision/train_lm.py), [`train_sequence.py`](experiments/revision/train_sequence.py) |
-| Forecasting | ETTh1 / ETTh2, L96 / H24 | [`train_new_families.py`](experiments/revision/train_new_families.py) |
-| Recommendation | MovieLens 100K / 1M explicit ratings | [`train_new_families.py`](experiments/revision/train_new_families.py) |
-| Sensor drift | UCI gas-sensor drift, fine-tuning and replay | [`train_new_families.py`](experiments/revision/train_new_families.py) |
-| Scientific ML | Burgers, Poisson, generated Darcy / FNO | [`train_pinn.py`](experiments/train_pinn.py), [`train_poisson.py`](experiments/train_poisson.py), [`train_darcy.py`](experiments/revision/train_darcy.py) |
+| Language modeling | GPT-2 Small/Medium and a decoder baseline; WikiText-2 LSTM/GRU/Transformer | [`train_lm.py`](experiments/revision/train_lm.py), [`train_sequence.py`](experiments/revision/train_sequence.py) |
+| Time-series forecasting | ETTh1 / ETTh2; 96 input steps, 24 prediction steps | [`train_new_families.py`](experiments/revision/train_new_families.py) |
+| Rating prediction | MovieLens 100K / 1M | [`train_new_families.py`](experiments/revision/train_new_families.py) |
+| Sensor drift | UCI gas-sensor drift; fine-tuning and replay | [`train_new_families.py`](experiments/revision/train_new_families.py) |
+| Scientific machine learning | Burgers, Poisson, generated Darcy data / FNO | [`train_pinn.py`](experiments/train_pinn.py), [`train_poisson.py`](experiments/train_poisson.py), [`train_darcy.py`](experiments/revision/train_darcy.py) |
 
-### Run one configuration
+### Run one experiment
+
+The following commands prepare the tabular datasets and train one Wine Quality
+model for 1000 epochs. The training command requires CUDA.
 
 ```bash
 cd experiments
@@ -93,37 +96,35 @@ python revision/train_tabular.py \
   --out runs_revision/wine_red_example
 ```
 
-Data preparation downloads the tabular suite and freezes its splits. This is
-one full-budget run. A comparison requires every declared method and candidate
-configuration; do not select a rate from test outcomes. For a short execution
-check, use the trainer's `--smoke --epochs 2` with a **different output folder**.
+For a short setup check, add `--smoke --epochs 2` and use a different output
+folder. To compare methods, run all configurations specified for that
+comparison, then select each method's learning rate using validation scores.
 
-[Full commands and data setup →](docs/EXPERIMENTS.md)
-[All 856 configuration recipes →](configs/experiments.json)
-[Choose a queue subset →](configs/README.md)
+[Data preparation and training commands](docs/EXPERIMENTS.md) ·
+[856 saved experiment configurations](configs/experiments.json) ·
+[Run a selected group of experiments](configs/README.md)
 
-## Repository map
+## Repository structure
 
 ```text
-experiments/strata_pkg/    Optimizer, geometry, baselines and diagnostics
-experiments/revision/     Expanded trainers, preprocessing, ablations and audits
-experiments/train_*.py    Original vision, graph and scientific-ML trainers
-configs/                  Portable experiment recipes and queue instructions
-examples/                 Data-free optimizer quickstart
-analysis/                 Independent verification scripts
-figures/                  Original figure-generation code
-data/scripts/             Data-pipeline and gradient-structure checks
-tools/                    Queue initialization and release checks
-results/                  Frozen, configuration-level evidence tables
-paper/                    Manuscript LaTeX source and figures
-docs/                     Guides and supporting visuals
-fig_method_update_detailed.png  Full-resolution method diagram
+experiments/strata_pkg/        Optimizer, geometry and baseline implementations
+experiments/revision/         Additional training, data preparation and analysis
+experiments/train_*.py         Original image, graph and scientific-ML training
+configs/                      Experiment configurations and queue instructions
+examples/                     Small optimizer example with no dataset download
+analysis/                     Independent checks of results and theory
+figures/                      Figure-generation scripts
+data/scripts/                 Data checks and gradient measurements
+tools/                        Queue setup and repository checks
+results/                      Saved results for completed experiments
+paper/                        LaTeX source and PNG figures
+docs/                         Usage guides and algorithm explanation
+fig_method_update_detailed.png  Detailed method diagram
 ```
 
-The historical launchers and archived variants are retained for completeness.
-Use the documented direct trainer commands for a first run. Queue activation
-and service scripts can start long jobs and are intended for deliberate use
-after inspecting their configuration.
+For a first experiment, use a command from the experiment guide. Older launch
+scripts and archived training versions are also included. Check their GPU
+assignments and selected experiments before using them to start a batch.
 
 ## Citation
 

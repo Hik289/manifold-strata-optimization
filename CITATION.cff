@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this implementation, please cite this repository and the accompanying manuscript."
+message: "If you use STRATA, please cite this repository."
 title: "STRATA: Flag-Manifold Optimizer State"
 authors:
   - name: "STRATA contributors"

@@ -1,36 +1,41 @@
-# Reproducibility and release contents
+# Reproducing the experiments
 
-## What is preserved
+## What the repository includes
 
-The release includes all original optimizer and baseline implementations,
-trainers, preprocessing scripts, scientific/geometry checks, diagnostic and
-figure code, expanded experiment recipes, ablation variants and publication
-tools. Historical trainer variants remain in the archive directories for
-provenance. Machine-specific paths are replaced by paths relative to the
-checkout; the read-only snapshot helper takes explicit connection arguments.
-No live queue, process state, SSH configuration or private deployment history
-is included. `configs/experiments.json` is a recipe catalog, not a live queue.
+The repository contains the optimizer and baseline implementations, training
+and data-preparation scripts, experiment configurations, numerical checks,
+result-analysis tools and figure scripts. Older training versions are kept in
+the `archive_*` directories so readers can trace changes to the implementation.
 
-The optimizer mathematics is unchanged from the reference experiment code.
-The public package adds an import surface, packaging, a small CPU example,
-portable paths, complete environment instructions and release checks.
-`docs/reference_environment.json` records package versions from the reference
-training environment without machine identifiers.
+Paths are relative to the repository. Data, model checkpoints, active job
+queues and connection credentials are kept outside version control. The
+856 entries in [`configs/experiments.json`](../configs/experiments.json) describe
+experiments to run; they do not report which jobs are currently running.
 
-## How comparisons are formed
+The package keeps the optimizer calculations used in the reference experiments
+and adds installation support, a small CPU example and portable paths.
+[`reference_environment.json`](reference_environment.json) lists the Python
+and package versions used on the training machine.
 
-1. Freeze splits, seed, model, budget, candidate sets and primary metric.
-2. Run every declared candidate for every method to the stated budget.
-3. Recompute the terminal-100 validation mean from full logs.
-4. Select each method's configuration using validation only.
-5. Read its corresponding test metric and retain every competing method.
+## Comparing methods
 
-The two original rates are not interchangeable with the later six-candidate
-extension. The reduced image design uses its fixed first-listed rate for each
-method, including SGD with momentum and Muon. A fixed-rate comparison is not
-a completed two-rate search. A stopped/failed run has no fabricated endpoint.
+1. Fix the data splits, random seed, model, training length, candidate settings
+   and main evaluation metric before starting.
+2. Run every candidate setting for every method in the comparison.
+3. Compute each candidate's mean validation score over its last 100 recorded
+   epochs or evaluation units.
+4. Select the candidate with the best validation score for each method.
+5. Report the matching test score for every method, including stronger baselines.
 
-## Numerical checks and local checks
+Some comparisons test two learning rates per method. Later experiments test
+six settings per method. The reduced image comparisons use one rate per
+method: the first rate listed in the original design, including for SGD with
+momentum and Muon. Keep these comparison rules separate when reporting results.
+A failed or unfinished run is recorded as such and has no completed result.
+
+## Checking the software
+
+Run from the repository root:
 
 ```bash
 python tools/check_release.py
@@ -38,37 +43,42 @@ OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 python experiments/test_numerical.py
 python examples/quickstart.py --steps 40
 ```
 
-`test_numerical.py` returns a nonzero status if a check fails and writes an
-ignored JSON report. These checks test geometric and update identities; they
-do not replace multi-seed empirical evaluation. Additional named-theorem and
-bound diagnostics are in `experiments/revision/validate_*.py`,
-`actual_theory_diagnostics.py` and `analysis/validate_tight_bounds.py`.
+The numerical suite checks geometric and update identities. It returns a
+nonzero exit status when a check fails and saves a local JSON report, which
+Git ignores. More checks of the theory and its assumptions are in
+[`experiments/revision/`](../experiments/revision/) and
+[`analysis/validate_tight_bounds.py`](../analysis/validate_tight_bounds.py).
 
-The release was checked on CPU with Python 3.9.16 and PyTorch 2.3.1:
-all 13 numerical checks passed, editable installation and import from outside
-the checkout passed, and the 40-update quickstart reduced its example loss
-from 64.092369 to 59.634636. Queue initialization was checked for explicit
-selection, unknown-ID rejection and refusal to overwrite an existing queue.
-These are software checks, not additional research experiments. GitHub Actions
-runs the source, numerical and quickstart checks on Python 3.11.
+The initial release was checked on CPU with Python 3.9.16 and PyTorch 2.3.1.
+All 13 numerical checks passed. Installation and importing the package from
+outside the repository also passed. In the 40-step example, loss fell from
+64.092369 to 59.634636. The queue tool was checked for correct selection,
+unknown-ID rejection and refusal to overwrite an existing queue.
 
-## Building the manuscript
+These checks confirm software behavior; they are not new benchmark results.
+GitHub Actions runs the repository checks, numerical suite and small example
+with Python 3.11.
 
-With TeX Live and latexmk installed, from the repository root:
+## Building the paper
+
+Install TeX Live and latexmk, then run from the repository root:
 
 ```bash
 latexmk -pdf -interaction=nonstopmode -halt-on-error -cd paper/main.tex
 ```
 
-The repository includes the manuscript source and PNG figures. Compile locally
-to generate the PDF; PDF outputs are excluded from version control. The original
-style notices are retained. The source uses the ICML 2026 format; it is not
-relabeled as an official 2027 template.
+The repository includes LaTeX source and PNG figures. Generated PDFs stay
+local and are ignored by Git. The paper uses the ICML 2026 style files, with
+their original notices preserved.
 
-## Data and storage
+## Data, logs and memory measurements
 
-Datasets and model checkpoints are acquired or generated locally. Do not add
-raw dataset archives, tokens, Arrow caches, checkpoints or authentication files
-to Git. Frequent checkpointing and geometric diagnostics can use substantial
-disk space. A small public results table cannot replace the full logs required
-for independent metric recomputation or checkpoint-based resource audits.
+Download or generate datasets with the preparation scripts described in the
+[experiment guide](EXPERIMENTS.md). Training writes logs and checkpoints to
+the chosen output directory. Frequent checkpoints can use substantial disk
+space.
+
+The saved result tables are useful for reading comparisons. To recompute a
+metric or measure stored optimizer tensors, use the full run logs or relevant
+checkpoints. Optimizer tensor storage and peak allocated GPU memory measure
+different things; report them separately.

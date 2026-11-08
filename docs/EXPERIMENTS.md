@@ -1,27 +1,35 @@
-# Reproducing experiments
+# Running experiments
 
-Run commands below from `experiments/` after installing `pip install -e
-".[experiments]"` from the repository root. `../data` is local to your checkout.
-No account, private server or API credential is needed for the optimizer.
-Some datasets have their own access and redistribution terms.
+First install the training dependencies from the repository root:
 
-## Execution rules
+```bash
+python -m pip install -e ".[experiments]"
+cd experiments
+```
 
-- Formal classifier, graph, tabular, sequence and continual trials use 1000
-  epochs and seed 42. Generated Darcy uses 2000 epochs.
-- GPT-2 uses a fixed token budget: 1000 units × 10 updates × batch 8 × length
-  256 = 20,480,000 tokens. A unit is **not** a full-corpus epoch.
-- Use distinct output directories for each method, rate, setting and smoke.
-  A directory with an existing `summary.json` is treated as already complete.
-- `--smoke` is an execution check, never a formal endpoint. Keep its output
-  separate. Logs, flags and frequent checkpoints can require substantial disk.
-- The revision method names are `strata`, `single`, `adamw`, `galore`,
-  `independent`; image benchmarks additionally support `sgdm` and `muon`.
-  Original trainers use `single_grassmann` / `independent_grassmann` instead.
-- Queue orchestration uses POSIX file locks and Linux process inspection.
-  Direct training commands are the easiest way to start.
+Run all remaining commands on this page from `experiments/`. The `../data`
+path points to the repository's local data directory. Each section states
+whether its training command needs CUDA.
 
-## Tabular classification (CPU or CUDA)
+## Settings shared across experiments
+
+- Classification, graph, tabular, sequence and continual-learning experiments
+  use 1000 epochs and seed 42. Generated Darcy experiments use 2000 epochs.
+- GPT-2 uses 1000 evaluation units, with 10 updates per unit, batch size 8 and
+  sequence length 256. This processes 20,480,000 tokens. A unit is not a full
+  pass through the corpus.
+- Give each method, learning rate and setting its own output directory.
+  Several trainers skip a directory that already contains `summary.json`.
+- A `--smoke` run checks that the script executes. Save it in a separate folder
+  so it cannot be mistaken for a completed experiment.
+- The method names in `revision/` are `strata`, `single`, `adamw`, `galore`
+  and `independent`. The image trainer also supports `sgdm` and `muon`.
+  Original trainers use `single_grassmann` and `independent_grassmann`.
+
+Start with a direct training command. To run a batch later, follow the
+[queue instructions](../configs/README.md).
+
+## Tabular classification — CUDA
 
 ```bash
 python revision/prepare_tabular.py --root ../data
@@ -30,11 +38,12 @@ python revision/train_tabular.py --dataset wine_red --width 512 \
   --data ../data --out runs_revision/wine_red_strata
 ```
 
-Adult uses its official test split. Wine Quality uses the documented binary
-quality target. Preprocessing is fitted on training data only. The preparation
-script downloads Adult, both Wine Quality datasets and Covertype.
+Preparation downloads Adult, red and white Wine Quality, and Covertype. Adult
+uses its official test set. Wine Quality is a binary task: quality scores of
+6 or higher form the positive class. Preprocessing is fitted on training data
+only. Data preparation runs on CPU; this training script requires CUDA.
 
-## Continual learning and artificial shifts (CUDA)
+## Continual learning and changing data distributions — CUDA
 
 ```bash
 python revision/train_stream.py --task rotated_mnist_cl --base replay \
@@ -42,12 +51,15 @@ python revision/train_stream.py --task rotated_mnist_cl --base replay \
   --data ../data --out runs_revision/rotated_replay_strata
 ```
 
-MNIST/CIFAR downloads use torchvision. Rotated-MNIST has ten ordered rotations,
-100 epochs per rotation, and a two-layer 256-wide MLP. Validation averages seen
-tasks. Replay retains task rotations and uses the same buffer rule for every
-method. `--base finetune`, `replay` and `ewc` are separate protocols.
+MNIST and CIFAR are downloaded through torchvision. Rotated-MNIST presents
+ten rotations in sequence, with 100 epochs per rotation and two hidden layers
+of width 256. Validation averages performance on tasks seen so far.
 
-## Graph learning (CUDA)
+Replay keeps a small collection of earlier examples, including their task
+rotations. Every method uses the same buffer rule. `finetune`, `replay` and
+`ewc` are separate settings; compare methods within the same setting.
+
+## Graph learning — CUDA
 
 ```bash
 python revision/train_graph_extra.py --dataset PubMed --model sage \
@@ -55,11 +67,12 @@ python revision/train_graph_extra.py --dataset PubMed --model sage \
   --data ../data --out runs_revision/pubmed_sage_strata
 ```
 
-The trainer uses public Planetoid masks. Models are the included reference
-implementations, including single-head GAT and fixed-mixing GCNII. A setting
-can specify `--ablation` or `--flag-xi`; do not mix these with default cohorts.
+The trainer uses the public Planetoid train, validation and test masks.
+The included models use a single attention head for GAT and fixed mixing
+coefficients for GCNII. Options such as `--ablation` and `--flag-xi` change the
+method being tested; report these runs separately from the default settings.
 
-## Forecasting, recommendation and sensor drift (CPU by default)
+## Forecasting, rating prediction and sensor drift — CPU by default
 
 ```bash
 python revision/prepare_new_families.py --data ../data
@@ -69,16 +82,19 @@ python revision/train_new_families.py --task ETTh2 --base static \
   --data ../data --out runs_revision/etth2_strata_example
 ```
 
-Tasks: `ETTh1`, `ETTh2`, `ml100k`, `ml1m`, `gas_drift`. Gas drift requires
-`--base finetune` or `--base replay`; other tasks use `static`. This is one
-candidate, not necessarily the validation-selected winner. The complete
-six-candidate-per-method design is retained in the recipes. ETT uses a compact
-MLP forecaster; it is not a claim against specialized forecasting architectures.
-MovieLens data must be acquired under the provider's terms and are not bundled.
+Supported tasks are `ETTh1`, `ETTh2`, `ml100k`, `ml1m` and `gas_drift`. Use
+`--base finetune` or `--base replay` for gas drift and `static` for the other
+tasks. The configuration file contains six candidate settings per method;
+the command above runs just one of them.
 
-## Image classification and real continual learning (CUDA)
+ETT uses a small MLP that predicts 24 time steps from the preceding 96. These
+experiments compare optimizers on that model. MovieLens experiments predict
+ratings; download the data under the provider's terms.
 
-Prepare manifests once. Source folders below are examples you provide:
+## Image classification and real-world task sequences — CUDA
+
+Prepare the image lists and splits before training. For Tiny-ImageNet, supply
+its extracted dataset directory:
 
 ```bash
 python revision/prepare_image_benchmarks.py --dataset tinyimagenet \
@@ -91,14 +107,17 @@ python revision/train_image_benchmarks.py --dataset tinyimagenet \
 ```
 
 ImageNet-100 preparation accepts an existing `clane9/imagenet-100` Arrow cache
-via `--source`. It verifies the expected 126689 training / 5000 validation
-images. The original validation images become test data and a fixed hash split
-of training images becomes internal validation. Tiny-ImageNet requires its
-original extracted directory. DomainNet and CORe50 preparation download and
-validate public archives; these downloads are large. The manuscript specifies
-the exact split and image-resolution conventions.
+through `--source`. It checks for 126,689 training images and 5,000 original
+validation images. The original validation set becomes the test set; a fixed
+hash rule takes internal validation examples from the training set.
 
-## Sequence models and GPT-2 language modeling (CUDA)
+DomainNet and CORe50 preparation downloads and checks the public archives.
+These datasets are large. The paper source records the exact splits and
+image sizes used in the experiments.
+
+## Language models — CUDA
+
+For WikiText-2:
 
 ```bash
 python revision/prepare_sequence.py --root ../data
@@ -106,8 +125,10 @@ python revision/train_sequence.py --model lstm --method strata --lr 0.0003 \
   --epochs 1000 --data ../data --out runs_revision/wikitext2_lstm_strata
 ```
 
-WikiText-2 uses official splits and a training-only word vocabulary. For GPT-2,
-prepare WikiText-103 using `prepare_language.py` first:
+The script uses the official splits and builds its word vocabulary from the
+training set only.
+
+For GPT-2 on WikiText-103:
 
 ```bash
 python revision/prepare_language.py --root ../data
@@ -117,34 +138,43 @@ python revision/train_lm.py --dataset wikitext103 --model gpt2-small \
   --data ../data --out runs_revision/wikitext103_gpt2_strata
 ```
 
-Model weights are initialized from scratch; the GPT-2 tokenizer is reused.
-Prospective OpenWebText/C4 materialization is included in
-`materialize_corpora.py`; its availability is not a completed benchmark claim.
+The model starts with random weights and reuses the GPT-2 tokenizer.
+`materialize_corpora.py` also includes data-preparation code for OpenWebText
+and C4. Its presence does not mean experiments on those datasets have finished.
 
 ## Scientific machine learning
 
-Original Burgers and Poisson runners are `train_pinn.py` and `train_poisson.py`.
-Their CLI options are listed by `--help`. For the generated Darcy/FNO setting:
+The original Burgers and Poisson training scripts are `train_pinn.py` and
+`train_poisson.py`. Use `--help` to inspect their options.
+
+The Darcy training script fits a Fourier neural operator (FNO) on generated
+data and requires CUDA:
 
 ```bash
 python revision/train_darcy.py --method strata --lr 0.001 --rank 64 \
   --epochs 2000 --data ../data --out runs_revision/darcy_strata
 ```
 
-The Darcy dataset is a retained 16×16 finite-volume generator, not an external
-standard dataset. Spectral real/imaginary tensors use dense optimizer state;
-only eligible pointwise matrices use the projected state.
+This script generates a 16×16 dataset with a finite-volume solver. It does not
+use an external Darcy benchmark. Real and imaginary spectral tensors use dense
+optimizer state; eligible pointwise weight matrices use the subspace update.
 
-## Outputs and analysis
+## Files written by training
 
-Revision trainers write `config.json`, `log.jsonl`, `summary.json`, `flags/`
-and `checkpoints/` as applicable. These local outputs are ignored by Git.
-The audit/collector scripts reconstruct terminal-100 metrics and preserve
-failures. Paper publishers expect the complete corresponding local logs and,
-for state measurements, the relevant checkpoints. They are not a way to
-reconstruct missing measurements from the small public CSV alone.
+Depending on the task, a run writes:
 
-The original shell launchers retain their historical GPU assignments; inspect
-and adjust them before execution. Do not run activation/service scripts as a
-quickstart. To reproduce a controlled subset, prefer the
-[portable queue initializer](../configs/README.md).
+| File or directory | Contents |
+| --- | --- |
+| `config.json` | Arguments, seed, model and data information. |
+| `log.jsonl` | One record per epoch or evaluation unit. |
+| `summary.json` | Completion status and summary scores. |
+| `flags/` | Saved subspace measurements, where enabled. |
+| `checkpoints/` | Model and optimizer checkpoints, where enabled. |
+
+These outputs stay local and are ignored by Git. Analysis scripts recompute
+scores from the logs, usually using the final 100 records. Paper-table and
+loss-curve scripts need the full logs for the comparison; memory measurements
+also need the relevant checkpoints.
+
+Older shell launchers contain fixed GPU assignments. Review them before use.
+For a new setup, use the direct commands above before starting a batch.

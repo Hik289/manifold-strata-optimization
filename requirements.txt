@@ -1,2 +1,2 @@
-# Install from the repository root. Select a matching PyTorch/CUDA wheel first.
+# Install from the repository root. Choose a PyTorch build for your CPU or CUDA version first.
 -e .[experiments]
